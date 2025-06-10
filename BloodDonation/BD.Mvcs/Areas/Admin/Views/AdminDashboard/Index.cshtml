@@ -1,0 +1,152 @@
+﻿@model dynamic
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="stats-card text-center">
+            <div class="stats-icon text-primary">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="stats-number">@(Model?.TotalUsers ?? 1234)</div>
+            <div class="stats-label">Total Users</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stats-card text-center">
+            <div class="stats-icon text-success">
+                <i class="fas fa-user-plus"></i>
+            </div>
+            <div class="stats-number">@(Model?.ActiveDonors ?? 856)</div>
+            <div class="stats-label">Active Donors</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stats-card text-center">
+            <div class="stats-icon text-warning">
+                <i class="fas fa-hand-holding-medical"></i>
+            </div>
+            <div class="stats-number">@(Model?.PendingRequests ?? 42)</div>
+            <div class="stats-label">Pending Requests</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stats-card text-center">
+            <div class="stats-icon text-danger">
+                <i class="fas fa-tint"></i>
+            </div>
+            <div class="stats-number">@(Model?.BloodUnits ?? 2567)</div>
+            <div class="stats-label">Blood Units</div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="admin-card">
+            <div class="admin-card-header">
+                <h5 class="mb-0">Recent Blood Requests</h5>
+            </div>
+            <div class="admin-card-body">
+                <div class="table-responsive">
+                    <table class="table admin-table">
+                        <thead>
+                            <tr>
+                                <th>Request ID</th>
+                                <th>Patient Name</th>
+                                <th>Blood Type</th>
+                                <th>Units Needed</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>#BR001</td>
+                                <td>John Doe</td>
+                                <td>O+</td>
+                                <td>2</td>
+                                <td><span class="badge bg-warning">Pending</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-admin-primary">View</button>
+                                    <button class="btn btn-sm btn-success">Approve</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#BR002</td>
+                                <td>Jane Smith</td>
+                                <td>A-</td>
+                                <td>1</td>
+                                <td><span class="badge bg-success">Approved</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-admin-primary">View</button>
+                                    <button class="btn btn-sm btn-info">Contact</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="admin-card">
+            <div class="admin-card-header">
+                <h5 class="mb-0">Blood Inventory Status</h5>
+            </div>
+            <div class="admin-card-body">
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between">
+                        <span>O+ Blood</span>
+                        <span class="text-success">85 units</span>
+                    </div>
+                    <div class="progress" style="height: 10px;">
+                        <div class="progress-bar bg-success" style="width: 85%"></div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between">
+                        <span>A+ Blood</span>
+                        <span class="text-warning">45 units</span>
+                    </div>
+                    <div class="progress" style="height: 10px;">
+                        <div class="progress-bar bg-warning" style="width: 45%"></div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between">
+                        <span>B+ Blood</span>
+                        <span class="text-danger">15 units</span>
+                    </div>
+                    <div class="progress" style="height: 10px;">
+                        <div class="progress-bar bg-danger" style="width: 15%"></div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between">
+                        <span>AB+ Blood</span>
+                        <span class="text-info">25 units</span>
+                    </div>
+                    <div class="progress" style="height: 10px;">
+                        <div class="progress-bar bg-info" style="width: 25%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="admin-card mt-3">
+            <div class="admin-card-header">
+                <h5 class="mb-0">Quick Actions</h5>
+            </div>
+            <div class="admin-card-body">
+                <div class="d-grid gap-2">
+                    <a href="@Url.Action("Create", "Donors", new { area = "Admin" })" class="btn btn-admin-primary">Add New Donor</a>
+                    <a href="@Url.Action("Create", "BloodRequests", new { area = "Admin" })" class="btn btn-admin-primary">Create Blood Request</a>
+                    <a href="@Url.Action("Index", "Inventory", new { area = "Admin" })" class="btn btn-admin-primary">Update Inventory</a>
+                    <a href="@Url.Action("Index", "Reports", new { area = "Admin" })" class="btn btn-admin-primary">Generate Report</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
