@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace BD.Repositories.Models;
+namespace BD.Repositories.Models.Entities;
 
 public partial class MedicalFacility
 {
