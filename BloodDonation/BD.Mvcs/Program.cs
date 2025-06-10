@@ -1,5 +1,9 @@
+using BD.Repositories.Implementation;
+using BD.Repositories.Interfaces;
+using BD.Repositories.Models.Entities;
 using BD.Services.Implementation;
 using BD.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace BD.Mvcs
 {
@@ -17,10 +21,12 @@ namespace BD.Mvcs
                 options.Cookie.IsEssential = true; // Ensure session cookie is always created
             });
             builder.Services.AddControllersWithViews();
-            builder.Services.AddScoped<IBlogPostService, BlogPostService>();
+            builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+            builder.Services.AddScoped<IStatusNotificationRepository, StatusNotificationRepository>();
             builder.Services.AddScoped<INotificationService, NotificationService>();
             builder.Services.AddScoped<IStatusNotificationService, StatusNotificationService>();
-
+            builder.Services.AddDbContext<BloodDonationDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
             var app = builder.Build();
 
 
