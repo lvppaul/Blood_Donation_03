@@ -7,16 +7,16 @@ namespace BD.Mvcs
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+            builder.Services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(20); // Set session timeout
+                options.Cookie.HttpOnly = true; // For security
+                options.Cookie.IsEssential = true; // Ensure session cookie is always created
+            });
             builder.Services.AddControllersWithViews();
 
             var app = builder.Build();
 
-            //builder.Services.AddSession(options =>
-            //{
-            //    options.IdleTimeout = TimeSpan.FromMinutes(20); // Set session timeout
-            //    options.Cookie.HttpOnly = true; // For security
-            //    options.Cookie.IsEssential = true; // Ensure session cookie is always created
-            //});
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
