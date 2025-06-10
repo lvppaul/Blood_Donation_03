@@ -1,3 +1,6 @@
+using BD.Services.Implementation;
+using BD.Services.Interfaces;
+
 namespace BD.Mvcs
 {
     public class Program
@@ -14,8 +17,13 @@ namespace BD.Mvcs
                 options.Cookie.IsEssential = true; // Ensure session cookie is always created
             });
             builder.Services.AddControllersWithViews();
+            builder.Services.AddScoped<IBlogPostService, BlogPostService>();
+            builder.Services.AddScoped<INotificationService, NotificationService>();
+            builder.Services.AddScoped<IStatusNotificationService, StatusNotificationService>();
 
             var app = builder.Build();
+
+
 
 
             // Configure the HTTP request pipeline.

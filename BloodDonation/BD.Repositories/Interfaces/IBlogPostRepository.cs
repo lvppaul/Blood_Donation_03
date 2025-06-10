@@ -12,8 +12,8 @@ namespace BD.Repositories.Interfaces
     {
         public Task<IEnumerable<BlogPost>> GetAllPostsAsync();
         public Task<BlogPost> GetPostByIdAsync(int id);
-        public Task<BlogPost> AddAsync(BlogPostRequest post);
-        public Task<BlogPost> UpdatePostAsync(BlogPostRequest post);
+        public Task<BlogPost> AddBlogAsync(BlogPost post);
+        public Task<BlogPost> UpdatePostAsync(BlogPost post);
         public Task DeletePostAsync(int id);
     }
 }
