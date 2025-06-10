@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BD.Repositories.Implementation
+namespace BD.Repositories.Interfaces.Implementation
 {
     public class BlogPostRepository : IBlogPostRepository
     {

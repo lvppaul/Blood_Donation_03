@@ -54,3 +54,5 @@ Migrations/*.db
 !*.csproj
 !*.cs
 
+# Ignore tailwind css 
+node_modules/

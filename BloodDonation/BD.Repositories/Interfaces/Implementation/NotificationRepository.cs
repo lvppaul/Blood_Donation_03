@@ -2,7 +2,7 @@
 using BD.Repositories.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace BD.Repositories.Implementation
+namespace BD.Repositories.Interfaces.Implementation
 {
     public class NotificationRepository : INotificationRepository
     {

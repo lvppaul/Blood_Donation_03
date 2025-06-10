@@ -1,3 +1,10 @@
+@import "tailwindcss";
+
+@layer base {
+    html {
+        @apply bg-white text-black;
+    }
+}
 html {
   font-size: 14px;
 }
