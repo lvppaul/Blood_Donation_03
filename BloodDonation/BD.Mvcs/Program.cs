@@ -11,12 +11,12 @@ namespace BD.Mvcs
 
             var app = builder.Build();
 
-            builder.Services.AddSession(options =>
-            {
-                options.IdleTimeout = TimeSpan.FromMinutes(20); // Set session timeout
-                options.Cookie.HttpOnly = true; // For security
-                options.Cookie.IsEssential = true; // Ensure session cookie is always created
-            });
+            //builder.Services.AddSession(options =>
+            //{
+            //    options.IdleTimeout = TimeSpan.FromMinutes(20); // Set session timeout
+            //    options.Cookie.HttpOnly = true; // For security
+            //    options.Cookie.IsEssential = true; // Ensure session cookie is always created
+            //});
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())

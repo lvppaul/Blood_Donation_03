@@ -25,17 +25,6 @@ namespace BD.Repositories.Models.Mappers
             };
         }
 
-        public static BlogPostRequest ToRequest(BlogPost blogPost)
-        {
-            return new BlogPostRequest
-            {
-                Title = blogPost.Title,
-                Content = blogPost.Content,
-                AuthorId = blogPost.AuthorId,
-                Category = blogPost.Category
-            };
-        }
-
         public static BlogPostResponse ToResponse(BlogPost blogPost)
         {
             return new BlogPostResponse

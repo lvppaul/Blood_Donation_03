@@ -2,6 +2,7 @@
 using BD.Repositories.Models.DTOs.Requests;
 using BD.Repositories.Models.Entities;
 using BD.Repositories.Models.Mappers;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,34 +18,49 @@ namespace BD.Repositories.Implementation
         {
             _context = context;
         }
-        public async Task<BlogPost> AddAsync(BlogPostRequest post)
+        public async Task<BlogPost> AddBlogAsync(BlogPost post)
         {
-            var entity = BlogPostMapper.ToEntity(post);
-
-            await _context.BlogPosts.AddAsync(entity);
+            await _context.BlogPosts.AddAsync(post);
             await _context.SaveChangesAsync();
 
-            return entity;
+            return post;
         }
 
-        public Task DeletePostAsync(int id)
+        public async Task DeletePostAsync(int id)
         {
-            throw new NotImplementedException();
+            var post = await _context.BlogPosts.FindAsync(id);
+            if(post == null)
+            {
+                throw new Exception("Post not found");
+            }
+            post.IsDeleted = true;
+            await _context.SaveChangesAsync();
         }
 
-        public Task<IEnumerable<BlogPost>> GetAllPostsAsync()
+        public async Task<IEnumerable<BlogPost>> GetAllPostsAsync()
         {
-            throw new NotImplementedException();
+            var posts = await _context.BlogPosts.ToListAsync();
+
+            return posts;
         }
 
-        public Task<BlogPost> GetPostByIdAsync(int id)
+        public async Task<BlogPost> GetPostByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            var post = await _context.BlogPosts.FindAsync(id);
+
+            if(post == null)
+            {
+                return null;
+            }
+
+            return post;
         }
 
-        public Task<BlogPost> UpdatePostAsync(BlogPostRequest post)
+        public async Task<BlogPost> UpdatePostAsync(BlogPost post)
         {
-            throw new NotImplementedException();
+            _context.BlogPosts.Update(post);
+            await _context.SaveChangesAsync();
+            return post;
         }
     }
 }

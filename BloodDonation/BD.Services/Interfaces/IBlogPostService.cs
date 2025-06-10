@@ -10,10 +10,10 @@ namespace BD.Services.Interfaces
 {
     public interface IBlogPostService
     {
-        public Task<IEnumerable<BlogPost>> GetAllPostsAsync();
-        public Task<BlogPost> GetPostByIdAsync(int id);
-        public Task<BlogPost> AddAsync(BlogPostRequest post);
-        public Task<BlogPost> UpdatePostAsync(BlogPostRequest post);
-        public Task DeletePostAsync(int id);
+        Task<IEnumerable<BlogPost>> GetAllPostsAsync();
+        Task<BlogPost> GetPostByIdAsync(int id);
+        Task<BlogPost> AddAsync(BlogPostRequest post);
+        Task<BlogPost> UpdatePostAsync(int id, BlogPostRequest post);
+        Task DeletePostAsync(int id);
     }
 }
