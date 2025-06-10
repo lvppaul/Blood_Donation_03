@@ -5,7 +5,7 @@ namespace BD.Repositories.Models.Entities;
 
 public partial class StatusBloodDonor
 {
-    public int StatusId { get; set; }
+    public int StatusDonorId { get; set; }
 
     public string StatusName { get; set; } = null!;
 

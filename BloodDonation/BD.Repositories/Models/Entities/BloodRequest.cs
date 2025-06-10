@@ -13,7 +13,7 @@ public partial class BloodRequest
 
     public string ComponentType { get; set; } = null!;
 
-    public int Quantity { get; set; }
+    public int Amount { get; set; }
 
     public string UrgencyLevel { get; set; } = null!;
 

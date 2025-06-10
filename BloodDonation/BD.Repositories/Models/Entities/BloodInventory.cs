@@ -11,9 +11,11 @@ public partial class BloodInventory
 
     public string ComponentType { get; set; } = null!;
 
-    public int Quantity { get; set; }
+    public int Amount { get; set; }
 
-    public DateOnly ExpiryDate { get; set; }
+    public DateOnly ExpiredDate { get; set; }
+
+    public int StatusInventoryId { get; set; }
 
     public DateTime? LastUpdated { get; set; }
 
@@ -22,4 +24,6 @@ public partial class BloodInventory
     public string BloodType { get; set; } = null!;
 
     public virtual MedicalFacility Facility { get; set; } = null!;
+
+    public virtual StatusBloodInventory StatusInventory { get; set; } = null!;
 }

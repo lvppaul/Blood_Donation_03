@@ -13,7 +13,7 @@ public partial class DonationHistory
 
     public int FacilityId { get; set; }
 
-    public int Quantity { get; set; }
+    public int Amount { get; set; }
 
     public DateTime? DonationDate { get; set; }
 
