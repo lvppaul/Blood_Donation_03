@@ -1,12 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using BD.Repositories.Models.Entities;
 
 namespace BD.Repositories.Interfaces
 {
-    internal interface INotificationRepository
+    public interface INotificationRepository
     {
+        Task<IEnumerable<Notification>> GetAllAsync();
+        Task<Notification?> GetByIdAsync(int notificationId);
+        Task<IEnumerable<Notification>> GetByUserIdAsync(int userId);
+        Task AddAsync(Notification notification);
+        Task UpdateAsync(Notification notification);
+        Task DeleteAsync(int notificationId);
     }
 }
