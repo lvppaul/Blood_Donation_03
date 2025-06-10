@@ -32,11 +32,11 @@ public partial class BloodDonationDbContext : DbContext
 
     public virtual DbSet<Role> Roles { get; set; }
 
+    public virtual DbSet<StatusBloodDonor> StatusBloodDonors { get; set; }
+
+    public virtual DbSet<StatusBloodRequest> StatusBloodRequests { get; set; }
+
     public virtual DbSet<StatusNotification> StatusNotifications { get; set; }
-
-    public virtual DbSet<StatusesBloodDonor> StatusesBloodDonors { get; set; }
-
-    public virtual DbSet<StatusesBloodRequest> StatusesBloodRequests { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
 
@@ -56,11 +56,12 @@ public partial class BloodDonationDbContext : DbContext
     {
         optionsBuilder.UseSqlServer(GetConnectionString());
     }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<BlogPost>(entity =>
         {
-            entity.HasKey(e => e.PostId).HasName("PK__BlogPost__3ED78766BB16EA8F");
+            entity.HasKey(e => e.PostId).HasName("PK__BlogPost__3ED787661158ED3A");
 
             entity.ToTable("BlogPost");
 
@@ -95,7 +96,7 @@ public partial class BloodDonationDbContext : DbContext
 
         modelBuilder.Entity<BloodCompatibility>(entity =>
         {
-            entity.HasKey(e => e.CompatibilityId).HasName("PK__BloodCom__AA12AC9902CCF0E0");
+            entity.HasKey(e => e.CompatibilityId).HasName("PK__BloodCom__AA12AC99C40C1ABA");
 
             entity.ToTable("BloodCompatibility");
 
@@ -119,7 +120,7 @@ public partial class BloodDonationDbContext : DbContext
 
         modelBuilder.Entity<BloodInventory>(entity =>
         {
-            entity.HasKey(e => e.InventoryId).HasName("PK__BloodInv__B59ACC4949391100");
+            entity.HasKey(e => e.InventoryId).HasName("PK__BloodInv__B59ACC495717679C");
 
             entity.ToTable("BloodInventory");
 
@@ -150,7 +151,7 @@ public partial class BloodDonationDbContext : DbContext
 
         modelBuilder.Entity<BloodRequest>(entity =>
         {
-            entity.HasKey(e => e.RequestId).HasName("PK__BloodReq__18D3B90F09EECF86");
+            entity.HasKey(e => e.RequestId).HasName("PK__BloodReq__18D3B90F4F702FA1");
 
             entity.ToTable("BloodRequest");
 
@@ -192,7 +193,7 @@ public partial class BloodDonationDbContext : DbContext
 
         modelBuilder.Entity<DonationHistory>(entity =>
         {
-            entity.HasKey(e => e.DonationId).HasName("PK__Donation__296B91DCFB6C7DEA");
+            entity.HasKey(e => e.DonationId).HasName("PK__Donation__296B91DC2A4ECAB6");
 
             entity.ToTable("DonationHistory");
 
@@ -236,7 +237,7 @@ public partial class BloodDonationDbContext : DbContext
 
         modelBuilder.Entity<DonorAvailability>(entity =>
         {
-            entity.HasKey(e => e.AvailabilityId).HasName("PK__DonorAva__86E3A8014578F754");
+            entity.HasKey(e => e.AvailabilityId).HasName("PK__DonorAva__86E3A801EFAEC733");
 
             entity.ToTable("DonorAvailability");
 
@@ -263,7 +264,7 @@ public partial class BloodDonationDbContext : DbContext
 
         modelBuilder.Entity<MedicalFacility>(entity =>
         {
-            entity.HasKey(e => e.FacilityId).HasName("PK__MedicalF__B2E8EAAE785C6765");
+            entity.HasKey(e => e.FacilityId).HasName("PK__MedicalF__B2E8EAAE31C04DAF");
 
             entity.ToTable("MedicalFacility");
 
@@ -292,7 +293,7 @@ public partial class BloodDonationDbContext : DbContext
 
         modelBuilder.Entity<Notification>(entity =>
         {
-            entity.HasKey(e => e.NotificationId).HasName("PK__Notifica__E059842F5EB44054");
+            entity.HasKey(e => e.NotificationId).HasName("PK__Notifica__E059842F51DFDC56");
 
             entity.ToTable("Notification");
 
@@ -326,7 +327,7 @@ public partial class BloodDonationDbContext : DbContext
 
         modelBuilder.Entity<Role>(entity =>
         {
-            entity.HasKey(e => e.RoleId).HasName("PK__Role__760965CC0D8AF0C9");
+            entity.HasKey(e => e.RoleId).HasName("PK__Role__760965CC2D219254");
 
             entity.ToTable("Role");
 
@@ -339,9 +340,39 @@ public partial class BloodDonationDbContext : DbContext
                 .HasColumnName("name");
         });
 
+        modelBuilder.Entity<StatusBloodDonor>(entity =>
+        {
+            entity.HasKey(e => e.StatusId).HasName("PK__StatusBl__3683B531E7C768E0");
+
+            entity.ToTable("StatusBloodDonor");
+
+            entity.Property(e => e.StatusId).HasColumnName("status_id");
+            entity.Property(e => e.IsDeleted)
+                .HasDefaultValue(false)
+                .HasColumnName("is_Deleted");
+            entity.Property(e => e.StatusName)
+                .HasMaxLength(100)
+                .HasColumnName("status_name");
+        });
+
+        modelBuilder.Entity<StatusBloodRequest>(entity =>
+        {
+            entity.HasKey(e => e.StatusRequestId).HasName("PK__StatusBl__BB59962BD7199C54");
+
+            entity.ToTable("StatusBloodRequest");
+
+            entity.Property(e => e.StatusRequestId).HasColumnName("status_request_id");
+            entity.Property(e => e.IsDeleted)
+                .HasDefaultValue(false)
+                .HasColumnName("is_Deleted");
+            entity.Property(e => e.StatusName)
+                .HasMaxLength(100)
+                .HasColumnName("status_name");
+        });
+
         modelBuilder.Entity<StatusNotification>(entity =>
         {
-            entity.HasKey(e => e.StatusNotificationId).HasName("PK__StatusNo__F90F86D5027AA2B6");
+            entity.HasKey(e => e.StatusNotificationId).HasName("PK__StatusNo__F90F86D5F1697CED");
 
             entity.ToTable("StatusNotification");
 
@@ -354,39 +385,9 @@ public partial class BloodDonationDbContext : DbContext
                 .HasColumnName("status_name");
         });
 
-        modelBuilder.Entity<StatusesBloodDonor>(entity =>
-        {
-            entity.HasKey(e => e.StatusId).HasName("PK__Statuses__3683B531D73F6CB6");
-
-            entity.ToTable("StatusesBloodDonor");
-
-            entity.Property(e => e.StatusId).HasColumnName("status_id");
-            entity.Property(e => e.IsDeleted)
-                .HasDefaultValue(false)
-                .HasColumnName("is_Deleted");
-            entity.Property(e => e.StatusName)
-                .HasMaxLength(100)
-                .HasColumnName("status_name");
-        });
-
-        modelBuilder.Entity<StatusesBloodRequest>(entity =>
-        {
-            entity.HasKey(e => e.StatusRequestId).HasName("PK__Statuses__BB59962BA29BBBB7");
-
-            entity.ToTable("StatusesBloodRequest");
-
-            entity.Property(e => e.StatusRequestId).HasColumnName("status_request_id");
-            entity.Property(e => e.IsDeleted)
-                .HasDefaultValue(false)
-                .HasColumnName("is_Deleted");
-            entity.Property(e => e.StatusName)
-                .HasMaxLength(100)
-                .HasColumnName("status_name");
-        });
-
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.UserId).HasName("PK__User__B9BE370FB261D9A2");
+            entity.HasKey(e => e.UserId).HasName("PK__User__B9BE370F2211BA01");
 
             entity.ToTable("User");
 

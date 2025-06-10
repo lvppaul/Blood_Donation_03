@@ -27,7 +27,7 @@ public partial class BloodRequest
 
     public virtual ICollection<DonationHistory> DonationHistories { get; set; } = new List<DonationHistory>();
 
-    public virtual StatusesBloodRequest StatusRequest { get; set; } = null!;
+    public virtual StatusBloodRequest StatusRequest { get; set; } = null!;
 
     public virtual User User { get; set; } = null!;
 }

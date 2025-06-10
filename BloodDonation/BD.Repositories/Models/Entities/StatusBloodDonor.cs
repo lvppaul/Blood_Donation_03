@@ -3,13 +3,13 @@ using System.Collections.Generic;
 
 namespace BD.Repositories.Models.Entities;
 
-public partial class StatusesBloodRequest
+public partial class StatusBloodDonor
 {
-    public int StatusRequestId { get; set; }
+    public int StatusId { get; set; }
 
     public string StatusName { get; set; } = null!;
 
     public bool? IsDeleted { get; set; }
 
-    public virtual ICollection<BloodRequest> BloodRequests { get; set; } = new List<BloodRequest>();
+    public virtual ICollection<DonorAvailability> DonorAvailabilities { get; set; } = new List<DonorAvailability>();
 }
