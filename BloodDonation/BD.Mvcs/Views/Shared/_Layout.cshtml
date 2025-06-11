@@ -1,11 +1,11 @@
 ﻿@model string // Role (e.g., "guest", "member", "staff", "admin")
 
 <!DOCTYPE html>
-<html lang="en" class="@(ViewData["Theme"] == "dark" ? "dark" : "")">
+<html lang="en" class="@(string.Equals(ViewData["Theme"] as string, "dark", StringComparison.Ordinal) ? "dark" : "")">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - BloodDonation.Mvcs</title>
+    <title>@ViewData["Title"] BloodDonation</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/output.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
@@ -17,6 +17,8 @@
         // Default to "guest" if no role is provided
         var role = Model ?? "guest";
         var isAuthenticated = User.Identity.IsAuthenticated;
+        // var sessionRole = Context.Session.GetString("UserRole");
+
 
         // Define navigation items
         var navItems = new Dictionary<string, List<(string href, string label, string iconClass)>>
@@ -63,7 +65,7 @@
             <!-- Logo -->
             <a href="/" class="flex items-center gap-2 text-primary hover:text-primary/80 transition-colors text-decoration-none">
                 <i class="fas fa-tint text-2xl text-red-700"></i>
-                <span class="text-2xl font-bold text-red-700 hover:text-white">BloodConnect</span>
+                <span class="text-2xl font-bold text-red-700">BloodConnect</span>
             </a>
 
             <!-- Desktop Navigation -->
@@ -97,7 +99,7 @@
                 else
                 {
                     <a href="/login"
-                       class="text-decoration-none text-white bg-red-500 hover:bg-red-300 inline-flex items-center px-4 py-2 text-sm font-medium rounded-md transition-colors">
+                       class="text-decoration-none text-red-700! border-1 hover:bg-red-300 inline-flex items-center px-4 py-2 text-sm font-medium rounded-md transition-colors">
                         <i class="fas fa-sign-in-alt mr-1.5 text-sm"></i> Login
                     </a>
                 }

@@ -18,6 +18,6 @@ html {
     }
 
     body {
-        bg-: [var(--background)] text-[var(--foreground)];
+        bg-background: text-foreground;
     }
 }
