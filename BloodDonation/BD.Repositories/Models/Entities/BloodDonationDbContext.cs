@@ -79,6 +79,12 @@ public partial class BloodDonationDbContext : DbContext
             entity.Property(e => e.IsDeleted)
                 .HasDefaultValue(false)
                 .HasColumnName("is_Deleted");
+            entity.Property(e => e.IsDocument)
+                .HasDefaultValue(false)
+                .HasColumnName("is_Document");
+            entity.Property(e => e.IsPublished)
+                .HasDefaultValue(true)
+                .HasColumnName("is_Published");
             entity.Property(e => e.Title)
                 .HasMaxLength(200)
                 .HasColumnName("title");

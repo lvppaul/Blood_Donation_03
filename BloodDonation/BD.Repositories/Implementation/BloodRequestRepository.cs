@@ -12,44 +12,30 @@ namespace BD.Repositories.Implementation
     public class BloodRequestRepository : IBloodRequestRepository
     {
         private readonly BloodDonationDbContext _context;
+
         public BloodRequestRepository(BloodDonationDbContext context)
         {
             _context = context;
         }
+
         public async Task<BloodRequest> AddBloodRequestAsync(BloodRequest bloodRequest)
         {
             await _context.BloodRequests.AddAsync(bloodRequest);
             await _context.SaveChangesAsync();
-
             return bloodRequest;
         }
 
-        public async Task DeleteBloodRequestAsync(int id)
+        public async Task<BloodRequest?> GetBloodRequestByIdAsync(int id)
         {
-            var bloodRequest = await _context.BloodRequests.FindAsync(id);
-            if (bloodRequest == null)
-            {
-                throw new Exception("Blood request not found");
-            }
-            bloodRequest.IsDeleted = true;
-            await _context.SaveChangesAsync();
+            return await _context.BloodRequests
+                .FirstOrDefaultAsync(br => br.RequestId == id && br.IsDeleted != true);
         }
 
         public async Task<IEnumerable<BloodRequest>> GetAllBloodRequestsAsync()
         {
-            var bloodRequests = await _context.BloodRequests.ToListAsync();
-
-            return bloodRequests;
-        }
-
-        public async Task<BloodRequest> GetBloodRequestByIdAsync(int id)
-        {
-            var bloodRequest = await _context.BloodRequests.FindAsync(id);
-            if (bloodRequest == null)
-            {
-                return null;
-            }
-            return bloodRequest;
+            return await _context.BloodRequests
+                .Where(br => br.IsDeleted != true)
+                .ToListAsync();
         }
 
         public async Task<BloodRequest> UpdateBloodRequestAsync(BloodRequest bloodRequest)
@@ -57,6 +43,12 @@ namespace BD.Repositories.Implementation
             _context.BloodRequests.Update(bloodRequest);
             await _context.SaveChangesAsync();
             return bloodRequest;
+        }
+
+        public async Task DeleteBloodRequestAsync(BloodRequest bloodRequest)
+        {
+            bloodRequest.IsDeleted = true;
+            await _context.SaveChangesAsync();
         }
     }
 }

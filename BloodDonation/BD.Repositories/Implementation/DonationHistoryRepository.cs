@@ -26,14 +26,9 @@ namespace BD.Repositories.Implementation
             return donationHistory;
         }
 
-        public async Task DeleteDonationHistoryAsync(int id)
+        public async Task DeleteDonationHistoryAsync(DonationHistory donationHistory)
         {
-            var history = await _context.DonationHistories.FindAsync(id);
-            if(history == null)
-            {
-                throw new Exception("Donation history not found");
-            }
-            history.IsDeleted = true;
+            donationHistory.IsDeleted = true;
             await _context.SaveChangesAsync();
         }
 
@@ -44,14 +39,10 @@ namespace BD.Repositories.Implementation
             return histories;
         }
 
-        public async Task<DonationHistory> GetDonationHistoryByIdAsync(int id)
+        public async Task<DonationHistory?> GetDonationHistoryByIdAsync(int id)
         {
-            var history = await _context.DonationHistories.FindAsync(id);
-            if (history == null)
-            {
-                return null;
-            }
-            return history;
+            return await _context.DonationHistories
+                .FirstOrDefaultAsync(dh => dh.DonationId == id && dh.IsDeleted != true);
         }
 
         public async Task<DonationHistory> UpdateDonationHistoryAsync(DonationHistory donationHistory)

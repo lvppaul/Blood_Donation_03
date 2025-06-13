@@ -24,32 +24,23 @@ namespace BD.Repositories.Implementation
             return donorAvailability;
         }
 
-        public async Task DeleteDonorAvailabilityAsync(int id)
+        public async Task DeleteDonorAvailabilityAsync(DonorAvailability donorAvailability)
         {
-            var donorAvailability = await _context.DonorAvailabilities.FindAsync(id);
-            if (donorAvailability == null)
-            {
-                throw new Exception("Donor availability not found");
-            }
             donorAvailability.IsDeleted = true;
             await _context.SaveChangesAsync();
         }
 
         public async Task<IEnumerable<DonorAvailability>> GetAllDonorAvailabilitiesAsync()
         {
-            var donorAvailabilities = await _context.DonorAvailabilities.ToListAsync();
-
-            return donorAvailabilities;
+            return await _context.DonorAvailabilities
+                .Where(da => da.IsDeleted != true)
+                .ToListAsync();
         }
 
-        public async Task<DonorAvailability> GetDonorAvailabilityByIdAsync(int id)
+        public async Task<DonorAvailability?> GetDonorAvailabilityByIdAsync(int id)
         {
-            var donorAvailability = await _context.DonorAvailabilities.FindAsync(id);
-            if (donorAvailability == null)
-            {
-                return null;    
-            }
-            return donorAvailability;
+            return await _context.DonorAvailabilities
+                .FirstOrDefaultAsync(da => da.AvailabilityId == id && da.IsDeleted != true);
         }
 
         public async Task<DonorAvailability> UpdateDonorAvailabilityAsync(DonorAvailability donorAvailability)

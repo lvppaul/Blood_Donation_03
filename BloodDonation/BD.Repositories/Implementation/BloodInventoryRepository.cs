@@ -24,32 +24,23 @@ namespace BD.Repositories.Implementation
             return bloodInventory;
         }
 
-        public async Task DeleteBloodInventoryAsync(int id)
+        public async Task DeleteBloodInventoryAsync(BloodInventory bloodInventory)
         {
-            var bloodInventory = await _context.BloodInventories.FindAsync(id);
-            if (bloodInventory == null)
-            {
-                throw new Exception("Blood inventory not found");
-            }
             bloodInventory.IsDeleted = true;
             await _context.SaveChangesAsync();
         }
 
         public async Task<IEnumerable<BloodInventory>> GetAllBloodInventoriesAsync()
         {
-            var bloodInventories = await _context.BloodInventories.ToListAsync();
-
-            return bloodInventories;
+            return await _context.BloodInventories
+                .Where(bi => bi.IsDeleted != true)
+                .ToListAsync();
         }
 
-        public async Task<BloodInventory> GetBloodInventoryByIdAsync(int id)
+        public async Task<BloodInventory?> GetBloodInventoryByIdAsync(int id)
         {
-            var bloodInventory = await _context.BloodInventories.FindAsync(id);
-            if (bloodInventory == null)
-            {
-                return null;
-            }
-            return bloodInventory;
+            return await _context.BloodInventories
+                .FirstOrDefaultAsync(bi => bi.InventoryId == id && bi.IsDeleted != true);
         }
 
         public async Task<BloodInventory> UpdateBloodInventoryAsync(BloodInventory bloodInventory)

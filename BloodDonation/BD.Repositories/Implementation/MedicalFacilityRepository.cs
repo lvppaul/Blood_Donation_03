@@ -24,32 +24,23 @@ namespace BD.Repositories.Implementation
             return facility;
         }
 
-        public async Task DeleteFacilityAsync(int id)
+        public async Task DeleteFacilityAsync(MedicalFacility facility)
         {
-            var facility = await _context.MedicalFacilities.FindAsync(id);
-            if (facility == null)
-            {
-                throw new Exception("Medical facility not found");
-            }
             facility.IsDeleted = true;
             await _context.SaveChangesAsync();
         }
 
         public async Task<IEnumerable<MedicalFacility>> GetAllFacilitiesAsync()
         {
-            var facilities = await _context.MedicalFacilities.ToListAsync();
-
-            return facilities;
+            return await _context.MedicalFacilities
+                .Where(f => f.IsDeleted != true)
+                .ToListAsync();
         }
 
-        public async Task<MedicalFacility> GetFacilityByIdAsync(int id)
+        public async Task<MedicalFacility?> GetFacilityByIdAsync(int id)
         {
-            var facility = await _context.MedicalFacilities.FindAsync(id);
-            if (facility == null)
-            {
-                return null;
-            }
-            return facility;
+            return await _context.MedicalFacilities
+                .FirstOrDefaultAsync(f => f.FacilityId == id && f.IsDeleted != true);
         }
 
         public async Task<MedicalFacility> UpdateFacilityAsync(MedicalFacility facility)

@@ -11,9 +11,9 @@ namespace BD.Repositories.Interfaces
     public interface IDonationHistoryRepository
     {
         Task<IEnumerable<DonationHistory>> GetAllDonationHistoryAsync();
-        Task<DonationHistory> GetDonationHistoryByIdAsync(int id);
+        Task<DonationHistory?> GetDonationHistoryByIdAsync(int id);
         Task<DonationHistory> AddDonationHistoryAsync(DonationHistory donationHistory);
         Task<DonationHistory> UpdateDonationHistoryAsync(DonationHistory donationHistory);
-        Task DeleteDonationHistoryAsync(int id);
+        Task DeleteDonationHistoryAsync(DonationHistory donationHistory);
     }
 }

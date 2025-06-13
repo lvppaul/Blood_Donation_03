@@ -12,5 +12,6 @@ namespace BD.Repositories.Models.DTOs.Requests
         public string Content { get; set; } = null!;
         public int AuthorId { get; set; }
         public string? Category { get; set; }
+        public bool? IsDocument { get; set; }
     }
 }

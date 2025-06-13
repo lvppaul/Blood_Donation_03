@@ -26,34 +26,21 @@ namespace BD.Repositories.Implementation
             return post;
         }
 
-        public async Task DeletePostAsync(int id)
+        public async Task DeletePostAsync(BlogPost blogPost)
         {
-            var post = await _context.BlogPosts.FindAsync(id);
-            if(post == null)
-            {
-                throw new Exception("Post not found");
-            }
-            post.IsDeleted = true;
+            blogPost.IsDeleted = true;
             await _context.SaveChangesAsync();
         }
 
         public async Task<IEnumerable<BlogPost>> GetAllPostsAsync()
         {
-            var posts = await _context.BlogPosts.ToListAsync();
-
-            return posts;
+            return await _context.BlogPosts.Where(bp => bp.IsDeleted != true).ToListAsync();
         }
 
-        public async Task<BlogPost> GetPostByIdAsync(int id)
+        public async Task<BlogPost?> GetPostByIdAsync(int id)
         {
-            var post = await _context.BlogPosts.FindAsync(id);
-
-            if(post == null)
-            {
-                return null;
-            }
-
-            return post;
+            return await _context.BlogPosts
+                .FirstOrDefaultAsync(bp => bp.PostId == id && bp.IsDeleted != true);
         }
 
         public async Task<BlogPost> UpdatePostAsync(BlogPost post)

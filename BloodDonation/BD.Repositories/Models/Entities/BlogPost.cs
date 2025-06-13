@@ -19,7 +19,11 @@ public partial class BlogPost
 
     public string? Category { get; set; }
 
+    public bool? IsPublished { get; set; }
+
     public bool? IsDeleted { get; set; }
+
+    public bool? IsDocument { get; set; }
 
     public virtual User Author { get; set; } = null!;
 }

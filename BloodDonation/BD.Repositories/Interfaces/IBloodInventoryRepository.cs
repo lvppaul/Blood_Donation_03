@@ -10,9 +10,9 @@ namespace BD.Repositories.Interfaces
     public interface IBloodInventoryRepository
     {
         Task<IEnumerable<BloodInventory>> GetAllBloodInventoriesAsync();
-        Task<BloodInventory> GetBloodInventoryByIdAsync(int id);
+        Task<BloodInventory?> GetBloodInventoryByIdAsync(int id);
         Task<BloodInventory> AddBloodInventoryAsync(BloodInventory bloodInventory);
         Task<BloodInventory> UpdateBloodInventoryAsync(BloodInventory bloodInventory);
-        Task DeleteBloodInventoryAsync(int id);
+        Task DeleteBloodInventoryAsync(BloodInventory bloodInventory);
     }
 }

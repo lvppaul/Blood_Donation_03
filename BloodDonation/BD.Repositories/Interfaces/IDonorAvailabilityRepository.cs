@@ -10,9 +10,9 @@ namespace BD.Repositories.Interfaces
     public interface IDonorAvailabilityRepository
     {
         Task<IEnumerable<DonorAvailability>> GetAllDonorAvailabilitiesAsync();
-        Task<DonorAvailability> GetDonorAvailabilityByIdAsync(int id);
+        Task<DonorAvailability?> GetDonorAvailabilityByIdAsync(int id);
         Task<DonorAvailability> AddDonorAvailabilityAsync(DonorAvailability donorAvailability);
         Task<DonorAvailability> UpdateDonorAvailabilityAsync(DonorAvailability donorAvailability);
-        Task DeleteDonorAvailabilityAsync(int id);
+        Task DeleteDonorAvailabilityAsync(DonorAvailability donorAvailability);
     }
 }

@@ -25,12 +25,15 @@ namespace BD.Mvcs
             builder.Services.AddScoped<IStatusNotificationRepository, StatusNotificationRepository>();
             builder.Services.AddScoped<INotificationService, NotificationService>();
             builder.Services.AddScoped<IStatusNotificationService, StatusNotificationService>();
+            builder.Services.AddScoped<IBlogPostRepository, BlogPostRepository>();
+            builder.Services.AddScoped<IBlogPostService, BlogPostService>();
+            builder.Services.AddScoped<IBloodInventoryRepository, BloodInventoryRepository>();
+            builder.Services.AddScoped<IBloodInventoryService, BloodInventoryService>();
+
             builder.Services.AddDbContext<BloodDonationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
             var app = builder.Build();
-
-
-
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())

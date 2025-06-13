@@ -21,7 +21,8 @@ namespace BD.Repositories.Models.Mappers
                 Category = blogPostRequest.Category,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
-                IsDeleted = false
+                IsDeleted = false,
+                IsDocument = blogPostRequest.IsDocument
             };
         }
 
@@ -35,7 +36,7 @@ namespace BD.Repositories.Models.Mappers
                 AuthorId = blogPost.AuthorId,
                 CreatedAt = blogPost.CreatedAt,
                 UpdatedAt = blogPost.UpdatedAt,
-                Category = blogPost.Category
+                Category = blogPost.Category,    
             };
         }
     }
