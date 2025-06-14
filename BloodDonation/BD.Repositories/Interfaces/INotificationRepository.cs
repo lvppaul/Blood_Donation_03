@@ -7,8 +7,8 @@ namespace BD.Repositories.Interfaces
         Task<IEnumerable<Notification>> GetAllAsync();
         Task<Notification?> GetByIdAsync(int notificationId);
         Task<IEnumerable<Notification>> GetByUserIdAsync(int userId);
-        Task AddAsync(Notification notification);
-        Task UpdateAsync(Notification notification);
+        Task<Notification> AddAsync(Notification notification);
+        Task<Notification> UpdateAsync(Notification notification);
         Task DeleteAsync(int notificationId);
     }
 }

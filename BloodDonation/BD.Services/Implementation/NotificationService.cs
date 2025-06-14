@@ -14,10 +14,11 @@ namespace BD.Services.Implementation
             _notificationRepository = notificationRepository;
         }
 
-        public async Task AddAsync(NotificationRequest request)
+        public async Task<NotificationResponse> AddAsync(NotificationRequest request)
         {
             var notificationEntity = NotificationMapper.ToEntity(request);
             await _notificationRepository.AddAsync(notificationEntity);
+            return NotificationMapper.ToResponseDto(notificationEntity);
         }
 
         public async Task DeleteAsync(int notificationId)
@@ -43,7 +44,7 @@ namespace BD.Services.Implementation
             return notifications.Select(NotificationMapper.ToResponseDto);
         }
 
-        public async Task UpdateAsync(int notificationId, NotificationRequest request)
+        public async Task<NotificationResponse?> UpdateAsync(int notificationId, NotificationRequest request)
         {
             var entity = await _notificationRepository.GetByIdAsync(notificationId);
             if (entity != null)
@@ -54,7 +55,9 @@ namespace BD.Services.Implementation
                 entity.SentAt = request.SentAt;
                 entity.StatusNotificationId = request.StatusNotificationId;
                 await _notificationRepository.UpdateAsync(entity);
+                return NotificationMapper.ToResponseDto(entity);
             }
+            return null;
         }
 
     }

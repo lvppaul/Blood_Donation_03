@@ -12,10 +12,11 @@ namespace BD.Repositories.Implementation
             _context = context;
         }
 
-        public async Task AddAsync(StatusNotification statusNotification)
+        public async Task<StatusNotification> AddAsync(StatusNotification statusNotification)
         {
-            _context.Add(statusNotification);
+            await _context.AddAsync(statusNotification);
             await _context.SaveChangesAsync();
+            return statusNotification;
         }
 
         public async Task DeleteAsync(int id)
@@ -42,10 +43,11 @@ namespace BD.Repositories.Implementation
 
         }
 
-        public async Task UpdateAsync(StatusNotification statusNotification)
+        public async Task<StatusNotification> UpdateAsync(StatusNotification statusNotification)
         {
             _context.StatusNotifications.Update(statusNotification);
             await _context.SaveChangesAsync();
+            return statusNotification;
         }
     }
 }

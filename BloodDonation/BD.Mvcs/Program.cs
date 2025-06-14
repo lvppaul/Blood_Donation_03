@@ -21,14 +21,26 @@ namespace BD.Mvcs
                 options.Cookie.IsEssential = true; // Ensure session cookie is always created
             });
             builder.Services.AddControllersWithViews();
-            builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+            //StatusNotification
             builder.Services.AddScoped<IStatusNotificationRepository, StatusNotificationRepository>();
-            builder.Services.AddScoped<INotificationService, NotificationService>();
             builder.Services.AddScoped<IStatusNotificationService, StatusNotificationService>();
+            //Notification
+            builder.Services.AddScoped<INotificationService, NotificationService>();
+            builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+            //BlogPost
             builder.Services.AddScoped<IBlogPostRepository, BlogPostRepository>();
             builder.Services.AddScoped<IBlogPostService, BlogPostService>();
+            //BloodInventory
             builder.Services.AddScoped<IBloodInventoryRepository, BloodInventoryRepository>();
             builder.Services.AddScoped<IBloodInventoryService, BloodInventoryService>();
+            //BloodCompatibility
+            builder.Services.AddScoped<IBloodCompatibilityRepository, BloodCompatibilityRepository>();
+            builder.Services.AddScoped<IBloodCompatibilityService, BloodCompatibilityService>();
+            //StatusBloodDonor
+            builder.Services.AddScoped<IStatusBloodDonorRepository, StatusBloodDonorRepository>();
+            builder.Services.AddScoped<IStatusBloodDonorService, StatusBloodDonorService>();
+
+
 
             builder.Services.AddDbContext<BloodDonationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));

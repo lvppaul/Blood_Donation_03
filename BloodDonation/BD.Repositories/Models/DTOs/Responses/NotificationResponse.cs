@@ -9,7 +9,7 @@
         public DateTime? SentAt { get; set; }
         public int StatusNotificationId { get; set; }
         //public string StatusName { get; set; } = null!;
-        public bool? IsDeleted { get; set; }
+        //public bool? IsDeleted { get; set; }
         //public string UserName { get; set; } = null!;
 
     }

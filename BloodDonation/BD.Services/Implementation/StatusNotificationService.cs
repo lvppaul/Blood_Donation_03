@@ -13,10 +13,11 @@ namespace BD.Services.Implementation
         {
             _statusNotificationRepository = statusNotificationRepository;
         }
-        public async Task AddAsync(StatusNotificationRequest statusNotificationRequest)
+        public async Task<StatusNotificationResponse> AddAsync(StatusNotificationRequest statusNotificationRequest)
         {
             var notificationEntity = StatusNotificationMapper.ToEntity(statusNotificationRequest);
             await _statusNotificationRepository.AddAsync(notificationEntity);
+            return StatusNotificationMapper.ToResponseDto(notificationEntity);
         }
 
         public async Task DeleteAsync(int id)
@@ -36,7 +37,7 @@ namespace BD.Services.Implementation
             return statusNotification == null ? null : StatusNotificationMapper.ToResponseDto(statusNotification);
         }
 
-        public async Task UpdateAsync(int statusNotificationId, StatusNotificationRequest statusNotificationRequest)
+        public async Task<StatusNotificationResponse?> UpdateAsync(int statusNotificationId, StatusNotificationRequest statusNotificationRequest)
         {
             var entity = await _statusNotificationRepository.GetByIdAsync(statusNotificationId);
             if (entity != null)
@@ -44,7 +45,9 @@ namespace BD.Services.Implementation
                 // Update properties
                 entity.StatusName = statusNotificationRequest.StatusName;
                 await _statusNotificationRepository.UpdateAsync(entity);
+                return StatusNotificationMapper.ToResponseDto(entity);
             }
+            return null;
         }
     }
 }
