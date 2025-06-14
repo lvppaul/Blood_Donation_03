@@ -6,8 +6,8 @@ namespace BD.Repositories.Interfaces
     {
         Task<IEnumerable<StatusNotification>> GetAllAsync();
         Task<StatusNotification?> GetByIdAsync(int id);
-        Task AddAsync(StatusNotification statusNotification);
-        Task UpdateAsync(StatusNotification statusNotification);
+        Task<StatusNotification> AddAsync(StatusNotification statusNotification);
+        Task<StatusNotification> UpdateAsync(StatusNotification statusNotification);
         Task DeleteAsync(int id); // Soft delete: set IsDeleted = true
 
 
