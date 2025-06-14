@@ -4,22 +4,22 @@ using BD.Repositories.Models.Entities;
 
 namespace BD.Repositories.Models.Mappers
 {
-    public static class StatusBloodDonorMapper
+    public static class StatusBloodRequestMapper
     {
-        public static StatusBloodDonor ToEntity(StatusBloodDonorRequest request)
+        public static StatusBloodRequest ToEntity(StatusBloodRequestRequest request)
         {
-            return new StatusBloodDonor
+            return new StatusBloodRequest
             {
                 StatusName = request.StatusName,
                 IsDeleted = false
             };
         }
 
-        public static StatusBloodDonorResponse ToResponseDto(StatusBloodDonor entity)
+        public static StatusBloodRequestResponse ToResponse(StatusBloodRequest entity)
         {
-            return new StatusBloodDonorResponse
+            return new StatusBloodRequestResponse
             {
-                StatusDonorId = entity.StatusDonorId,
+                StatusRequestId = entity.StatusRequestId,
                 StatusName = entity.StatusName,
                 IsDeleted = entity.IsDeleted
             };

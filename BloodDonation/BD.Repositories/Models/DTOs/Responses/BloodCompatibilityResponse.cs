@@ -7,5 +7,7 @@
         public string DonorBloodType { get; set; } = null!;
         public string ComponentType { get; set; } = null!;
         public bool IsCompatible { get; set; }
+
+        public bool? IsDeleted { get; set; }
     }
 }

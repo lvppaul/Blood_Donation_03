@@ -26,7 +26,8 @@ namespace BD.Repositories.Models.Mappers
                 RecipientBloodType = entity.RecipientBloodType,
                 DonorBloodType = entity.DonorBloodType,
                 ComponentType = entity.ComponentType,
-                IsCompatible = entity.IsCompatible
+                IsCompatible = entity.IsCompatible,
+                IsDeleted = entity.IsDeleted
             };
         }
     }

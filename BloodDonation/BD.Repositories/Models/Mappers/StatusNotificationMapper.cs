@@ -21,7 +21,7 @@ namespace BD.Repositories.Models.Mappers
             {
                 StatusNotificationId = entity.StatusNotificationId,
                 StatusName = entity.StatusName,
-                //IsDeleted = entity.IsDeleted
+                IsDeleted = entity.IsDeleted
             };
         }
 

@@ -6,6 +6,6 @@
 
         public string StatusName { get; set; } = null!;
 
-        //public bool? IsDeleted { get; set; }
+        public bool? IsDeleted { get; set; }
     }
 }
