@@ -24,7 +24,13 @@ namespace BD.Services.Implementation
 
         public async Task DeleteAsync(int id)
         {
-            await _repository.DeleteAsync(id);
+            var donor = await _repository.GetByIdAsync(id);
+            if (donor == null)
+            {
+                throw new Exception("Status Blood Donor not found");
+            }
+
+            await _repository.DeleteAsync(donor);
         }
 
         public async Task<IEnumerable<StatusBloodDonorResponse>> GetAllAsync()
@@ -39,7 +45,7 @@ namespace BD.Services.Implementation
             return statusDonors == null ? null : StatusBloodDonorMapper.ToResponseDto(statusDonors);
         }
 
-        public async Task<StatusBloodDonorResponse?> UpdateAsync(int statusDonorId, StatusNotificationRequest statusDonorRequest)
+        public async Task<StatusBloodDonorResponse?> UpdateAsync(int statusDonorId, StatusBloodDonorRequest statusDonorRequest)
         {
             var entity = await _repository.GetByIdAsync(statusDonorId);
             if (entity != null)

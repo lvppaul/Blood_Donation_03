@@ -33,13 +33,24 @@ namespace BD.Mvcs
             //BloodInventory
             builder.Services.AddScoped<IBloodInventoryRepository, BloodInventoryRepository>();
             builder.Services.AddScoped<IBloodInventoryService, BloodInventoryService>();
+            //StatusBloodInventory
+            builder.Services.AddScoped<IStatusBloodInventoryRepository, StatusBloodInventoryRepository>();
+            builder.Services.AddScoped<IStatusBloodInventoryService, StatusBloodInventoryService>();
             //BloodCompatibility
             builder.Services.AddScoped<IBloodCompatibilityRepository, BloodCompatibilityRepository>();
             builder.Services.AddScoped<IBloodCompatibilityService, BloodCompatibilityService>();
             //StatusBloodDonor
             builder.Services.AddScoped<IStatusBloodDonorRepository, StatusBloodDonorRepository>();
             builder.Services.AddScoped<IStatusBloodDonorService, StatusBloodDonorService>();
-
+            //BloodRequest
+            builder.Services.AddScoped<IBloodRequestRepository, BloodRequestRepository>();
+            //builder.Services.AddScoped<IBloodRequestService, BloodRequestService>();
+            //StatusBloodRequest
+            builder.Services.AddScoped<IStatusBloodRequestRepository, StatusBloodRequestRepository>();
+            builder.Services.AddScoped<IStatusBloodRequestService, StatusBloodRequestService>();
+            //User
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<IUserService, UserService>();
 
 
             builder.Services.AddDbContext<BloodDonationDbContext>(options =>

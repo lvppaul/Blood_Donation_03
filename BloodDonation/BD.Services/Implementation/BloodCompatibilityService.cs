@@ -23,7 +23,13 @@ namespace BD.Services.Implementation
 
         public async Task DeleteAsync(int bloodCompatibilityId)
         {
-            await _repository.DeleteAsync(bloodCompatibilityId);
+            var bloodCompatibility = await _repository.GetByIdAsync(bloodCompatibilityId);
+            if (bloodCompatibility == null)
+            {
+                throw new Exception("Blood Compatibility not found");
+            }
+
+            await _repository.DeleteAsync(bloodCompatibility);
         }
 
         public async Task<IEnumerable<BloodCompatibilityResponse>> GetAllAsync()

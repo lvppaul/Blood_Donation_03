@@ -22,7 +22,13 @@ namespace BD.Services.Implementation
 
         public async Task DeleteAsync(int id)
         {
-            await _statusNotificationRepository.DeleteAsync(id);
+            var statusNotification = await _statusNotificationRepository.GetByIdAsync(id);
+            if (statusNotification == null)
+            {
+                throw new Exception("Status Notification not found");
+            }
+
+            await _statusNotificationRepository.DeleteAsync(statusNotification);
         }
 
         public async Task<IEnumerable<StatusNotificationResponse>> GetAllAsync()

@@ -1,14 +1,8 @@
-﻿using BD.Repositories.Implementation;
-using BD.Repositories.Interfaces;
+﻿using BD.Repositories.Interfaces;
 using BD.Repositories.Models.DTOs.Requests;
 using BD.Repositories.Models.DTOs.Responses;
 using BD.Repositories.Models.Mappers;
 using BD.Services.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BD.Services.Implementation
 {
@@ -34,13 +28,13 @@ namespace BD.Services.Implementation
             var bloodInventory = await _bloodInventoryRepository.GetBloodInventoryByIdAsync(id);
             if (bloodInventory == null)
             {
-                throw new Exception("Blood Inventory post not found");
+                throw new Exception("Blood Inventory not found");
             }
 
             await _bloodInventoryRepository.DeleteBloodInventoryAsync(bloodInventory);
         }
 
-        public Task<IEnumerable<BloodInventoryResponse>> GetAllPostsAsync()
+        public Task<IEnumerable<BloodInventoryResponse>> GetAllAsync()
         {
             throw new NotImplementedException();
         }

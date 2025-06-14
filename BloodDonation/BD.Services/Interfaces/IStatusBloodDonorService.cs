@@ -7,8 +7,8 @@ namespace BD.Services.Interfaces
     {
         Task<IEnumerable<StatusBloodDonorResponse>> GetAllAsync();
         Task<StatusBloodDonorResponse?> GetByIdAsync(int id);
-        Task<StatusBloodDonorResponse> AddAsync(StatusBloodDonorRequest statusNotification);
-        Task<StatusBloodDonorResponse> UpdateAsync(int statusDonorId, StatusNotificationRequest statusDonorRequest);
+        Task<StatusBloodDonorResponse> AddAsync(StatusBloodDonorRequest statusDonor);
+        Task<StatusBloodDonorResponse?> UpdateAsync(int statusDonorId, StatusBloodDonorRequest statusDonorRequest);
         Task DeleteAsync(int id); // Soft delete: set IsDeleted = true
 
     }
