@@ -30,7 +30,7 @@ namespace BD.Repositories.Models.Mappers
                 SentAt = entity.SentAt,
                 StatusNotificationId = entity.StatusNotificationId,
                 // StatusName = entity.StatusNotification?.StatusName ?? string.Empty,
-                IsDeleted = entity.IsDeleted,
+                //IsDeleted = entity.IsDeleted,
                 // UserName = entity.User?.Name ?? string.Empty
             };
         }
