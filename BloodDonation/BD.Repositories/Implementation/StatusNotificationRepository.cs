@@ -19,14 +19,11 @@ namespace BD.Repositories.Implementation
             return statusNotification;
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task DeleteAsync(StatusNotification statusNotification)
         {
-            var statusNotification = await _context.StatusNotifications.FindAsync(id);
-            if (statusNotification != null)
-            {
-                statusNotification.IsDeleted = true; // Soft delete
-                await _context.SaveChangesAsync();
-            }
+            statusNotification.IsDeleted = true; // Soft delete
+            await _context.SaveChangesAsync();
+
         }
 
         public async Task<IEnumerable<StatusNotification>> GetAllAsync()

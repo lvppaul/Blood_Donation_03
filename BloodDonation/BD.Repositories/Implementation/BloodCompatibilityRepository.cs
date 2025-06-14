@@ -19,14 +19,10 @@ namespace BD.Repositories.Implementation
             return bloodCompatibility;
         }
 
-        public async Task DeleteAsync(int bloodCompatibilityId)
+        public async Task DeleteAsync(BloodCompatibility bloodCompatibility)
         {
-            var bloodCompatibility = await _context.BloodCompatibilities.FindAsync(bloodCompatibilityId);
-            if (bloodCompatibility != null)
-            {
-                bloodCompatibility.IsDeleted = true;
-                await _context.SaveChangesAsync();
-            }
+            bloodCompatibility.IsDeleted = true;
+            await _context.SaveChangesAsync();
 
         }
 
@@ -37,8 +33,8 @@ namespace BD.Repositories.Implementation
 
         public async Task<BloodCompatibility?> GetByIdAsync(int bloodCompatibilityId)
         {
-            var bloodCompatibility = await _context.BloodCompatibilities.FindAsync(bloodCompatibilityId);
-            return bloodCompatibility != null ? bloodCompatibility : null;
+            return await _context.BloodCompatibilities
+                .FirstOrDefaultAsync(b => b.CompatibilityId == bloodCompatibilityId && b.IsDeleted != true);
         }
 
         public async Task<BloodCompatibility> UpdateAsync(BloodCompatibility bloodCompatibility)

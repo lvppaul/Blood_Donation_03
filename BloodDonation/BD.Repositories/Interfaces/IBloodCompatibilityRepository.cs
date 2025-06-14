@@ -8,6 +8,6 @@ namespace BD.Repositories.Interfaces
         Task<BloodCompatibility?> GetByIdAsync(int bloodCompatibilityId);
         Task<BloodCompatibility> AddAsync(BloodCompatibility bloodCompatibility);
         Task<BloodCompatibility> UpdateAsync(BloodCompatibility bloodCompatibility);
-        Task DeleteAsync(int bloodCompatibilityId);
+        Task DeleteAsync(BloodCompatibility bloodCompatibility);
     }
 }

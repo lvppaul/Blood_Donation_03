@@ -19,14 +19,10 @@ namespace BD.Repositories.Implementation
             return status;
         }
 
-        public async Task DeleteAsync(int status_donor_id)
+        public async Task DeleteAsync(StatusBloodDonor status)
         {
-            var statusDonor = await _context.StatusBloodDonors.FindAsync(status_donor_id);
-            if (statusDonor != null)
-            {
-                statusDonor.IsDeleted = true; // Soft delete
-                await _context.SaveChangesAsync();
-            }
+            status.IsDeleted = true; // Soft delete
+            await _context.SaveChangesAsync();
         }
 
         public async Task<IEnumerable<StatusBloodDonor>> GetAllAsync()

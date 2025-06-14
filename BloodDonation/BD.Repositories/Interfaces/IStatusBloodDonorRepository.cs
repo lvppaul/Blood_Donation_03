@@ -8,6 +8,6 @@ namespace BD.Repositories.Interfaces
         Task<StatusBloodDonor?> GetByIdAsync(int status_donor_id);
         Task<StatusBloodDonor> AddAsync(StatusBloodDonor status);
         Task<StatusBloodDonor> UpdateAsync(StatusBloodDonor status);
-        Task DeleteAsync(int status_donor_id);
+        Task DeleteAsync(StatusBloodDonor status);
     }
 }

@@ -21,14 +21,10 @@ namespace BD.Repositories.Implementation
             return notification;
         }
 
-        public async Task DeleteAsync(int notificationId)
+        public async Task DeleteAsync(Notification notification)
         {
-            var notification = await _context.Notifications.FindAsync(notificationId);
-            if (notification != null)
-            {
-                notification.IsDeleted = true;
-                await _context.SaveChangesAsync();
-            }
+            notification.IsDeleted = true;
+            await _context.SaveChangesAsync();
 
         }
 

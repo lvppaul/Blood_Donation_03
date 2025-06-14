@@ -8,7 +8,7 @@ namespace BD.Repositories.Interfaces
         Task<StatusNotification?> GetByIdAsync(int id);
         Task<StatusNotification> AddAsync(StatusNotification statusNotification);
         Task<StatusNotification> UpdateAsync(StatusNotification statusNotification);
-        Task DeleteAsync(int id); // Soft delete: set IsDeleted = true
+        Task DeleteAsync(StatusNotification statusNotification); // Soft delete: set IsDeleted = true
 
 
     }
