@@ -4,22 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BD.Repositories.Models.DTOs.Responses
+namespace BD.Repositories.Models.DTOs.Requests
 {
-    public class MedicalFacilityResponse
+    public class MedicalFacilityRequest
     {
-        public int FacilityId { get; set; }
-
         public string Name { get; set; } = null!;
-
         public string Address { get; set; } = null!;
-
         public string? Phone { get; set; }
-
         public string? Email { get; set; }
-
         public string? Description { get; set; }
-
-        public bool IsDeleted { get; set; }
     }
+
 }

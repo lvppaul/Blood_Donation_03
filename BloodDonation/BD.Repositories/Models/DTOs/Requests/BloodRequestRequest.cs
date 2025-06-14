@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BD.Repositories.Models.DTOs.Responses
+namespace BD.Repositories.Models.DTOs.Requests
 {
-    public class BloodRequestResponse
+    public class BloodRequestRequest
     {
-        public int RequestId { get; set; }
+        public int UserId { get; set; }
 
         public string BloodType { get; set; } = null!;
 
@@ -20,13 +20,9 @@ namespace BD.Repositories.Models.DTOs.Responses
 
         public DateTime? RequestDate { get; set; }
 
+        public int StatusRequestId { get; set; }
 
         public DateTime? FulfilledDate { get; set; }
-
-        public bool? IsDeleted { get; set; }
-
-        public UserResponse User { get; set; } = null!;
-
-        public StatusBloodRequestResponse StatusBloodRequestResponse { get; set; } = null!;
     }
+
 }
