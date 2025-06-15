@@ -14,7 +14,7 @@ namespace BD.Services.Interfaces
         Task<IEnumerable<BlogPostResponse>> GetAllPostsAsync();
         Task<BlogPostResponse?> GetPostByIdAsync(int id);
         Task<BlogPostResponse> AddAsync(BlogPostRequest post);
-        Task<BlogPostResponse?> UpdatePostAsync(BlogPostRequest post);
+        Task<BlogPostResponse?> UpdatePostAsync(int id, BlogPostRequest post);
         Task DeletePostAsync(int id);
     }
 }

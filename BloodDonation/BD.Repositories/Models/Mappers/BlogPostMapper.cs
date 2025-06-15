@@ -22,7 +22,8 @@ namespace BD.Repositories.Models.Mappers
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
                 IsDeleted = false,
-                IsDocument = blogPostRequest.IsDocument
+                IsDocument = false,
+                IsPublished = true, // Assuming new posts are published by default
             };
         }
 
@@ -37,6 +38,9 @@ namespace BD.Repositories.Models.Mappers
                 CreatedAt = blogPost.CreatedAt,
                 UpdatedAt = blogPost.UpdatedAt,
                 Category = blogPost.Category,    
+                IsDeleted = blogPost.IsDeleted,
+                IsPublished = blogPost.IsPublished,
+                IsDocument = blogPost.IsDocument
             };
         }
     }

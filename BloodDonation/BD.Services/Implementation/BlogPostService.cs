@@ -1,6 +1,7 @@
 ﻿using BD.Repositories.Interfaces;
 using BD.Repositories.Models.DTOs.Requests;
 using BD.Repositories.Models.DTOs.Responses;
+using BD.Repositories.Models.DTOs.Updates;
 using BD.Repositories.Models.Entities;
 using BD.Repositories.Models.Mappers;
 using BD.Services.Interfaces;
@@ -51,14 +52,23 @@ namespace BD.Services.Implementation
             return BlogPostMapper.ToResponse(existingPost);
         }
 
-        public async Task<BlogPostResponse?> UpdatePostAsync(BlogPostRequest post)
+        public async Task<BlogPostResponse?> UpdatePostAsync(int id, BlogPostUpdateRequest post)
         {
-            var existingPost = BlogPostMapper.ToEntity(post);
-            var updatedPost = await _blogPostRepository.UpdatePostAsync(existingPost);
-            if (updatedPost == null)
+            var existingPost = await _blogPostRepository.GetPostByIdAsync(id);
+            if (existingPost == null)
             {
-                return null; // or throw an exception if you prefer
+                return null;
             }
+
+            existingPost.Title = post.Title;
+            existingPost.Content = post.Content;
+            existingPost.Category = post.Category;
+            existingPost.UpdatedAt = DateTime.UtcNow;
+            existingPost.IsPublished = post.IsPublished;
+            existingPost.IsDeleted = post.IsDeleted;
+            existingPost.IsDocument = post.IsDocument;
+            var updatedPost = await _blogPostRepository.UpdatePostAsync(existingPost);
+
             return BlogPostMapper.ToResponse(updatedPost);
         }
     }

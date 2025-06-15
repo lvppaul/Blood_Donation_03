@@ -1,4 +1,5 @@
-﻿using BD.Repositories.Interfaces;
+﻿using Azure.Core;
+using BD.Repositories.Interfaces;
 using BD.Repositories.Models.DTOs.Requests;
 using BD.Repositories.Models.DTOs.Responses;
 using BD.Repositories.Models.Mappers;
@@ -34,19 +35,38 @@ namespace BD.Services.Implementation
             await _bloodInventoryRepository.DeleteBloodInventoryAsync(bloodInventory);
         }
 
-        public Task<IEnumerable<BloodInventoryResponse>> GetAllAsync()
+        public async Task<IEnumerable<BloodInventoryResponse>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            var bloodInventories = await _bloodInventoryRepository.GetAllBloodInventoriesAsync();
+
+            return bloodInventories.Select(bi => BloodInventoryMapper.ToResponse(bi));
         }
 
-        public Task<BloodInventoryResponse?> GetByIdAsync(int id)
+        public async Task<BloodInventoryResponse?> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            var bloodInventory = await _bloodInventoryRepository.GetBloodInventoryByIdAsync(id);
+            return bloodInventory == null ? null : BloodInventoryMapper.ToResponse(bloodInventory);
         }
 
-        public Task<BloodInventoryResponse?> UpdateAsync(BloodInventoryRequest post)
+        public async Task<BloodInventoryResponse?> UpdateAsync(int id, BloodInventoryRequest request)
         {
-            throw new NotImplementedException();
+            var existingInventory = await _bloodInventoryRepository.GetBloodInventoryByIdAsync(id);
+            if (existingInventory == null)
+            {
+                return null;
+            }
+
+            existingInventory.FacilityId = request.FacilityId;
+            existingInventory.ComponentType = request.ComponentType;
+            existingInventory.Amount = request.Amount;
+            existingInventory.ExpiredDate = request.ExpiredDate;
+            existingInventory.StatusInventoryId = request.StatusInventoryId;
+            existingInventory.BloodType = request.BloodType;
+            existingInventory.LastUpdated = DateTime.UtcNow;
+
+            var updatedEntity = await _bloodInventoryRepository.UpdateBloodInventoryAsync(existingInventory);
+
+            return BloodInventoryMapper.ToResponse(updatedEntity);
         }
     }
 }
