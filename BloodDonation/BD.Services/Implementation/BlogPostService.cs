@@ -65,7 +65,6 @@ namespace BD.Services.Implementation
             existingPost.Category = post.Category;
             existingPost.UpdatedAt = DateTime.UtcNow;
             existingPost.IsPublished = post.IsPublished;
-            existingPost.IsDeleted = post.IsDeleted;
             existingPost.IsDocument = post.IsDocument;
             var updatedPost = await _blogPostRepository.UpdatePostAsync(existingPost);
 

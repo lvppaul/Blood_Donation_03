@@ -44,13 +44,25 @@ namespace BD.Mvcs
             builder.Services.AddScoped<IStatusBloodDonorService, StatusBloodDonorService>();
             //BloodRequest
             builder.Services.AddScoped<IBloodRequestRepository, BloodRequestRepository>();
-            //builder.Services.AddScoped<IBloodRequestService, BloodRequestService>();
+            builder.Services.AddScoped<IBloodRequestService, BloodRequestService>();
             //StatusBloodRequest
             builder.Services.AddScoped<IStatusBloodRequestRepository, StatusBloodRequestRepository>();
             builder.Services.AddScoped<IStatusBloodRequestService, StatusBloodRequestService>();
             //User
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IUserService, UserService>();
+            //Role
+            builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+            builder.Services.AddScoped<IRoleService, RoleService>();
+            //DonorAvailability
+            builder.Services.AddScoped<IDonorAvailabilityRepository, DonorAvailabilityRepository>();
+            builder.Services.AddScoped<IDonorAvailabilityService, DonorAvailabilityService>();
+            //MedicalFacility
+            builder.Services.AddScoped<IMedicalFacilityRepository, MedicalFacilityRepository>();
+            builder.Services.AddScoped<IMedicalFacilityService, MedicalFacilityService>();
+            //DonationHistory
+            builder.Services.AddScoped<IDonationHistoryRepository, DonationHistoryRepository>();
+            builder.Services.AddScoped<IDonationHistoryService, DonationHistoryService>();
 
 
             builder.Services.AddDbContext<BloodDonationDbContext>(options =>

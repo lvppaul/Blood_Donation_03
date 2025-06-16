@@ -13,7 +13,5 @@ namespace BD.Repositories.Models.DTOs.Updates
         public string? Category { get; set; }
         public bool? IsDocument { get; set; }
         public bool? IsPublished { get; set; }
-        public bool? IsDeleted { get; set; }
-
     }
 }
