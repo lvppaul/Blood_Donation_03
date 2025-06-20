@@ -1,0 +1,54 @@
+﻿@page
+@model BD.RazorPages.Pages.Public.BloodCompatibilityPages.EditModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>Blood Compatibility</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="BloodCompatibility.CompatibilityId" />
+            <div class="form-group">
+                <label asp-for="BloodCompatibility.RecipientBloodType" class="control-label">Recipient Blood Type</label>
+                <input asp-for="BloodCompatibility.RecipientBloodType" class="form-control" />
+                <span asp-validation-for="BloodCompatibility.RecipientBloodType" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BloodCompatibility.DonorBloodType" class="control-label">Donor Blood Type</label>
+                <input asp-for="BloodCompatibility.DonorBloodType" class="form-control" />
+                <span asp-validation-for="BloodCompatibility.DonorBloodType" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BloodCompatibility.ComponentType" class="control-label">Component Type</label>
+                <select asp-for="BloodCompatibility.ComponentType" class="form-control">
+                    <option value="Red Blood Cells">RBC</option>
+                    <option value="Plasma">Plasma</option>
+                    <option value="Platelets">Platelets</option>
+                    <option value="White Blood Cells">WBC</option>
+                </select>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="BloodCompatibility.IsCompatible" /> @Html.DisplayNameFor(model => model.BloodCompatibility.IsCompatible)
+                </label>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="./Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

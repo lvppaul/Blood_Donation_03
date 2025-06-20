@@ -1,0 +1,52 @@
+﻿@page
+@model BD.RazorPages.Pages.Public.BloodCompatibilityPages.DeleteModel
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<h1>Delete</h1>
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>BloodCompatibility</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.BloodCompatibility.RecipientBloodType)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.BloodCompatibility.RecipientBloodType)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.BloodCompatibility.DonorBloodType)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.BloodCompatibility.DonorBloodType)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.BloodCompatibility.ComponentType)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.BloodCompatibility.ComponentType)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.BloodCompatibility.IsCompatible)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.BloodCompatibility.IsCompatible)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.BloodCompatibility.IsDeleted)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.BloodCompatibility.IsDeleted)
+        </dd>
+    </dl>
+    
+    <form method="post">
+        <input type="hidden" asp-for="BloodCompatibility.CompatibilityId" />
+        <input type="submit" value="Delete" class="btn btn-danger" /> |
+        <a asp-page="./Index">Back to List</a>
+    </form>
+</div>
