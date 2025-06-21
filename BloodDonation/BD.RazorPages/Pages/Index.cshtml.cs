@@ -53,7 +53,7 @@ namespace BD.RazorPages.Pages
                 RecentRequests = allRequests.OrderByDescending(r => r.RequestDate).Take(1);
                 var allBlogPosts = await _blogPostRepository.GetAllPostsAsync();
                 LatestBlogPosts = allBlogPosts
-                    .Where(bp => bp.IsDeleted != true)
+                    .Where(bp => bp.IsDeleted != true && bp.IsPublished == true && bp.CreatedAt.HasValue)
                     .OrderByDescending(bp => bp.CreatedAt)
                     .Take(3);
             }

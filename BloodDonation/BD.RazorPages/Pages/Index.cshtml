@@ -99,11 +99,10 @@
                                     var truncatedContent = plainTextContent.Length > 150 ? plainTextContent.Substring(0, 150) + "..." : plainTextContent;
                                 }
                                 @truncatedContent
-                            </p>
-                            <div class="flex items-center justify-between">
+                            </p>                            <div class="flex items-center justify-between">
                                 <div class="flex items-center text-sm text-gray-500">
                                     <i class="fas fa-user mr-1"></i>
-                                    <span>@post.Author.Name</span>
+                                    <span>@(post.Author?.Name ?? "Unknown Author")</span>
                                     <span class="mx-2">•</span>
                                     <i class="fas fa-calendar mr-1"></i>
                                     <span>@post.CreatedAt?.ToString("MMM dd, yyyy")</span>
