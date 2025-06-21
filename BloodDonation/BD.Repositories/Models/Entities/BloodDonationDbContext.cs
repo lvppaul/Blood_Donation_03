@@ -60,6 +60,7 @@ public partial class BloodDonationDbContext : DbContext
     }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
         modelBuilder.Entity<BlogPost>(entity =>
         {
             entity.HasKey(e => e.PostId).HasName("PK__BlogPost__3ED7876681296E8D");
