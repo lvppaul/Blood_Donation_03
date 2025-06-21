@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BD.Repositories.Migrations
 {
     /// <inheritdoc />
-    public partial class ModifyBlogPost : Migration
+    public partial class init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -126,6 +126,7 @@ namespace BD.Repositories.Migrations
                     blood_type = table.Column<string>(type: "varchar(10)", unicode: false, maxLength: 10, nullable: false),
                     phone = table.Column<string>(type: "varchar(20)", unicode: false, maxLength: 20, nullable: true),
                     email = table.Column<string>(type: "varchar(100)", unicode: false, maxLength: 100, nullable: true),
+                    password = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     address = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     created_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())"),
                     is_Deleted = table.Column<bool>(type: "bit", nullable: true, defaultValue: false),
@@ -183,6 +184,7 @@ namespace BD.Repositories.Migrations
                     created_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())"),
                     updated_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())"),
                     category = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    is_Published = table.Column<bool>(type: "bit", nullable: true, defaultValue: true),
                     is_Deleted = table.Column<bool>(type: "bit", nullable: true, defaultValue: false),
                     is_Document = table.Column<bool>(type: "bit", nullable: true, defaultValue: false)
                 },

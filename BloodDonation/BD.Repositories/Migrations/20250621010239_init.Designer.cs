@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BD.Repositories.Migrations
 {
     [DbContext(typeof(BloodDonationDbContext))]
-    [Migration("20250611093349_Test")]
-    partial class Test
+    [Migration("20250621010239_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -69,7 +69,7 @@ namespace BD.Repositories.Migrations
                     b.Property<bool?>("IsPublished")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
-                        .HasDefaultValue(false)
+                        .HasDefaultValue(true)
                         .HasColumnName("is_Published");
 
                     b.Property<string>("Title")
@@ -646,6 +646,12 @@ namespace BD.Repositories.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)")
                         .HasColumnName("name");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("password");
 
                     b.Property<string>("Phone")
                         .HasMaxLength(20)

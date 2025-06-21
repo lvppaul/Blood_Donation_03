@@ -1,0 +1,70 @@
+﻿@page
+@model BD.RazorPages.Pages.Admin.Inventory.EditModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>BloodInventory</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="BloodInventory.InventoryId" />
+            <div class="form-group">
+                <label asp-for="BloodInventory.FacilityId" class="control-label"></label>
+                <select asp-for="BloodInventory.FacilityId" class="form-control" asp-items="ViewBag.FacilityId"></select>
+                <span asp-validation-for="BloodInventory.FacilityId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BloodInventory.ComponentType" class="control-label"></label>
+                <input asp-for="BloodInventory.ComponentType" class="form-control" />
+                <span asp-validation-for="BloodInventory.ComponentType" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BloodInventory.Amount" class="control-label"></label>
+                <input asp-for="BloodInventory.Amount" class="form-control" />
+                <span asp-validation-for="BloodInventory.Amount" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BloodInventory.ExpiredDate" class="control-label"></label>
+                <input asp-for="BloodInventory.ExpiredDate" class="form-control" />
+                <span asp-validation-for="BloodInventory.ExpiredDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BloodInventory.StatusInventoryId" class="control-label"></label>
+                <select asp-for="BloodInventory.StatusInventoryId" class="form-control" asp-items="ViewBag.StatusInventoryId"></select>
+                <span asp-validation-for="BloodInventory.StatusInventoryId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BloodInventory.LastUpdated" class="control-label"></label>
+                <input asp-for="BloodInventory.LastUpdated" class="form-control" />
+                <span asp-validation-for="BloodInventory.LastUpdated" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BloodInventory.IsDeleted" class="control-label"></label>
+                <input asp-for="BloodInventory.IsDeleted" class="form-control" />
+                <span asp-validation-for="BloodInventory.IsDeleted" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BloodInventory.BloodType" class="control-label"></label>
+                <input asp-for="BloodInventory.BloodType" class="form-control" />
+                <span asp-validation-for="BloodInventory.BloodType" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="./Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

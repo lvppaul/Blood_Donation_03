@@ -644,6 +644,12 @@ namespace BD.Repositories.Migrations
                         .HasColumnType("nvarchar(100)")
                         .HasColumnName("name");
 
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("password");
+
                     b.Property<string>("Phone")
                         .HasMaxLength(20)
                         .IsUnicode(false)

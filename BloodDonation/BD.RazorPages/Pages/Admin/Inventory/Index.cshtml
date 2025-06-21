@@ -1,0 +1,78 @@
+﻿@page
+@model BD.RazorPages.Pages.Admin.Inventory.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.BloodInventory[0].ComponentType)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BloodInventory[0].Amount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BloodInventory[0].ExpiredDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BloodInventory[0].LastUpdated)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BloodInventory[0].IsDeleted)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BloodInventory[0].BloodType)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BloodInventory[0].Facility)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BloodInventory[0].StatusInventory)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.BloodInventory) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.ComponentType)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Amount)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ExpiredDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LastUpdated)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsDeleted)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.BloodType)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Facility.Address)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.StatusInventory.StatusName)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.InventoryId">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.InventoryId">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.InventoryId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

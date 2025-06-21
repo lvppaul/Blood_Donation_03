@@ -22,12 +22,6 @@
     <ProjectReference Include="..\BD.Repositories\BD.Repositories.csproj" />
     <ProjectReference Include="..\BD.Services\BD.Services.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Content Update="appsettings.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
 	<ItemGroup>
 		<UpToDateCheckBuilt Include="wwwroot/css/site.css" Set="Css" />
 		<UpToDateCheckBuilt Include="tailwind.config.js" Set="Css" />
