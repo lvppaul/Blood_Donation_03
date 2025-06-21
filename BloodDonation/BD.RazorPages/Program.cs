@@ -5,15 +5,18 @@ using BD.Services.Implementation;
 using BD.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
+using BD.Repositories.Models.Entities;
+using BD.Repositories.Interfaces;
+using BD.Repositories.Implementation;
+using Microsoft.EntityFrameworkCore;
+
 namespace BD.RazorPages
 {
     public class Program
     {
         public static void Main(string[] args)
         {
-            var builder = WebApplication.CreateBuilder(args);
-
-            // Add services to the container.
+            var builder = WebApplication.CreateBuilder(args);            // Add services to the container.
             builder.Services.AddRazorPages();
 
 
@@ -61,7 +64,26 @@ namespace BD.RazorPages
 
             builder.Services.AddDbContext<BloodDonationDbContext>(options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+                        
+            // Add session support
+            builder.Services.AddDistributedMemoryCache();
+            builder.Services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(30);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
             
+            // Add Entity Framework
+            builder.Services.AddDbContext<BloodDonationDbContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+              // Add Repository services
+            builder.Services.AddScoped<IBloodRequestRepository, BloodRequestRepository>();
+            builder.Services.AddScoped<IDonorAvailabilityRepository, DonorAvailabilityRepository>();
+            builder.Services.AddScoped<IBloodInventoryRepository, BloodInventoryRepository>();
+            builder.Services.AddScoped<IMedicalFacilityRepository, MedicalFacilityRepository>();
+            builder.Services.AddScoped<IBlogPostRepository, BlogPostRepository>();
+
             var app = builder.Build();
             // Configure the HTTP request pipeline.
 
@@ -70,12 +92,13 @@ namespace BD.RazorPages
                 app.UseExceptionHandler("/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
-            }
-
-            app.UseHttpsRedirection();
+            }            app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseRouting();
+            
+            // Add session middleware before authorization
+            app.UseSession();
 
             app.UseAuthorization();
 
