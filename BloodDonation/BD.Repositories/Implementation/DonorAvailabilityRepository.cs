@@ -43,6 +43,14 @@ namespace BD.Repositories.Implementation
                 .FirstOrDefaultAsync(da => da.AvailabilityId == id && da.IsDeleted != true);
         }
 
+        public async Task<DonorAvailability?> GetLatestDonorAvailabilityByUserIdAsync(int userId)
+        {
+            return await _context.DonorAvailabilities
+                .Where(da => da.UserId == userId && da.IsDeleted != true)
+                .OrderByDescending(da => da.AvailableDate)
+                .FirstOrDefaultAsync();
+        }
+
         public async Task<DonorAvailability> UpdateDonorAvailabilityAsync(DonorAvailability donorAvailability)
         {
             _context.DonorAvailabilities.Update(donorAvailability);

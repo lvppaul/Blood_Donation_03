@@ -31,10 +31,13 @@
                                 </span>
                             </div>
                         </div>
-                    </div>
-                    <div class="flex space-x-3">
+                    </div>                    <div class="flex space-x-3">
                         @if (!Model.IsEditMode)
                         {
+                            <a href="/profile/DonationHistory" class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 inline-flex items-center">
+                                <i class="fas fa-history mr-2"></i>
+                                Donation History
+                            </a>
                             <a href="/profile?edit=true" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 inline-flex items-center">
                                 <i class="fas fa-edit mr-2"></i>
                                 Edit Profile

@@ -19,5 +19,9 @@
     <ProjectReference Include="..\BD.Services\BD.Services.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Pages\DonationHistory\" />
+  </ItemGroup>
+
 
 </Project>

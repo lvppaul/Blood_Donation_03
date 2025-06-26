@@ -76,13 +76,13 @@ namespace BD.RazorPages
             
             // Add Entity Framework
             builder.Services.AddDbContext<BloodDonationDbContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-              // Add Repository services
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));              // Add Repository services
             builder.Services.AddScoped<IBloodRequestRepository, BloodRequestRepository>();
             builder.Services.AddScoped<IDonorAvailabilityRepository, DonorAvailabilityRepository>();
             builder.Services.AddScoped<IBloodInventoryRepository, BloodInventoryRepository>();
             builder.Services.AddScoped<IMedicalFacilityRepository, MedicalFacilityRepository>();
             builder.Services.AddScoped<IBlogPostRepository, BlogPostRepository>();
+            builder.Services.AddScoped<IDonationHistoryRepository, DonationHistoryRepository>();
 
             var app = builder.Build();
             // Configure the HTTP request pipeline.

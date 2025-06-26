@@ -14,7 +14,7 @@
         ["member"] = new List<(string, string, string)> {
             ("/", "Home", ""),
             ("/blog", "Blog", ""),
-            ("/register", "Donor Profile", "fas fa-user-circle"),
+            ("/RegisterDonation", "Donor Profile", "fas fa-user-circle"),
             ("/search", "Find Blood", "fas fa-heartbeat"),
             ("/emergency", "Emergency Requests", "fas fa-siren")
         },
@@ -78,8 +78,9 @@
                 @if (isAuthenticated)
                 {
                     <a href="/profile"
-                       class="text-foreground/80 hover:text-primary/90 hover:bg-accent/10 inline-flex items-center px-4 py-2 text-sm font-medium rounded-md transition-colors">
-                        <i class="fas fa-user-circle mr-1.5 text-sm"></i> Profile
+                       class=" border-red-700 border-1 hover:bg-red-300 inline-flex items-center px-4 py-2 text-sm font-medium rounded-md transition-colors">
+                        <i class="fas fa-user-circle mr-1.5 text-sm text-red-700"></i> 
+                        <p class="text-red-700"> Profile </p>
                     </a>
                     <a href="/logout"
                        class=" hover:bg-red-300 inline-flex items-center px-4 py-2 text-sm font-medium border border-border border-red-700 border-1 rounded-md transition-colors">
