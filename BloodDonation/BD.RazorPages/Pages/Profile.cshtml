@@ -79,7 +79,7 @@
             @if (!Model.IsEditMode)
             {
                 <!-- View Mode -->
-                <div class="grid md:grid-cols-2 gap-8">
+                <div class="grid md:grid-cols-1 gap-8">
                     <!-- Account Information -->
                     <div class="bg-white rounded-lg shadow-lg p-6">
                         <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
@@ -122,25 +122,8 @@
                         </div>
                     </div>
 
-                    <!-- Role Permissions -->
-                    <div class="bg-white rounded-lg shadow-lg p-6">
-                        <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
-                            <i class="fas fa-shield-alt text-red-600 mr-3"></i>
-                            Role Permissions
-                        </h2>
-                        <div class="space-y-3">
-                            @{
-                                var permissions = Model.GetRolePermissions();
-                            }
-                            @foreach (var permission in permissions)
-                            {
-                                <div class="flex items-center">
-                                    <i class="fas fa-check-circle text-green-500 mr-3"></i>
-                                    <span class="text-gray-700">@permission</span>
-                                </div>
-                            }
-                        </div>
-                    </div>
+                  
+                    
                 </div>
             }
             else

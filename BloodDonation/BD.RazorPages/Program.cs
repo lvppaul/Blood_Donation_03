@@ -99,7 +99,7 @@ namespace BD.RazorPages
             
             // Add session middleware before authorization
             app.UseSession();
-
+           
             app.UseAuthorization();
 
             app.MapRazorPages();

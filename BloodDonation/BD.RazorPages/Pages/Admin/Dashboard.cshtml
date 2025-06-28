@@ -1,0 +1,186 @@
+@page "/admin/dashboard"
+@model BD.RazorPages.Pages.Admin.DashboardModel
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="space-y-6">
+    <!-- Dashboard Header -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <h2 class="text-3xl font-bold text-gray-900 mb-2">Dashboard Overview</h2>
+        <p class="text-gray-600">Welcome to the BloodConnect admin dashboard. Here's an overview of your system.</p>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Total Users -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div class="flex items-center">
+                <div class="p-3 rounded-full bg-blue-100">
+                    <i class="fas fa-users text-2xl text-blue-600"></i>
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-lg font-semibold text-gray-900">Total Users</h3>
+                    <p class="text-3xl font-bold text-blue-600">1,234</p>
+                    <p class="text-sm text-gray-500">+12% from last month</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Active Donors -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div class="flex items-center">
+                <div class="p-3 rounded-full bg-green-100">
+                    <i class="fas fa-hand-holding-heart text-2xl text-green-600"></i>
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-lg font-semibold text-gray-900">Active Donors</h3>
+                    <p class="text-3xl font-bold text-green-600">856</p>
+                    <p class="text-sm text-gray-500">+8% from last month</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Blood Units -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div class="flex items-center">
+                <div class="p-3 rounded-full bg-red-100">
+                    <i class="fas fa-flask text-2xl text-red-600"></i>
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-lg font-semibold text-gray-900">Blood Units</h3>
+                    <p class="text-3xl font-bold text-red-600">2,156</p>
+                    <p class="text-sm text-gray-500">Available units</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pending Requests -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div class="flex items-center">
+                <div class="p-3 rounded-full bg-yellow-100">
+                    <i class="fas fa-clock text-2xl text-yellow-600"></i>
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-lg font-semibold text-gray-900">Pending Requests</h3>
+                    <p class="text-3xl font-bold text-yellow-600">42</p>
+                    <p class="text-sm text-gray-500">Requires attention</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Recent Donations -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <h3 class="text-xl font-semibold text-gray-900 mb-4">Recent Donations</h3>
+            <div class="space-y-4">
+                <div class="flex items-center justify-between border-b border-gray-100 pb-3">
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-tint text-red-600"></i>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm font-medium text-gray-900">John Doe</p>
+                            <p class="text-xs text-gray-500">Blood Type: O+</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm text-gray-900">450ml</p>
+                        <p class="text-xs text-gray-500">2 hours ago</p>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between border-b border-gray-100 pb-3">
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-tint text-red-600"></i>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm font-medium text-gray-900">Jane Smith</p>
+                            <p class="text-xs text-gray-500">Blood Type: A-</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm text-gray-900">450ml</p>
+                        <p class="text-xs text-gray-500">5 hours ago</p>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-tint text-red-600"></i>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm font-medium text-gray-900">Mike Johnson</p>
+                            <p class="text-xs text-gray-500">Blood Type: B+</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm text-gray-900">450ml</p>
+                        <p class="text-xs text-gray-500">1 day ago</p>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-4">
+                <a href="/admin/blood-units" class="text-red-600 hover:text-red-500 text-sm font-medium">View all donations →</a>
+            </div>
+        </div>
+
+        <!-- System Alerts -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <h3 class="text-xl font-semibold text-gray-900 mb-4">System Alerts</h3>
+            <div class="space-y-4">
+                <div class="flex items-start p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                    <i class="fas fa-exclamation-triangle text-yellow-600 mt-1"></i>
+                    <div class="ml-3">
+                        <p class="text-sm font-medium text-yellow-800">Low Blood Stock</p>
+                        <p class="text-xs text-yellow-700">O- blood type is running low (only 12 units remaining)</p>
+                    </div>
+                </div>
+                <div class="flex items-start p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                    <i class="fas fa-info-circle text-blue-600 mt-1"></i>
+                    <div class="ml-3">
+                        <p class="text-sm font-medium text-blue-800">New User Registration</p>
+                        <p class="text-xs text-blue-700">15 new users registered today</p>
+                    </div>
+                </div>
+                <div class="flex items-start p-3 bg-green-50 border border-green-200 rounded-lg">
+                    <i class="fas fa-check-circle text-green-600 mt-1"></i>
+                    <div class="ml-3">
+                        <p class="text-sm font-medium text-green-800">System Status</p>
+                        <p class="text-xs text-green-700">All systems are running normally</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <h3 class="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <a href="/admin/users" class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                <i class="fas fa-users text-blue-600 text-xl mr-3"></i>
+                <div>
+                    <p class="font-medium text-gray-900">Manage Users</p>
+                    <p class="text-sm text-gray-500">View and manage all users</p>
+                </div>
+            </a>
+            <a href="/admin/blood-units" class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                <i class="fas fa-flask text-red-600 text-xl mr-3"></i>
+                <div>
+                    <p class="font-medium text-gray-900">Blood Inventory</p>
+                    <p class="text-sm text-gray-500">Manage blood units</p>
+                </div>
+            </a>
+            <a href="/admin/blood-units/requests" class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                <i class="fas fa-clipboard-list text-green-600 text-xl mr-3"></i>
+                <div>
+                    <p class="font-medium text-gray-900">Blood Requests</p>
+                    <p class="text-sm text-gray-500">Handle blood requests</p>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>

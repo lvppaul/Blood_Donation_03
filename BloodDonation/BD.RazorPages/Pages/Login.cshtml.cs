@@ -50,7 +50,7 @@ namespace BD.RazorPages.Pages
             }
 
             try
-            {        
+            {
                 // Check database for real users
                 var user = await _context.Users
                     .Include(u => u.Role)
@@ -59,7 +59,8 @@ namespace BD.RazorPages.Pages
                 if (user == null)
                 {
                     ErrorMessage = "Invalid email or password.";
-                    return Page();                }
+                    return Page();
+                }
 
                 // For demo purposes, we'll accept any password for database users
                 // In a real application, you would hash and verify the password
@@ -67,9 +68,18 @@ namespace BD.RazorPages.Pages
                 var roleName = GetRoleName(roleId);
 
                 SetUserSession(user.UserId.ToString(), user.Name, roleName);
-                
+
                 _logger.LogInformation($"User {Email} logged in successfully with role {roleName}");
-                return RedirectToPage("/Index");
+
+                // Redirect based on role
+                if (roleName == "admin")
+                {
+                    return RedirectToPage("/Admin/Dashboard");
+                }
+                else
+                {
+                    return RedirectToPage("/Index");
+                }
             }
             catch (Exception ex)
             {
@@ -84,16 +94,17 @@ namespace BD.RazorPages.Pages
             return roleId switch
             {
                 1 => "admin",
-                2 => "staff", 
+                2 => "staff",
                 3 => "member",
                 _ => "guest"
             };
-        }        private void SetUserSession(string userId, string name, string role)
+        }
+        private void SetUserSession(string userId, string name, string role)
         {
             HttpContext.Session.SetString("UserId", userId);
             HttpContext.Session.SetString("UserName", name);
             HttpContext.Session.SetString("UserRole", role);
-            
+
             if (RememberMe)
             {
                 // Set longer session timeout for remember me
