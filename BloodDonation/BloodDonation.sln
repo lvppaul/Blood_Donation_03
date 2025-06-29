@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BD.Repositories", "BD.Repos
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BD.Services", "BD.Services\BD.Services.csproj", "{5ADAC4CB-07DD-4916-B308-D484E5E43D08}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BD.Mvcs", "BD.Mvcs\BD.Mvcs.csproj", "{FC145272-1531-430C-A4ED-DEF963BEF9FF}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BD.RazorPages", "BD.RazorPages\BD.RazorPages.csproj", "{68A790AB-D30B-4F23-A275-9FA2E83849F4}"
 EndProject
 Global

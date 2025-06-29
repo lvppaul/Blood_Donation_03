@@ -13,7 +13,7 @@ namespace BD.Repositories.Migrations
 {
     [DbContext(typeof(BloodDonationDbContext))]
     [Migration("20250621010239_init")]
-    partial class init
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

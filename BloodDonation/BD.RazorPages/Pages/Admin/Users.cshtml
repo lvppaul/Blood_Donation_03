@@ -4,6 +4,20 @@
     ViewData["Title"] = "Manage Users";
 }
 
+@if (TempData["Success"] != null)
+{
+    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4" role="alert">
+        <span class="block sm:inline">@TempData["Success"]</span>
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4" role="alert">
+        <span class="block sm:inline">@TempData["Error"]</span>
+    </div>
+}
+
 <div class="space-y-6">
     <!-- Page Header -->
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
@@ -12,7 +26,7 @@
                 <h2 class="text-3xl font-bold text-gray-900 mb-2">User Management</h2>
                 <p class="text-gray-600">Manage all users in the BloodConnect system</p>
             </div>
-            <button class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors">
+            <button type="button" onclick="openAddUserModal()" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors">
                 <i class="fas fa-plus mr-2"></i>Add New User
             </button>
         </div>
@@ -27,7 +41,7 @@
                 </div>
                 <div class="ml-4">
                     <p class="text-sm text-gray-600">Total Users</p>
-                    <p class="text-2xl font-bold text-gray-900">1,234</p>
+                    <p class="text-2xl font-bold text-gray-900">@Model.Statistics.TotalUsers</p>
                 </div>
             </div>
         </div>
@@ -38,7 +52,7 @@
                 </div>
                 <div class="ml-4">
                     <p class="text-sm text-gray-600">Donors</p>
-                    <p class="text-2xl font-bold text-gray-900">856</p>
+                    <p class="text-2xl font-bold text-gray-900">@Model.Statistics.DonorsCount</p>
                 </div>
             </div>
         </div>
@@ -49,7 +63,7 @@
                 </div>
                 <div class="ml-4">
                     <p class="text-sm text-gray-600">Staff</p>
-                    <p class="text-2xl font-bold text-gray-900">34</p>
+                    <p class="text-2xl font-bold text-gray-900">@Model.Statistics.StaffCount</p>
                 </div>
             </div>
         </div>
@@ -60,7 +74,7 @@
                 </div>
                 <div class="ml-4">
                     <p class="text-sm text-gray-600">Admins</p>
-                    <p class="text-2xl font-bold text-gray-900">3</p>
+                    <p class="text-2xl font-bold text-gray-900">@Model.Statistics.AdminsCount</p>
                 </div>
             </div>
         </div>
@@ -68,29 +82,34 @@
 
     <!-- Filters and Search -->
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <div class="flex flex-col md:flex-row gap-4 items-center justify-between">
-            <div class="flex flex-col md:flex-row gap-4 flex-1">
-                <div class="relative">
-                    <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                    <input type="text" placeholder="Search users..." class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500">
+        <form method="post" asp-page-handler="Search">
+            <div class="flex flex-col md:flex-row gap-4 items-center justify-between">
+                <div class="flex flex-col md:flex-row gap-4 flex-1">
+                    <div class="relative">
+                        <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        <input type="text" asp-for="SearchTerm" placeholder="Search users..." class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500">
+                    </div>
+                    <select asp-for="SelectedRole" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500">
+                        <option value="">All Roles</option>
+                        @foreach (var role in Model.Roles)
+                        {
+                            <option value="@role">@role</option>
+                        }
+                    </select>
+                    <select asp-for="SelectedStatus" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500">
+                        <option value="">All Status</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                    <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors">
+                        <i class="fas fa-search mr-2"></i>Search
+                    </button>
                 </div>
-                <select class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500">
-                    <option value="">All Roles</option>
-                    <option value="donor">Donor</option>
-                    <option value="staff">Staff</option>
-                    <option value="admin">Admin</option>
-                </select>
-                <select class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500">
-                    <option value="">All Status</option>
-                    <option value="active">Active</option>
-                    <option value="inactive">Inactive</option>
-                    <option value="suspended">Suspended</option>
-                </select>
+                <button type="button" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors">
+                    <i class="fas fa-download mr-2"></i>Export
+                </button>
             </div>
-            <button class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors">
-                <i class="fas fa-download mr-2"></i>Export
-            </button>
-        </div>
+        </form>
     </div>
 
     <!-- Users Table -->
@@ -108,87 +127,54 @@
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="flex items-center">
-                                <div class="h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center">
-                                    <span class="text-blue-600 font-medium">JD</span>
-                                </div>
-                                <div class="ml-4">
-                                    <div class="text-sm font-medium text-gray-900">John Doe</div>
-                                    <div class="text-sm text-gray-500">john.doe@email.com</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Donor</span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">O+</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Active</span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Jan 15, 2024</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <div class="flex space-x-2">
-                                <button class="text-blue-600 hover:text-blue-900">Edit</button>
-                                <button class="text-red-600 hover:text-red-900">Delete</button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="flex items-center">
-                                <div class="h-10 w-10 bg-purple-100 rounded-full flex items-center justify-center">
-                                    <span class="text-purple-600 font-medium">JS</span>
-                                </div>
-                                <div class="ml-4">
-                                    <div class="text-sm font-medium text-gray-900">Jane Smith</div>
-                                    <div class="text-sm text-gray-500">jane.smith@email.com</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-800">Staff</span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">A-</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Active</span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Dec 8, 2023</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <div class="flex space-x-2">
-                                <button class="text-blue-600 hover:text-blue-900">Edit</button>
-                                <button class="text-red-600 hover:text-red-900">Delete</button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="flex items-center">
-                                <div class="h-10 w-10 bg-red-100 rounded-full flex items-center justify-center">
-                                    <span class="text-red-600 font-medium">MJ</span>
-                                </div>
-                                <div class="ml-4">
-                                    <div class="text-sm font-medium text-gray-900">Mike Johnson</div>
-                                    <div class="text-sm text-gray-500">mike.johnson@email.com</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">Admin</span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">B+</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Active</span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Nov 20, 2023</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <div class="flex space-x-2">
-                                <button class="text-blue-600 hover:text-blue-900">Edit</button>
-                                <button class="text-red-600 hover:text-red-900">Delete</button>
-                            </div>
-                        </td>
-                    </tr>
+                    @if (Model.Users?.Any() == true)
+                    {
+                        @foreach (var user in Model.Users)
+                        {
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="h-10 w-10 @(Model.GetRoleColorClass(user.Role.Name)) rounded-full flex items-center justify-center">
+                                            <span class="@(Model.GetRoleTextColorClass(user.Role.Name)) font-medium">@(Model.GetInitials(user.Name))</span>
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="text-sm font-medium text-gray-900">@user.Name</div>
+                                            <div class="text-sm text-gray-500">@user.Email</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full @(Model.GetRoleBadgeClass(user.Role.Name))">@user.Role.Name</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">@user.BloodType</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full @(Model.GetStatusBadgeClass(user.IsDeleted != true))">
+                                        @(user.IsDeleted != true ? "Active" : "Inactive")
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    @(user.CreatedAt?.ToString("MMM dd, yyyy") ?? "N/A")
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    <div class="flex space-x-2">
+                                        <a href="/admin/users/edit/@user.UserId" class="text-blue-600 hover:text-blue-900">Edit</a>
+                                        <form method="post" asp-page-handler="Delete" asp-route-id="@user.UserId" style="display: inline;">
+                                            <button type="submit" class="text-red-600 hover:text-red-900" 
+                                                    onclick="return confirm('Are you sure you want to delete this user?')">Delete</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="px-6 py-4 text-center text-gray-500">
+                                No users found matching your criteria.
+                            </td>
+                        </tr>
+                    }
                 </tbody>
             </table>
         </div>
@@ -202,7 +188,7 @@
             <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
                 <div>
                     <p class="text-sm text-gray-700">
-                        Showing <span class="font-medium">1</span> to <span class="font-medium">10</span> of <span class="font-medium">97</span> results
+                        Showing <span class="font-medium">@Math.Min(1, Model.Users?.Count() ?? 0)</span> to <span class="font-medium">@(Model.Users?.Count() ?? 0)</span> of <span class="font-medium">@(Model.Users?.Count() ?? 0)</span> results
                     </p>
                 </div>
                 <div>
@@ -210,9 +196,7 @@
                         <button class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
                             <i class="fas fa-chevron-left"></i>
                         </button>
-                        <button class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">1</button>
-                        <button class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-red-50 text-sm font-medium text-red-600">2</button>
-                        <button class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">3</button>
+                        <button class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-red-50 text-sm font-medium text-red-600">1</button>
                         <button class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
                             <i class="fas fa-chevron-right"></i>
                         </button>
@@ -222,3 +206,95 @@
         </div>
     </div>
 </div>
+
+<!-- Add User Modal -->
+<div id="addUserModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+    <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-1/2 lg:w-1/3 shadow-lg rounded-md bg-white">
+        <div class="mt-3">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-medium text-gray-900">Add New User</h3>
+                <button type="button" onclick="closeAddUserModal()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <form method="post" asp-page-handler="AddUser" class="space-y-4">
+                <div>
+                    <label for="Name" class="block text-sm font-medium text-gray-700">Full Name</label>
+                    <input type="text" name="Name" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500">
+                </div>
+                
+                <div>
+                    <label for="Email" class="block text-sm font-medium text-gray-700">Email</label>
+                    <input type="email" name="Email" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500">
+                </div>
+                
+                <div>
+                    <label for="Phone" class="block text-sm font-medium text-gray-700">Phone</label>
+                    <input type="tel" name="Phone" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500">
+                </div>
+                
+                <div>
+                    <label for="BloodType" class="block text-sm font-medium text-gray-700">Blood Type</label>
+                    <select name="BloodType" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500">
+                        <option value="">Select Blood Type</option>
+                        <option value="A+">A+</option>
+                        <option value="A-">A-</option>
+                        <option value="B+">B+</option>
+                        <option value="B-">B-</option>
+                        <option value="AB+">AB+</option>
+                        <option value="AB-">AB-</option>
+                        <option value="O+">O+</option>
+                        <option value="O-">O-</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="Address" class="block text-sm font-medium text-gray-700">Address</label>
+                    <textarea name="Address" rows="3" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500"></textarea>
+                </div>
+                
+                <div>
+                    <label for="RoleId" class="block text-sm font-medium text-gray-700">Role</label>
+                    <select name="RoleId" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500">
+                        <option value="">Select Role</option>
+                        <option value="1">Admin</option>
+                        <option value="2">Staff</option>
+                        <option value="3">Donor</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="Password" class="block text-sm font-medium text-gray-700">Password</label>
+                    <input type="password" name="Password" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500">
+                </div>
+                
+                <div class="flex justify-end space-x-3 pt-4">
+                    <button type="button" onclick="closeAddUserModal()" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+                        Cancel
+                    </button>
+                    <button type="submit" class="px-4 py-2 bg-red-600 border border-transparent rounded-md text-sm font-medium text-white hover:bg-red-700">
+                        Add User
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openAddUserModal() {
+        document.getElementById('addUserModal').classList.remove('hidden');
+    }
+    
+    function closeAddUserModal() {
+        document.getElementById('addUserModal').classList.add('hidden');
+    }
+    
+    // Close modal when clicking outside
+    document.getElementById('addUserModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeAddUserModal();
+        }
+    });
+</script>
