@@ -1,10 +1,147 @@
 ﻿@page
 @model IndexModel
+@using System.Text.RegularExpressions
 @{
-    ViewData["Title"] = "Home page";
+    ViewData["Title"] = "BloodConnect - Save Lives Through Donation";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+@* Add Tailwind CSS and Font Awesome *@
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+@* Hero Section *@
+<section class="relative py-20 md:py-32 bg-gradient-to-br from-red-50 via-white to-white">
+    <div class="absolute inset-0 flex items-center justify-center opacity-30">
+        <img src="~/landing.png"
+             alt="Blood donation background"
+             class="object-cover w-full h-full"
+             style="opacity: 0.5;" />
+    </div>
+    <div class="container mx-auto px-4 relative z-10 text-center">
+        <i class="fas fa-tint text-6xl text-red-600 mb-6"></i>
+        <h1 class="text-4xl md:text-6xl font-bold text-red-700 mb-6">Connect. Donate. Save Lives.</h1>
+        <p class="text-lg md:text-xl mb-10 max-w-3xl mx-auto text-gray-700">BloodConnect is a dedicated platform to bridge the gap between blood donors and those in urgent need. Join our community and make a difference.</p>
+        <div class="space-y-4 md:space-y-0 md:space-x-4 md:flex md:justify-center">
+            <a class="inline-flex bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-8 rounded-lg transition-colors duration-300" href="/RegisterDonation">Become a Donor</a>
+            <a class="inline-flex border-2 border-red-700 text-red-700 hover:bg-red-700 hover:text-white font-medium py-3 px-8 rounded-lg transition-colors duration-300" href="/search">Find Blood</a>
+        </div>
+    </div>
+</section>
+
+
+@* How We Help Section *@
+<section class="py-16 bg-white">
+    <div class="container mx-auto px-4">
+        <h2 class="text-3xl font-bold text-center text-red-700 mb-12">How We Help</h2>
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div class="bg-white border rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 p-6 text-center">
+                <div class="bg-red-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-user-plus text-2xl text-red-600"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-red-700 mb-4">Donor Registration</h3>
+                <p class="text-gray-600 text-sm mb-4">Easily register as a blood donor and manage your availability.</p>
+                <a class="text-red-700 hover:underline font-medium" href="/register">Register / Update Profile</a>
+            </div>
+            <div class="bg-white border rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 p-6 text-center">
+                <div class="bg-red-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-search text-2xl text-red-600"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-red-700 mb-4">Find Donors</h3>
+                <p class="text-gray-600 text-sm mb-4">Quickly search for available blood donors by type and location.</p>
+                <a class="text-red-700 hover:underline font-medium" href="/search">Search Donors</a>
+            </div>
+            <div class="bg-white border rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 p-6 text-center">
+                <div class="bg-red-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-calendar-days text-2xl text-red-600"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-red-700 mb-4">Blood Drives</h3>
+                <p class="text-gray-600 text-sm mb-4">Stay updated on upcoming blood donation drives near you.</p>
+                <a class="text-red-700 hover:underline font-medium" href="/drives">View Schedule</a>
+            </div>
+            <div class="bg-white border rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 p-6 text-center">
+                <div class="bg-red-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-heart-pulse text-2xl text-red-600"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-red-700 mb-4">Emergency Requests</h3>
+                <p class="text-gray-600 text-sm mb-4">Post and view urgent requests for blood in critical situations.</p>
+                <a class="text-red-700 hover:underline font-medium" href="/emergency">See Requests</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+@* Latest Blog Posts Section *@
+@if (Model.LatestBlogPosts.Any())
+{
+    <section class="py-16 bg-red-100">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center text-red-700 mb-12">Latest News & Articles</h2>
+            <div class="grid md:grid-cols-1 lg:grid-cols-3 gap-8">
+                @foreach (var post in Model.LatestBlogPosts)
+                {
+                    <article class="bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden">
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold text-gray-900 mb-3 line-clamp-2">@post.Title</h3>
+                            <div class="flex items-center mb-3">
+                                <div class="bg-red-100 w-10 h-10 rounded-full flex items-center justify-center mr-3">
+                                    <i class="fas fa-newspaper text-red-600"></i>
+                                </div>
+                                <div class="text-sm text-gray-500">
+                                    @if (!string.IsNullOrEmpty(post.Category))
+                                    {
+                                        <span class="bg-red-100 text-red-700 px-2 py-1 rounded-full text-xs font-medium">@post.Category</span>
+                                    }
+                                </div>
+                            </div>
+                            <p class="text-gray-600 mb-4 line-clamp-3">
+                                @{
+                                    var plainTextContent = System.Text.RegularExpressions.Regex.Replace(post.Content, "<.*?>", "");
+                                    var truncatedContent = plainTextContent.Length > 150 ? plainTextContent.Substring(0, 150) + "..." : plainTextContent;
+                                }
+                                @truncatedContent
+                            </p>                            <div class="flex items-center justify-between">
+                                <div class="flex items-center text-sm text-gray-500">
+                                    <i class="fas fa-user mr-1"></i>
+                                    <span>@(post.Author?.Name ?? "Unknown Author")</span>
+                                    <span class="mx-2">•</span>
+                                    <i class="fas fa-calendar mr-1"></i>
+                                    <span>@post.CreatedAt?.ToString("MMM dd, yyyy")</span>
+                                </div>
+                            </div>
+                            <div class="mt-4 text-right">
+                                <a href="/blog/@post.PostId" class="inline-flex items-center text-red-700 hover:text-red-800 font-medium">
+                                    Read More
+                                    <i class="fas fa-arrow-right ml-1 text-sm"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </article>
+                }
+            </div>
+            <div class="text-center mt-8">
+                <a href="/blog" class="inline-flex bg-red-700 hover:bg-red-800 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-300">
+                    View All Articles
+                </a>
+            </div>
+        </div>
+    </section>
+}
+else
+{
+    @* Fallback About Section if no blog posts available *@
+    <section class="py-16 bg-red-100">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col lg:flex-row items-center gap-12">
+                <div class="lg:w-1/2">
+                    <img src="~/doctor.jpg" alt="Doctor with patient" width="600" height="400" class="w-full rounded-lg shadow-xl" />
+                </div>
+                <div class="lg:w-1/2">
+                    <h2 class="text-3xl font-bold text-red-700 mb-6">Your Donation Matters</h2>
+                    <p class="mb-4 text-gray-700">Every pint of blood donated can save up to three lives. From accident victims to patients undergoing surgery or battling chronic illnesses, your contribution provides a lifeline.</p>
+                    <p class="mb-6 text-gray-700">BloodConnect facilitates this life-saving process by ensuring that safe blood is available to those who need it, when they need it.</p>
+                    <a class="inline-flex bg-red-700 hover:bg-red-800 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-300" href="/about">Learn More About Donation</a>
+                </div>
+            </div>
+        </div>
+    </section>
+}

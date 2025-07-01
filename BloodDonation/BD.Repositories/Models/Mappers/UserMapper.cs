@@ -16,6 +16,7 @@ namespace BD.Repositories.Models.Mappers
                 Email = userRequest.Email,
                 Address = userRequest.Address,
                 RoleId = userRequest.RoleId,
+                Password = userRequest.Password, // In a real app, this should be hashed
                 CreatedAt = DateTime.UtcNow,
                 IsDeleted = false
             };

@@ -1,29 +1,331 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+﻿@{
+    // Get user role from session or default to "guest"
+    var role = Context.Session.GetString("UserRole") ?? "guest";
+    var isAuthenticated = !string.IsNullOrEmpty(Context.Session.GetString("UserId"));
+
+    // Define navigation items based on role (removed "Blood Drives")
+    var navItems = new Dictionary<string, List<(string href, string label, string iconClass)>>
+    {
+        ["guest"] = new List<(string, string, string)> {
+            ("/", "Home", ""),
+            ("/blog", "Blog", ""),
+            ("/register", "Become a Donor", "fas fa-user-plus")
+        },
+        ["member"] = new List<(string, string, string)> {
+            ("/", "Home", ""),
+            ("/blog", "Blog", ""),
+            ("/RegisterDonation", "Donor Profile", "fas fa-user-circle"),
+            ("/search", "Find Blood", "fas fa-heartbeat"),
+            ("/emergency", "Emergency Requests", "fas fa-siren")
+        },
+        ["staff"] = new List<(string, string, string)> {
+            ("/", "Home", ""),
+            ("/blog", "Blog", ""),
+            ("/search", "Find Blood", "fas fa-heartbeat"),
+            ("/emergency", "Emergency System", "fas fa-siren"),
+            ("/reminder", "Donation Reminder", "fas fa-envelope")
+        },
+    };
+
+    // Select navigation items based on role
+    var currentNavItems = navItems.ContainsKey(role) ? navItems[role] : navItems["guest"];
+}
+
+<!DOCTYPE html>
+<html lang="en" class="@(string.Equals(ViewData["Theme"] as string, "dark", StringComparison.Ordinal) ? "dark" : "")">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - BD.RazorPages</title>
+    <title>@ViewData["Title"] - BloodConnect</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/BD.RazorPages.styles.css" asp-append-version="true" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container">
-                <a class="navbar-brand" asp-area="" asp-page="/Index">BD.RazorPages</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
+
+@if(role == "admin")
+{
+    <!-- Admin Layout with Sidebar -->
+    <div class="flex h-screen bg-gray-100">
+        <!-- Sidebar -->
+        <div class="w-64 bg-white text-red-700 shadow-lg">
+            <!-- Sidebar Header -->
+            <div class="p-4 border-b border-red-700">
+                <a href="/Admin/Dashboard" class="flex items-center gap-2 text-primary hover:text-primary/80 transition-colors text-decoration-none">
+                    <i class="fas fa-tint text-2xl text-red-700"></i>
+                    <span class="text-2xl font-bold text-red-700">BloodConnect</span>
+                </a>
+            </div>
+            
+            <!-- Sidebar Navigation -->
+            <nav class="p-4">
+                <ul class="space-y-2">
+                    <!-- Admin Dashboard Section -->
+                    <li>
+                        @{
+                            var isDashboardActive = Context.Request.Path.StartsWithSegments("/admin/dashboard") || Context.Request.Path.StartsWithSegments("/Admin/Dashboard");
+                        }
+                        <a href="/admin/dashboard" class="flex items-center gap-3 p-3 rounded-lg @(isDashboardActive ? "bg-red-500 text-white" : "hover:bg-red-300") transition-colors group hover:text-white">
+                            <i class="fas fa-tachometer-alt text-lg"></i>
+                            <span class="font-medium">Admin Dashboard</span>
+                        </a>
+                    </li>
+                    
+                    <!-- Manage Users Section -->
+                    <li>
+                        <div class="mt-6 mb-2">
+                            <h3 class="text-red-300 text-xs uppercase tracking-wider font-bold">User Management</h3>
+                        </div>
+                        @{
+                            var isUsersActive = Context.Request.Path.StartsWithSegments("/admin/users") && !Context.Request.Path.StartsWithSegments("/admin/users/roles") && !Context.Request.Path.StartsWithSegments("/admin/users/donors");
+                            var isUserRolesActive = Context.Request.Path.StartsWithSegments("/admin/users/roles");
+                            var isDonorsActive = Context.Request.Path.StartsWithSegments("/admin/users/donors");
+                        }
+                        <a href="/admin/users" class="flex items-center gap-3 p-3 rounded-lg @(isUsersActive ? "bg-red-500 text-white" : "hover:bg-red-300") transition-colors group hover:text-white">
+                            <i class="fas fa-users text-lg"></i>
+                            <span class="font-medium ">Manage Users</span>
+                        </a>
+                        <a href="/admin/users/roles" class="flex items-center gap-3 p-3 pl-10 rounded-lg @(isUserRolesActive ? "bg-red-500 text-white" : "hover:bg-red-300") transition-colors group hover:text-white text-sm">
+                            <i class="fas fa-user-tag text-sm"></i>
+                            <span>User Roles</span>
+                        </a>
+                        <a href="/admin/users/donors" class="flex items-center gap-3 p-3 pl-10 rounded-lg @(isDonorsActive ? "bg-red-500 text-white" : "hover:bg-red-300") transition-colors group hover:text-white text-sm">
+                            <i class="fas fa-hand-holding-heart text-sm "></i>
+                            <span>Donors</span>
+                        </a>
+                    </li>
+                    
+                    <!-- Manage Blood Units Section -->
+                    <li>
+                        <div class="mt-6 mb-2">
+                            <h3 class="text-red-300 text-xs uppercase tracking-wider font-bold">Blood Management</h3>
+                        </div>
+                        @{
+                            var isBloodUnitsActive = Context.Request.Path.StartsWithSegments("/admin/blood-units") && !Context.Request.Path.StartsWithSegments("/admin/blood-units/inventory") && !Context.Request.Path.StartsWithSegments("/admin/blood-units/requests") && !Context.Request.Path.StartsWithSegments("/admin/blood-units/compatibility");
+                            var isInventoryActive = Context.Request.Path.StartsWithSegments("/admin/blood-units/inventory");
+                            var isRequestsActive = Context.Request.Path.StartsWithSegments("/admin/blood-units/requests");
+                            var isCompatibilityActive = Context.Request.Path.StartsWithSegments("/admin/blood-units/compatibility");
+                        }
+                        <a href="/admin/blood-units" class="flex items-center gap-3 p-3 rounded-lg @(isBloodUnitsActive ? "bg-red-500 text-white" : "hover:bg-red-300") transition-colors group hover:text-white">
+                            <i class="fas fa-flask text-lg"></i>
+                            <span class="font-medium">Manage Blood Units</span>
+                        </a>
+                        <a href="/admin/blood-units/inventory" class="flex items-center gap-3 p-3 pl-10 rounded-lg @(isInventoryActive ? "bg-red-500 text-white" : "hover:bg-red-300") transition-colors group hover:text-white text-sm">
+                            <i class="fas fa-boxes text-sm"></i>
+                            <span>Inventory</span>
+                        </a>
+                        <a href="/admin/blood-units/requests" class="flex items-center gap-3 p-3 pl-10 rounded-lg @(isRequestsActive ? "bg-red-500 text-white" : "hover:bg-red-300") transition-colors group hover:text-white text-sm">
+                            <i class="fas fa-clipboard-list text-sm"></i>
+                            <span>Blood Requests</span>
+                        </a>
+                        <a href="/admin/blood-units/compatibility" class="flex items-center gap-3 p-3 pl-10 rounded-lg @(isCompatibilityActive ? "bg-red-500 text-white" : "hover:bg-red-300") transition-colors group hover:text-white text-sm">
+                            <i class="fas fa-dna text-sm"></i>
+                            <span>Compatibility</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            <div class="relative bottom-0 left-0 right-0 p-4 border-t border-red-700">
+                <div class="space-y-2">
+                    @{
+                        var isProfileActive = Context.Request.Path.StartsWithSegments("/profile");
+                    }
+                    <a href="/profile" class="flex items-center gap-3 p-2 rounded-lg @(isProfileActive ? "bg-red-500 text-white" : "hover:bg-red-300") transition-colors hover:text-white text-sm">
+                        <i class="fas fa-user-circle"></i>
+                        <span>Profile</span>
+                    </a>
+                    <a href="/logout" class="flex items-center gap-3 p-2 rounded-lg hover:bg-red-300 transition-colors hover:text-white text-sm">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content Area -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Top Bar for Admin -->
+            <header class="bg-white shadow-sm border-b border-gray-200 p-4">
+                <div class="flex items-center justify-between">
+                    <h1 class="text-2xl font-semibold text-gray-800">@ViewData["Title"]</h1>
+                    <div class="flex items-center gap-4">
+                        <div class="text-sm text-gray-600">
+                            Welcome, <span class="font-medium text-red-700">Administrator</span>
+                        </div>
+                        <div class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-medium">
+                            Admin Mode
+                        </div>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Admin Main Content -->
+            <main role="main" class="flex-1 overflow-auto p-6">
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+}
+else
+{
+    <!-- Regular User Layout -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+            <!-- Logo -->
+            <a href="/" class="flex items-center gap-2 text-primary hover:text-primary/80 transition-colors text-decoration-none">
+                <i class="fas fa-tint text-2xl text-red-700"></i>
+                <span class="text-2xl font-bold text-red-700">BloodConnect</span>
+            </a>
+
+            <!-- Desktop Navigation -->
+            <nav class="hidden md:flex items-center space-x-1 lg:space-x-2 text-decoration-none">
+                @foreach (var item in currentNavItems)
+                {
+                    var isActive = Context.Request.Path == item.href;
+                    var isBecomeDonor = item.href == "/register" && item.label == "Become a Donor";
+                    <a href="@item.href"
+                       class="text-decoration-none @(isBecomeDonor ? "md:hidden lg:flex text-white bg-red-700 hover:bg-red-300" : isActive ? "text-white bg-red-500 hover:bg-red-300" : "text-foreground/80 hover:text-white hover:bg-red-300") inline-flex items-center px-4 py-2 text-sm font-medium rounded-md transition-colors">
+                        @if (!string.IsNullOrEmpty(item.iconClass))
+                        {
+                            <i class="@item.iconClass mr-1.5 text-sm"></i>
+                        }
+                        @item.label
+                    </a>
+                }
+                @if (isAuthenticated)
+                {
+                    <a href="/profile"
+                       class=" border-red-700 border-1 hover:bg-red-300 inline-flex items-center px-4 py-2 text-sm font-medium rounded-md transition-colors">
+                        <i class="fas fa-user-circle mr-1.5 text-sm text-red-700"></i> 
+                        <p class="text-red-700"> Profile </p>
+                    </a>
+                    <a href="/logout"
+                       class=" hover:bg-red-300 inline-flex items-center px-4 py-2 text-sm font-medium border border-border border-red-700 border-1 rounded-md transition-colors">
+                        <i class="fas fa-sign-out-alt mr-1.5 text-sm text-red-700"></i>  <p class="text-red-700">Logout</p>
+                    </a>
+                }
+                else
+                {
+                    <a href="/login"
+                       class="  border-1 hover:bg-red-300 inline-flex border-red-700 items-center px-4 py-2 text-sm font-medium rounded-md">
+                        <i class="fas fa-sign-in-alt mr-1.5 text-sm text-red-700"></i> <p class="text-red-700">Login</p>
+                    </a>
+                }
+            </nav>
+
+            <!-- Mobile Navigation -->
+            <div class="md:hidden flex items-center text-decoration-none">
+                @if (isAuthenticated)
+                {
+                    <a href="/profile" class="mr-2">
+                        <i class="fas fa-user-circle text-xl"></i>
+                    </a>
+                }
+                <!-- Checkbox for mobile menu toggle -->
+                <input type="checkbox" id="mobile-menu-toggle" class="hidden peer">
+                <label for="mobile-menu-toggle" class="cursor-pointer">
+                    <i class="fas fa-bars text-2xl"></i>
+                    <span class="sr-only">Open menu</span>
+                </label>
+                <div class="fixed inset-0 bg-black bg-opacity-50 hidden peer-checked:flex md:hidden z-50"
+                     onclick="document.getElementById('mobile-menu-toggle').checked = false;">
+                    <div class="w-[280px] bg-white ml-auto h-full p-0 flex flex-col shadow-lg">
+                        <!-- Mobile Menu Header -->
+                        <div class="p-4 flex justify-between items-center border-b">
+                            <a href="/" class="flex items-center gap-2 text-decoration-none text-red-700!"
+                               onclick="document.getElementById('mobile-menu-toggle').checked = false;">
+                                <i class="fas fa-tint text-xl"></i>
+                                <span class="text-xl font-bold ">BloodConnect</span>
+                            </a>
+                            <label for="mobile-menu-toggle" class="cursor-pointer">
+                                <i class="fas fa-times text-2xl"></i>
+                                <span class="sr-only">Close menu</span>
+                            </label>
+                        </div>
+                        <!-- Mobile Menu Links -->
+                        <nav class="flex-grow p-4 space-y-1">
+                            @foreach (var item in currentNavItems)
+                            {
+                                var isActive = Context.Request.Path == item.href;
+                                var isBecomeDonor = item.href == "/register" && item.label == "Become a Donor";
+                                <a href="@item.href"
+                                   class="text-decoration-none @(isBecomeDonor ? "text-white bg-red-700 hover:bg-red-300" : isActive ? "bg-red-500 text-white" : "text-foreground/80 hover:bg-accent/10 hover:text-primary") block px-3 py-2.5 rounded-md text-base font-medium flex items-center"
+                                   onclick="document.getElementById('mobile-menu-toggle').checked = false;">
+                                    @if (!string.IsNullOrEmpty(item.iconClass))
+                                    {
+                                        <i class="@item.iconClass mr-2 text-sm"></i>
+                                    }
+                                    @item.label
+                                </a>
+                            }
+                        </nav>
+                        <!-- Mobile Menu Footer -->
+                        <div class="p-4 border-t mt-auto">
+                            @if (isAuthenticated)
+                            {
+                                <a href="/logout"
+                                   class="w-full text-foreground/80 hover:text-primary/90 hover:bg-accent/10 inline-flex items-center px-4 py-2 text-base font-medium border border-border rounded-md transition-colors"
+                                   onclick="document.getElementById('mobile-menu-toggle').checked = false;">
+                                    <i class="fas fa-sign-out-alt mr-2 text-sm"></i> Logout
+                                </a>
+                            }
+                            else
+                            {
+                                <div class="space-y-2">
+                                    <a href="/login"
+                                       class="w-full text-red-700! hover:bg-red-300 inline-flex items-center px-4 py-2 text-base font-medium border border-border rounded-md transition-colors"
+                                       onclick="document.getElementById('mobile-menu-toggle').checked = false;">
+                                        <i class="fas fa-sign-in-alt mr-2 text-sm"></i> Login
+                                    </a>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Regular layout main content -->
+    <div>
+        <main role="main">
+            @RenderBody()
+        </main>
+    </div>
+
+    <!-- Footer (only for non-admin users) -->
+    <footer class="bg-white border-t border-gray-200 py-10">
+        <div class="mx-auto px-4">
+            <div class="flex flex-wrap justify-between mb-8">
+                <div class="w-full md:w-1/3 min-w-[250px] mb-6 px-4">
+                    <h4 class="text-lg font-semibold text-gray-800 mb-4">BloodConnect</h4>
+                    <p class="text-gray-600 mb-4">Connecting blood donors with those in need. Your donation can save lives.</p>
+                </div>
+                <div class="w-full md:w-1/3 min-w-[250px] mb-6 px-4">
+                    <h4 class="text-lg font-semibold text-gray-800 mb-4">Quick Links</h4>
+                    <ul class="list-none p-0 m-0">
+                        <li class="mb-2"><a class="text-gray-600 hover:text-red-500 no-underline" asp-page="/About">About Us</a></li>
+                        <li class="mb-2"><a class="text-gray-600 hover:text-red-500 no-underline" asp-page="/FAQ">FAQ</a></li>
+                        <li class="mb-2"><a class="text-gray-600 hover:text-red-500 no-underline" asp-page="/Contact">Contact Us</a></li>
+                        <li class="mb-2"><a class="text-gray-600 hover:text-red-500 no-underline" asp-page="/Privacy">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                <div class="w-full md:w-1/3 min-w-[250px] mb-6 px-4">
+                    <h4 class="text-lg font-semibold text-gray-800 mb-4">Contact Info</h4>
+                    <ul class="list-none p-0 m-0">
+                        <li class="flex items-start mb-4 text-gray-600">
+                            <i class="fas fa-map-marker-alt text-red-500 w-5 mr-2 mt-1"></i>
+                            <span>FPTU HCM</span>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
+                        <li class="flex items-start mb-4 text-gray-600">
+                            <i class="fas fa-phone-alt text-red-500 w-5 mr-2 mt-1"></i>
+                            <span>(123) 456-7890</span>
+                        </li>
+                        <li class="flex items-start mb-4 text-gray-600">
+                            <i class="fas fa-envelope text-red-500 w-5 mr-2 mt-1"></i>
+                            <span>layzegot@gmail.com</span>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-page="/Public/BloodCompatibilityPages/Index">Blood Compatibility</a>
@@ -34,26 +336,38 @@
                     </ul>
                 </div>
             </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
-
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - BD.RazorPages - <a asp-area="" asp-page="/Privacy">Privacy</a>
+            <div class="text-center pt-6 border-t border-gray-200 text-gray-500 text-sm">
+                © 2025 BloodConnect. All rights reserved.
+            </div>
         </div>
     </footer>
+}
 
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
-
-    @await RenderSectionAsync("Scripts", required: false)
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+<script>
+    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.documentElement.classList.add('dark');
+    }
+</script>
+@await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
+
+<style>
+    /* Ensure the mobile menu is hidden by default and shown when the checkbox is checked */
+    #mobile-menu-toggle:checked ~ .peer-checked\:flex {
+        display: flex;
+    }
+    
+    /* Additional styles for better mobile menu behavior */
+    .peer:checked ~ .peer-checked\:flex {
+        display: flex !important;
+    }
+    
+    /* Admin sidebar styles */
+    .admin-sidebar {
+        position: relative;
+    }
+</style>

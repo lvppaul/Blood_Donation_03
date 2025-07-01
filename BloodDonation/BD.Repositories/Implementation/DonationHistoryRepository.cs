@@ -37,12 +37,29 @@ namespace BD.Repositories.Implementation
             var histories = await _context.DonationHistories.ToListAsync();
 
             return histories;
-        }
-
-        public async Task<DonationHistory?> GetDonationHistoryByIdAsync(int id)
+        }        public async Task<DonationHistory?> GetDonationHistoryByIdAsync(int id)
         {
             return await _context.DonationHistories
+                .Include(dh => dh.Facility)
                 .FirstOrDefaultAsync(dh => dh.DonationId == id && dh.IsDeleted != true);
+        }
+
+        public async Task<IEnumerable<DonationHistory>> GetByUserIdAsync(int userId)
+        {
+            return await _context.DonationHistories
+                .Include(dh => dh.Facility)
+                .Where(dh => dh.UserId == userId && dh.IsDeleted != true)
+                .OrderByDescending(dh => dh.DonationDate)
+                .ToListAsync();
+        }
+
+        public async Task<DonationHistory?> GetLatestDonationByUserIdAsync(int userId)
+        {
+            return await _context.DonationHistories
+                .Include(dh => dh.Facility)
+                .Where(dh => dh.UserId == userId && dh.IsDeleted != true)
+                .OrderByDescending(dh => dh.DonationDate)
+                .FirstOrDefaultAsync();
         }
 
         public async Task<DonationHistory> UpdateDonationHistoryAsync(DonationHistory donationHistory)

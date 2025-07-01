@@ -28,6 +28,7 @@ namespace BD.Repositories.Implementation
         public async Task<IEnumerable<User>> GetAllAsync()
         {
             return await _context.Users
+                        .Include(u => u.Role)
                         .Where(f => f.IsDeleted != true)
                         .ToListAsync();
         }
@@ -35,6 +36,7 @@ namespace BD.Repositories.Implementation
         public async Task<User?> GetByIdAsync(int id)
         {
             return await _context.Users
+                                .Include(u => u.Role)
                                 .FirstOrDefaultAsync(f => f.UserId == id && f.IsDeleted != true);
         }
 

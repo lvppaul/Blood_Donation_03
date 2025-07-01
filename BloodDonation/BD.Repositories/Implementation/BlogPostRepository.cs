@@ -30,16 +30,16 @@ namespace BD.Repositories.Implementation
         {
             blogPost.IsDeleted = true;
             await _context.SaveChangesAsync();
-        }
-
-        public async Task<IEnumerable<BlogPost>> GetAllPostsAsync()
-        {
-            return await _context.BlogPosts.Where(bp => bp.IsDeleted != true).ToListAsync();
-        }
-
-        public async Task<BlogPost?> GetPostByIdAsync(int id)
+        }        public async Task<IEnumerable<BlogPost>> GetAllPostsAsync()
         {
             return await _context.BlogPosts
+                .Include(bp => bp.Author)
+                .Where(bp => bp.IsDeleted != true)
+                .ToListAsync();
+        }        public async Task<BlogPost?> GetPostByIdAsync(int id)
+        {
+            return await _context.BlogPosts
+                .Include(bp => bp.Author)
                 .FirstOrDefaultAsync(bp => bp.PostId == id && bp.IsDeleted != true);
         }
 

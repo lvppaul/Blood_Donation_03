@@ -11,9 +11,7 @@ namespace BD.RazorPages
     {
         public static void Main(string[] args)
         {
-            var builder = WebApplication.CreateBuilder(args);
-
-            // Add services to the container.
+            var builder = WebApplication.CreateBuilder(args);            // Add services to the container.
             builder.Services.AddRazorPages();
 
 
@@ -61,7 +59,16 @@ namespace BD.RazorPages
 
             builder.Services.AddDbContext<BloodDonationDbContext>(options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-            
+                        
+            // Add session support
+            builder.Services.AddDistributedMemoryCache();
+            builder.Services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(30);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
+
             var app = builder.Build();
             // Configure the HTTP request pipeline.
 
@@ -76,7 +83,10 @@ namespace BD.RazorPages
             app.UseStaticFiles();
 
             app.UseRouting();
-
+            
+            // Add session middleware before authorization
+            app.UseSession();
+           
             app.UseAuthorization();
 
             app.MapRazorPages();

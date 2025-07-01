@@ -7,11 +7,12 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace BD.Repositories.Interfaces
-{
-    public interface IDonationHistoryRepository
+{    public interface IDonationHistoryRepository
     {
         Task<IEnumerable<DonationHistory>> GetAllDonationHistoryAsync();
         Task<DonationHistory?> GetDonationHistoryByIdAsync(int id);
+        Task<IEnumerable<DonationHistory>> GetByUserIdAsync(int userId);
+        Task<DonationHistory?> GetLatestDonationByUserIdAsync(int userId);
         Task<DonationHistory> AddDonationHistoryAsync(DonationHistory donationHistory);
         Task<DonationHistory> UpdateDonationHistoryAsync(DonationHistory donationHistory);
         Task DeleteDonationHistoryAsync(DonationHistory donationHistory);
