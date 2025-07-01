@@ -1,78 +1,69 @@
 ﻿@page
 @model BD.RazorPages.Pages.Admin.Inventory.IndexModel
-
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Blood Inventory";
 }
 
-<h1>Index</h1>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">🩸 Blood Inventory Management</h2>
+        <a class="btn btn-primary" asp-page="Create">
+            <i class="bi bi-plus-circle"></i> Create New
+        </a>
+    </div>
 
-<p>
-    <a asp-page="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.BloodInventory[0].ComponentType)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.BloodInventory[0].Amount)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.BloodInventory[0].ExpiredDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.BloodInventory[0].LastUpdated)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.BloodInventory[0].IsDeleted)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.BloodInventory[0].BloodType)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.BloodInventory[0].Facility)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.BloodInventory[0].StatusInventory)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model.BloodInventory) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.ComponentType)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Amount)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ExpiredDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.LastUpdated)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IsDeleted)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.BloodType)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Facility.Address)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.StatusInventory.StatusName)
-            </td>
-            <td>
-                <a asp-page="./Edit" asp-route-id="@item.InventoryId">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.InventoryId">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.InventoryId">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+    <!-- Search and Filter -->
+    <form method="get" class="row gy-2 gx-3 align-items-center mb-4">
+        <div class="col-md-4">
+            <input type="text" name="search" class="form-control" placeholder="🔍 Search by blood type, component..." value="@Model.Search" />
+        </div>
+        <div class="col-md-3">
+            <select name="status" class="form-select" asp-items="Model.StatusSelectList">
+                <option value="">Filter by Status</option>
+            </select>
+        </div>
+        <div class="col-md-auto">
+            <button type="submit" class="btn btn-outline-success"><i class="bi bi-search"></i> Filter</button>
+        </div>
+    </form>
+
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <table class="table table-striped table-hover mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Component</th>
+                        <th>Amount</th>
+                        <th>Blood Type</th>
+                        <th>Expired</th>
+                        <th>Last Updated</th>
+                        <th>Status</th>
+                        <th>Facility</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.BloodInventory)
+                    {
+                        <tr>
+                            <td>@item.ComponentType</td>
+                            <td>@item.Amount</td>
+                            <td>@item.BloodType</td>
+                            <td>@item.ExpiredDate.ToString("dd/MM/yyyy")</td>
+                            <td>@item.LastUpdated?.ToString("dd/MM/yyyy")</td>
+                            <td>@item.StatusInventory?.StatusName</td>
+                            <td>@item.Facility?.Name</td>
+                            <td>
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <a class="btn btn-outline-secondary" asp-page="./Edit" asp-route-id="@item.InventoryId"><i class="bi bi-pencil"></i></a>
+                                    <a class="btn btn-outline-info" asp-page="./Details" asp-route-id="@item.InventoryId"><i class="bi bi-info-circle"></i></a>
+                                    <a class="btn btn-outline-danger" asp-page="./Delete" asp-route-id="@item.InventoryId"><i class="bi bi-trash"></i></a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
