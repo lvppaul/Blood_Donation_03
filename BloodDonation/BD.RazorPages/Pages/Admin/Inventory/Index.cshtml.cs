@@ -23,7 +23,7 @@ namespace BD.RazorPages.Pages.Admin.Inventory
 
         public List<SelectListItem> StatusSelectList { get; set; } = new();
 
-        // ✅ Bind Search và Status để dùng trong Razor Page (GET)
+        //  Bind Search và Status để dùng trong Razor Page (GET)
         [BindProperty(SupportsGet = true)]
         public string? Search { get; set; }
 

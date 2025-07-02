@@ -32,7 +32,7 @@ namespace BD.Repositories.Implementation
 
         public async Task<IEnumerable<BloodInventory>> GetAllBloodInventoriesAsync()
         {
-            return await _context.BloodInventories
+            return await _context.BloodInventories.Include(d=> d.Facility).Include(d => d.StatusInventory)
                 .Where(bi => bi.IsDeleted != true)
                 .ToListAsync();
         }

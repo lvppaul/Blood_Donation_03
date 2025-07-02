@@ -33,7 +33,7 @@ namespace BD.Repositories.Implementation
 
         public async Task<IEnumerable<BloodRequest>> GetAllBloodRequestsAsync()
         {
-            return await _context.BloodRequests
+            return await _context.BloodRequests.Include(d=> d.User).Include(d => d.StatusRequest)
                 .Where(br => br.IsDeleted != true)
                 .ToListAsync();
         }
