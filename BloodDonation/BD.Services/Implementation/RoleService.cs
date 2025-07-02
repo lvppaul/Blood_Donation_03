@@ -1,4 +1,6 @@
 ﻿using BD.Repositories.Interfaces;
+using BD.Repositories.Models.DTOs.Responses;
+using BD.Repositories.Models.Mappers;
 using BD.Services.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -15,17 +17,19 @@ namespace BD.Services.Implementation
         {
             _roleRepository = roleRepository;
         }
+
+        public async Task<IEnumerable<RoleResponse>> GetAllRolesAsync()
+        {
+            var roles = await _roleRepository.GetAllAsync();
+            return roles.Select(RoleMapper.ToResponse);
+        }
+
         public Task AddRoleAsync(string roleName)
         {
             throw new NotImplementedException();
         }
 
         public Task AddUserToRoleAsync(int userId, string roleName)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<string>> GetAllRolesAsync()
         {
             throw new NotImplementedException();
         }

@@ -7,6 +7,8 @@ namespace BD.Services.Interfaces
     {
         Task<IEnumerable<UserResponse>> GetAllAsync();
         Task<UserResponse?> GetByIdAsync(int id);
+        Task<UserResponse?> GetByEmailAsync(string email);
+        Task<UserResponse?> GetByPhoneAsync(string phone);
         Task<UserResponse> AddAsync(UserRequest user);
         Task<UserResponse?> UpdateAsync(int userId, UserRequest user);
         Task DeleteAsync(int id);

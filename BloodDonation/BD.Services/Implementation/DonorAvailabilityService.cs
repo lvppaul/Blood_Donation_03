@@ -64,5 +64,11 @@ namespace BD.Services.Implementation
             var updated = await _repository.UpdateDonorAvailabilityAsync(existing);
             return DonorAvailabilityMapper.ToResponse(updated);
         }
+
+        public async Task<IEnumerable<DonorAvailabilityResponse>> GetAllAvailableDonorsAsync()
+        {
+            var availableDonors = await _repository.GetAllAvailableDonorAsync();
+            return availableDonors.Select(DonorAvailabilityMapper.ToResponse);
+        }
     }
 }

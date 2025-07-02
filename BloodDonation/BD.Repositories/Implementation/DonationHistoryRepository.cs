@@ -34,7 +34,13 @@ namespace BD.Repositories.Implementation
 
         public async Task<IEnumerable<DonationHistory>> GetAllDonationHistoryAsync()
         {
-            var histories = await _context.DonationHistories.ToListAsync();
+            var histories = await _context.DonationHistories
+            .Include(dh => dh.Facility)
+            .Include(dh => dh.User)
+            .Include(dh => dh.Request)
+                .Where(dh => dh.IsDeleted != true)
+                
+            .ToListAsync();
 
             return histories;
         }        public async Task<DonationHistory?> GetDonationHistoryByIdAsync(int id)

@@ -15,5 +15,6 @@ namespace BD.Services.Interfaces
         Task<DonorAvailabilityResponse> AddAsync(DonorAvailabilityRequest donorAvailability);
         Task<DonorAvailabilityResponse?> UpdateAsync(int id, DonorAvailabilityRequest donorAvailability);
         Task DeleteAsync(int id);
+        Task<IEnumerable<DonorAvailabilityResponse>> GetAllAvailableDonorsAsync();
     }
 }
