@@ -5,18 +5,21 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.ComponentModel.DataAnnotations;
 
-namespace BD.RazorPages.Pages.Admin
+namespace BD.RazorPages.Pages.Admin.Users
 {
-    public class AddUserModel : PageModel
+    public class EditUserModel : PageModel
     {
         private readonly IUserService _userService;
         private readonly IRoleService _roleService;
 
-        public AddUserModel(IUserService userService, IRoleService roleService)
+        public EditUserModel(IUserService userService, IRoleService roleService)
         {
             _userService = userService;
             _roleService = roleService;
         }
+
+        [BindProperty]
+        public int UserId { get; set; }
 
         [BindProperty]
         [StringLength(100, MinimumLength = 2, ErrorMessage = "Name must be between 2 and 100 characters")]
@@ -43,26 +46,84 @@ namespace BD.RazorPages.Pages.Admin
         public int RoleId { get; set; }
 
         [BindProperty]
+        public bool IsDeleted { get; set; }
+
+        [BindProperty]
         [StringLength(100, MinimumLength = 6, ErrorMessage = "Password must be between 6 and 100 characters")]
         [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{6,}$", 
             ErrorMessage = "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character")]
-        public string Password { get; set; } = string.Empty;
+        public string? NewPassword { get; set; }
+
+        [BindProperty]
+        [Compare("NewPassword", ErrorMessage = "The password and confirmation password do not match.")]
+        public string? ConfirmPassword { get; set; }
 
         public IEnumerable<RoleResponse> AllRoles { get; set; } = new List<RoleResponse>();
+        
+        // Store original values for validation
+        public string OriginalEmail { get; set; } = string.Empty;
+        public string OriginalPhone { get; set; } = string.Empty;
 
-        public async Task OnGetAsync()
+        public async Task<IActionResult> OnGetAsync(int id)
         {
-            await LoadRolesAsync();
+            try
+            {
+                await LoadRolesAsync();
+                
+                var user = await _userService.GetByIdAsync(id);
+                if (user == null)
+                {
+                    TempData["Error"] = "User not found.";
+                    return RedirectToPage("/Admin/Users");
+                }
+
+                // Populate form with user data
+                UserId = user.UserId;
+                Name = user.Name;
+                Email = user.Email ?? string.Empty;
+                Phone = user.Phone ?? string.Empty;
+                BloodType = user.BloodType ?? string.Empty;
+                Address = user.Address;
+                RoleId = user.Role?.RoleId ?? 0;
+                IsDeleted = user.IsDeleted ?? false;
+
+                // Store original values for validation
+                OriginalEmail = Email;
+                OriginalPhone = Phone;
+                
+                return Page();
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "Error loading user: " + ex.Message;
+                return RedirectToPage("/Admin/Users");
+            }
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
             await LoadRolesAsync();
 
+            // Store original values for validation
+            try
+            {
+                var existingUser = await _userService.GetByIdAsync(UserId);
+                if (existingUser != null)
+                {
+                    OriginalEmail = existingUser.Email ?? string.Empty;
+                    OriginalPhone = existingUser.Phone ?? string.Empty;
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "Error retrieving user data: " + ex.Message;
+                return Page();
+            }
+
             // Additional custom validation
             ValidateUserInput();
 
-            // Check for existing email and phone
+            // Check for existing email and phone (excluding current user)
             await ValidateExistingUserAsync();
 
             if (!ModelState.IsValid)
@@ -80,18 +141,23 @@ namespace BD.RazorPages.Pages.Admin
                     BloodType = BloodType,
                     Address = string.IsNullOrWhiteSpace(Address) ? null : Address.Trim(),
                     RoleId = RoleId,
-                    Password = Password
+                    Password = string.IsNullOrEmpty(NewPassword) ? null : NewPassword // Only update password if provided
                 };
 
-                await _userService.AddAsync(userRequest);
-                TempData["Success"] = "User added successfully!";
+                await _userService.UpdateAsync(UserId, userRequest);
                 
-                // Redirect to Users page after successful addition
+                // Update IsDeleted status if needed
+                if (IsDeleted)
+                {
+                    await _userService.DeleteAsync(UserId);
+                }
+
+                TempData["Success"] = "User updated successfully!";
                 return RedirectToPage("/Admin/Users");
             }
             catch (Exception ex)
             {
-                TempData["Error"] = "Error adding user: " + ex.Message;
+                TempData["Error"] = "Error updating user: " + ex.Message;
                 return Page();
             }
         }
@@ -156,14 +222,20 @@ namespace BD.RazorPages.Pages.Admin
                 }
             }
 
-            // Additional password validation (beyond regex)
-            if (!string.IsNullOrEmpty(Password))
+            // Additional password validation (only if password is provided)
+            if (!string.IsNullOrEmpty(NewPassword))
             {
                 // Check for only whitespace characters as special chars
-                if (Password.All(c => char.IsLetterOrDigit(c) || char.IsWhiteSpace(c)))
+                if (NewPassword.All(c => char.IsLetterOrDigit(c) || char.IsWhiteSpace(c)))
                 {
-                    ModelState.AddModelError(nameof(Password), "Password must contain at least one special character (not just spaces)");
+                    ModelState.AddModelError(nameof(NewPassword), "Password must contain at least one special character (not just spaces)");
                 }
+            }
+
+            // Validate password confirmation only if new password is provided
+            if (!string.IsNullOrEmpty(NewPassword) && string.IsNullOrEmpty(ConfirmPassword))
+            {
+                ModelState.AddModelError(nameof(ConfirmPassword), "Please confirm your new password");
             }
         }
 
@@ -171,23 +243,23 @@ namespace BD.RazorPages.Pages.Admin
         {
             try
             {
-                // Check if email already exists
-                if (!string.IsNullOrEmpty(Email))
+                // Check if email already exists (excluding current user)
+                if (!string.IsNullOrEmpty(Email) && !Email.Equals(OriginalEmail, StringComparison.OrdinalIgnoreCase))
                 {
                     var existingUserByEmail = await _userService.GetByEmailAsync(Email.Trim().ToLower());
-                    if (existingUserByEmail != null)
+                    if (existingUserByEmail != null && existingUserByEmail.UserId != UserId)
                     {
-                        ModelState.AddModelError(nameof(Email), "This email address is already registered");
+                        ModelState.AddModelError(nameof(Email), "This email address is already registered by another user");
                     }
                 }
 
-                // Check if phone already exists
-                if (!string.IsNullOrEmpty(Phone))
+                // Check if phone already exists (excluding current user)
+                if (!string.IsNullOrEmpty(Phone) && !Phone.Equals(OriginalPhone, StringComparison.OrdinalIgnoreCase))
                 {
                     var existingUserByPhone = await _userService.GetByPhoneAsync(Phone.Trim());
-                    if (existingUserByPhone != null)
+                    if (existingUserByPhone != null && existingUserByPhone.UserId != UserId)
                     {
-                        ModelState.AddModelError(nameof(Phone), "This phone number is already registered");
+                        ModelState.AddModelError(nameof(Phone), "This phone number is already registered by another user");
                     }
                 }
             }

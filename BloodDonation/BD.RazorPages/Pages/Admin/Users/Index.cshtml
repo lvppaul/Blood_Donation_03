@@ -1,5 +1,5 @@
 @page "/admin/users"
-@model BD.RazorPages.Pages.Admin.UsersModel
+@model BD.RazorPages.Pages.Admin.Users.IndexModel
 @{
     ViewData["Title"] = "Manage Users";
 }
@@ -26,7 +26,7 @@
                 <h2 class="text-3xl font-bold text-gray-900 mb-2">User Management</h2>
                 <p class="text-gray-600">Manage all users in the BloodConnect system</p>
             </div>
-            <a href="/Admin/AddUser" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors inline-flex items-center">
+            <a href="/Admin/Users/AddUser" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors inline-flex items-center">
                 <i class="fas fa-plus mr-2"></i>Add New User
             </a>
         </div>
@@ -279,5 +279,3 @@
         </div>
     </div>
 </div>
-
-

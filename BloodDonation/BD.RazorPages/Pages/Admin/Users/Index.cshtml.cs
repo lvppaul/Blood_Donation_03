@@ -4,14 +4,14 @@ using BD.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace BD.RazorPages.Pages.Admin
+namespace BD.RazorPages.Pages.Admin.Users
 {
-    public class UsersModel : PageModel
+    public class IndexModel : PageModel
     {
         private readonly IUserService _userService;
         private readonly IDonorAvailabilityService _donorAvailabilityService;
 
-        public UsersModel(IUserService userService, IDonorAvailabilityService donorAvailabilityService)
+        public IndexModel(IUserService userService, IDonorAvailabilityService donorAvailabilityService)
         {
             _userService = userService;
             _donorAvailabilityService = donorAvailabilityService;
