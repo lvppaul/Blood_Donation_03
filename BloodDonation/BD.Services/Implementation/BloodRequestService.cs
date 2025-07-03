@@ -3,33 +3,44 @@ using BD.Repositories.Models.DTOs.Requests;
 using BD.Repositories.Models.DTOs.Responses;
 using BD.Repositories.Models.Mappers;
 using BD.Services.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BD.Services.Implementation
 {
     public class BloodRequestService : IBloodRequestService
     {
         private readonly IBloodRequestRepository _bloodRequestRepository;
-        public BloodRequestService(IBloodRequestRepository bloodRequestRepository)
+        private readonly IUserRepository _userRepository;
+        private readonly IStatusBloodRequestRepository _statusRequestRepository;
+        public BloodRequestService(IBloodRequestRepository bloodRequestRepository, IUserRepository userRepository, IStatusBloodRequestRepository statusBloodRequestRepository)
         {
             _bloodRequestRepository = bloodRequestRepository;
+            _userRepository = userRepository;
+            _statusRequestRepository = statusBloodRequestRepository;
         }
         public async Task<BloodRequestResponse> AddAsync(BloodRequestRequest request)
         {
             var entity = BloodRequestMapper.ToEntity(request);
-            var addedEntity = await _bloodRequestRepository.AddBloodRequestAsync(entity);
 
+            var userEntity = await _userRepository.GetByIdAsync(request.UserId);
+            if (userEntity == null)
+            {
+                throw new Exception("User not found");
+            }
+            var statusEntity = await _statusRequestRepository.GetByIdAsync(request.StatusRequestId);
+            if (statusEntity == null)
+            {
+                throw new Exception("Status request not found");
+            }
+            entity.User = userEntity;
+            entity.StatusRequest = statusEntity;
+            var addedEntity = await _bloodRequestRepository.AddBloodRequestAsync(entity);
             return BloodRequestMapper.ToResponse(addedEntity);
         }
 
         public async Task DeleteAsync(int requestId)
         {
             var existingRequest = await _bloodRequestRepository.GetBloodRequestByIdAsync(requestId);
-            if(existingRequest == null)
+            if (existingRequest == null)
             {
                 throw new Exception("Blood request not found");
             }

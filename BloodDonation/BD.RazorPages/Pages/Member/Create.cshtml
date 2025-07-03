@@ -1,0 +1,62 @@
+﻿@page
+@model BD.RazorPages.Pages.Member.CreateModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>BloodRequest</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="BloodRequest.UserId" class="control-label"></label>
+                <select asp-for="BloodRequest.UserId" class ="form-control" asp-items="ViewBag.UserId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="BloodRequest.BloodType" class="control-label"></label>
+                <input asp-for="BloodRequest.BloodType" class="form-control" />
+                <span asp-validation-for="BloodRequest.BloodType" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BloodRequest.ComponentType" class="control-label"></label>
+                <input asp-for="BloodRequest.ComponentType" class="form-control" />
+                <span asp-validation-for="BloodRequest.ComponentType" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BloodRequest.Amount" class="control-label"></label>
+                <input asp-for="BloodRequest.Amount" class="form-control" />
+                <span asp-validation-for="BloodRequest.Amount" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BloodRequest.UrgencyLevel" class="control-label"></label>
+                <input asp-for="BloodRequest.UrgencyLevel" class="form-control" />
+                <span asp-validation-for="BloodRequest.UrgencyLevel" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BloodRequest.StatusRequestId" class="control-label"></label>
+                <select asp-for="BloodRequest.StatusRequestId" class ="form-control" asp-items="ViewBag.StatusRequestId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="BloodRequest.FulfilledDate" class="control-label"></label>
+                <input asp-for="BloodRequest.FulfilledDate" class="form-control" />
+                <span asp-validation-for="BloodRequest.FulfilledDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
