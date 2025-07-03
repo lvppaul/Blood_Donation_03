@@ -87,7 +87,7 @@ namespace BD.RazorPages.Pages.Admin.Users
                 TempData["Success"] = "User added successfully!";
                 
                 // Redirect to Users page after successful addition
-                return RedirectToPage("/Admin/Users");
+                return RedirectToPage("/Admin/Users/Index");
             }
             catch (Exception ex)
             {

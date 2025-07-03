@@ -9,18 +9,15 @@ namespace BD.RazorPages.Pages.Admin.Users
     public class IndexModel : PageModel
     {
         private readonly IUserService _userService;
-        private readonly IDonorAvailabilityService _donorAvailabilityService;
 
-        public IndexModel(IUserService userService, IDonorAvailabilityService donorAvailabilityService)
+        public IndexModel(IUserService userService)
         {
             _userService = userService;
-            _donorAvailabilityService = donorAvailabilityService;
         }
 
         public IEnumerable<UserResponse> Users { get; set; } = new List<UserResponse>();
         public IEnumerable<string> Roles { get; set; } = new List<string>();
         public UserStatistics Statistics { get; set; } = new UserStatistics();
-        public IEnumerable<DonorAvailabilityResponse> DonorAvailabilities { get; set; } = new List<DonorAvailabilityResponse>();
 
         // Pagination properties
         [BindProperty(SupportsGet = true)]
@@ -34,9 +31,6 @@ namespace BD.RazorPages.Pages.Admin.Users
 
         [BindProperty(SupportsGet = true)]
         public string SelectedRole { get; set; } = string.Empty;
-
-        [BindProperty(SupportsGet = true)]
-        public string SelectedStatus { get; set; } = string.Empty;
 
         [BindProperty]
         public int SelectedPageSize { get; set; } = 10;
@@ -67,12 +61,8 @@ namespace BD.RazorPages.Pages.Admin.Users
         {
             try
             {
-                // Get all data using the same approach as Dashboard
+                // Get all data
                 var allUsers = await SafeGetDataAsync(() => _userService.GetAllAsync()) ?? Enumerable.Empty<UserResponse>();
-                var donorAvailabilities = await SafeGetDataAsync(() => _donorAvailabilityService.GetAllAvailableDonorsAsync()) ?? Enumerable.Empty<DonorAvailabilityResponse>();
-                
-                // Store donor availabilities for use in the view
-                DonorAvailabilities = donorAvailabilities;
 
                 // Apply filters to users
                 var filteredUsers = allUsers.AsEnumerable();
@@ -88,13 +78,6 @@ namespace BD.RazorPages.Pages.Admin.Users
                 {
                     filteredUsers = filteredUsers.Where(u => 
                         u.Role.Name.Equals(SelectedRole, StringComparison.OrdinalIgnoreCase));
-                }
-                
-                if (!string.IsNullOrEmpty(SelectedStatus))
-                {
-                    var isActive = SelectedStatus.Equals("active", StringComparison.OrdinalIgnoreCase);
-                    filteredUsers = filteredUsers.Where(u => 
-                        (u.IsDeleted != true) == isActive);
                 }
                 
                 // Calculate total count before pagination
@@ -134,7 +117,6 @@ namespace BD.RazorPages.Pages.Admin.Users
                 Users = new List<UserResponse>();
                 Statistics = new UserStatistics();
                 Roles = new List<string>();
-                DonorAvailabilities = new List<DonorAvailabilityResponse>();
             }
         }
 
@@ -201,17 +183,6 @@ namespace BD.RazorPages.Pages.Admin.Users
             return isActive ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800";
         }
 
-        public bool IsActiveDonor(int userId)
-        {
-            // Check if this user has any available donor records
-            return DonorAvailabilities?.Any(da => da.User?.UserId == userId) ?? false;
-        }
-
-        public string GetDonorStatusBadgeClass(bool isActiveDonor)
-        {
-            return isActiveDonor ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800";
-        }
-
         public string GetPageUrl(int page)
         {
             var queryParams = new List<string>();
@@ -224,9 +195,6 @@ namespace BD.RazorPages.Pages.Admin.Users
             
             if (!string.IsNullOrEmpty(SelectedRole))
                 queryParams.Add($"SelectedRole={Uri.EscapeDataString(SelectedRole)}");
-            
-            if (!string.IsNullOrEmpty(SelectedStatus))
-                queryParams.Add($"SelectedStatus={Uri.EscapeDataString(SelectedStatus)}");
             
             return "?" + string.Join("&", queryParams);
         }
