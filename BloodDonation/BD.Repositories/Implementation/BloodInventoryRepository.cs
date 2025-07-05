@@ -49,5 +49,13 @@ namespace BD.Repositories.Implementation
             await _context.SaveChangesAsync();
             return bloodInventory;
         }
+        public async Task<IEnumerable<BloodInventory>> GetAllBloodInventoriesByBloodTypeAsync(string type)
+        {
+            return await _context.BloodInventories
+                .Include(d => d.Facility)
+                .Include(d => d.StatusInventory)
+                .Where(bi => bi.IsDeleted != true && bi.BloodType == type)
+                .ToListAsync();
+        }
     }
 }
