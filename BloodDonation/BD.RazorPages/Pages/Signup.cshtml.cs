@@ -1,21 +1,25 @@
-using BD.Repositories.Models.DTOs.Requests;
-using BD.Repositories.Models.DTOs.Responses;
-using BD.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.ComponentModel.DataAnnotations;
+using BD.Repositories.Interfaces;
+using BD.Repositories.Models.Entities;
+using BD.Services.Interfaces;
+using BD.Repositories.Models.DTOs.Requests;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace BD.RazorPages.Pages.Admin.Users
+namespace BD.RazorPages.Pages
 {
-    public class AddUserModel : PageModel
+    public class SignupModel : PageModel
     {
         private readonly IUserService _userService;
         private readonly IRoleService _roleService;
+        private readonly ILogger<SignupModel> _logger;
 
-        public AddUserModel(IUserService userService, IRoleService roleService)
+        public SignupModel(IUserService userService, IRoleService roleService, ILogger<SignupModel> logger)
         {
             _userService = userService;
             _roleService = roleService;
+            _logger = logger;
         }
 
         [BindProperty]
@@ -29,18 +33,15 @@ namespace BD.RazorPages.Pages.Admin.Users
 
         [BindProperty]
         [Phone(ErrorMessage = "Please enter a valid phone number")]
-        [StringLength(20, MinimumLength = 10, ErrorMessage = "Phone number must be between 10 and 20 characters")]
+        [StringLength(15, MinimumLength = 10, ErrorMessage = "Phone number must be between 10 and 15 characters")]
         public string Phone { get; set; } = string.Empty;
 
         [BindProperty]
         public string BloodType { get; set; } = string.Empty;
 
         [BindProperty]
+        [StringLength(200, ErrorMessage = "Address cannot exceed 200 characters")]
         public string? Address { get; set; }
-
-        [BindProperty]
-        [Range(1, int.MaxValue, ErrorMessage = "Please select a valid role")]
-        public int RoleId { get; set; }
 
         [BindProperty]
         [StringLength(100, MinimumLength = 6, ErrorMessage = "Password must be between 6 and 100 characters")]
@@ -48,16 +49,38 @@ namespace BD.RazorPages.Pages.Admin.Users
             ErrorMessage = "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character")]
         public string Password { get; set; } = string.Empty;
 
-        public IEnumerable<RoleResponse> AllRoles { get; set; } = new List<RoleResponse>();
+        [BindProperty]
+        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+        [DataType(DataType.Password)]
+        public string ConfirmPassword { get; set; } = string.Empty;
 
-        public async Task OnGetAsync()
+        [BindProperty]
+        [Required(ErrorMessage = "You must agree to the terms and conditions")]
+        public bool AgreeToTerms { get; set; }
+
+        [BindProperty]
+        public bool SubscribeToNewsletter { get; set; }
+
+        public string ErrorMessage { get; set; } = string.Empty;
+        public string SuccessMessage { get; set; } = string.Empty;
+
+        public List<SelectListItem> BloodTypes { get; set; } = new List<SelectListItem>();
+
+        public void OnGet()
         {
-            await LoadRolesAsync();
+            // Check if user is already logged in
+            if (!string.IsNullOrEmpty(HttpContext.Session.GetString("UserId")))
+            {
+                Response.Redirect("/");
+                return;
+            }
+
+            LoadBloodTypes();
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
-            await LoadRolesAsync();
+            LoadBloodTypes();
 
             // Additional custom validation
             ValidateUserInput();
@@ -79,35 +102,46 @@ namespace BD.RazorPages.Pages.Admin.Users
                     Phone = Phone.Trim(),
                     BloodType = BloodType,
                     Address = string.IsNullOrWhiteSpace(Address) ? null : Address.Trim(),
-                    RoleId = RoleId,
+                    RoleId = 3, // Default role: member (assuming 3 is member role based on login logic)
                     Password = Password
                 };
 
-                await _userService.AddAsync(userRequest);
-                TempData["Success"] = "User added successfully!";
+                var createdUser = await _userService.AddAsync(userRequest);
                 
-                // Redirect to Users page after successful addition
-                return RedirectToPage("/Admin/Users/Index");
+                _logger.LogInformation("New user registered: {Email}", Email);
+                
+                // Auto-login the user after successful registration
+                HttpContext.Session.SetString("UserId", createdUser.UserId.ToString());
+                HttpContext.Session.SetString("UserName", createdUser.Name);
+                HttpContext.Session.SetString("UserRole", "member");
+
+                TempData["Success"] = "Registration successful! Welcome to BloodConnect.";
+                
+                // Redirect to profile page or dashboard
+                return RedirectToPage("/Profile");
             }
             catch (Exception ex)
             {
-                TempData["Error"] = "Error adding user: " + ex.Message;
+                _logger.LogError(ex, "Error during user registration for email: {Email}", Email);
+                ErrorMessage = "An error occurred during registration. Please try again.";
                 return Page();
             }
         }
 
-        private async Task LoadRolesAsync()
+        private void LoadBloodTypes()
         {
-            try
+            BloodTypes = new List<SelectListItem>
             {
-                AllRoles = await _roleService.GetAllRolesAsync();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error loading roles: {ex.Message}");
-                AllRoles = new List<RoleResponse>();
-                TempData["Error"] = "Error loading roles. Please try again.";
-            }
+                new SelectListItem { Value = "", Text = "Select Blood Type", Disabled = true },
+                new SelectListItem { Value = "A+", Text = "A+" },
+                new SelectListItem { Value = "A-", Text = "A-" },
+                new SelectListItem { Value = "B+", Text = "B+" },
+                new SelectListItem { Value = "B-", Text = "B-" },
+                new SelectListItem { Value = "AB+", Text = "AB+" },
+                new SelectListItem { Value = "AB-", Text = "AB-" },
+                new SelectListItem { Value = "O+", Text = "O+" },
+                new SelectListItem { Value = "O-", Text = "O-" }
+            };
         }
 
         private void ValidateUserInput()
@@ -117,16 +151,6 @@ namespace BD.RazorPages.Pages.Admin.Users
             if (!string.IsNullOrEmpty(BloodType) && !validBloodTypes.Contains(BloodType))
             {
                 ModelState.AddModelError(nameof(BloodType), "Please select a valid blood type");
-            }
-
-            // Validate role exists
-            if (RoleId > 0 && AllRoles.Any())
-            {
-                var roleExists = AllRoles.Any(r => r.RoleId == RoleId);
-                if (!roleExists)
-                {
-                    ModelState.AddModelError(nameof(RoleId), "Please select a valid role");
-                }
             }
 
             // Validate name doesn't contain only numbers
@@ -156,13 +180,20 @@ namespace BD.RazorPages.Pages.Admin.Users
                 }
             }
 
-            // Additional password validation (beyond regex)
+            // Additional password validation
             if (!string.IsNullOrEmpty(Password))
             {
                 // Check for only whitespace characters as special chars
                 if (Password.All(c => char.IsLetterOrDigit(c) || char.IsWhiteSpace(c)))
                 {
                     ModelState.AddModelError(nameof(Password), "Password must contain at least one special character (not just spaces)");
+                }
+
+                // Check for common weak passwords
+                var weakPasswords = new[] { "123456", "password", "qwerty", "abc123", "password123" };
+                if (weakPasswords.Any(weak => Password.ToLower().Contains(weak)))
+                {
+                    ModelState.AddModelError(nameof(Password), "Password is too common. Please choose a stronger password");
                 }
             }
         }
@@ -177,7 +208,7 @@ namespace BD.RazorPages.Pages.Admin.Users
                     var existingUserByEmail = await _userService.GetByEmailAsync(Email.Trim().ToLower());
                     if (existingUserByEmail != null)
                     {
-                        ModelState.AddModelError(nameof(Email), "This email address is already registered");
+                        ModelState.AddModelError(nameof(Email), "This email address is already registered. Please use a different email or try logging in.");
                     }
                 }
 
@@ -187,14 +218,14 @@ namespace BD.RazorPages.Pages.Admin.Users
                     var existingUserByPhone = await _userService.GetByPhoneAsync(Phone.Trim());
                     if (existingUserByPhone != null)
                     {
-                        ModelState.AddModelError(nameof(Phone), "This phone number is already registered");
+                        ModelState.AddModelError(nameof(Phone), "This phone number is already registered. Please use a different phone number.");
                     }
                 }
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error validating existing user during signup");
                 // Log the error but don't fail validation - let the user try to submit
-                Console.WriteLine($"Error validating existing user: {ex.Message}");
             }
         }
     }

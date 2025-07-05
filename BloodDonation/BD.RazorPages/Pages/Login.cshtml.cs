@@ -72,7 +72,7 @@ namespace BD.RazorPages.Pages
                 _logger.LogInformation($"User {Email} logged in successfully with role {roleName}");
 
                 // Redirect based on role
-                if (roleName == "admin")
+                if (roleName == "admin" || roleName == "staff")
                 {
                     return RedirectToPage("/Admin/Dashboard");
                 }

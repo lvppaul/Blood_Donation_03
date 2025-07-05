@@ -26,8 +26,6 @@ namespace BD.RazorPages.Pages.Admin.Users
         public string Name { get; set; } = string.Empty;
 
         [BindProperty]
-        [EmailAddress(ErrorMessage = "Please enter a valid email address")]
-        [StringLength(255, ErrorMessage = "Email must not exceed 255 characters")]
         public string Email { get; set; } = string.Empty;
 
         [BindProperty]
@@ -46,9 +44,6 @@ namespace BD.RazorPages.Pages.Admin.Users
         public int RoleId { get; set; }
 
         [BindProperty]
-        public bool IsDeleted { get; set; }
-
-        [BindProperty]
         [StringLength(100, MinimumLength = 6, ErrorMessage = "Password must be between 6 and 100 characters")]
         [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{6,}$", 
             ErrorMessage = "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character")]
@@ -60,8 +55,7 @@ namespace BD.RazorPages.Pages.Admin.Users
 
         public IEnumerable<RoleResponse> AllRoles { get; set; } = new List<RoleResponse>();
         
-        // Store original values for validation
-        public string OriginalEmail { get; set; } = string.Empty;
+        // Store original values for validation - only phone now since email is not editable
         public string OriginalPhone { get; set; } = string.Empty;
 
         public async Task<IActionResult> OnGetAsync(int id)
@@ -74,7 +68,7 @@ namespace BD.RazorPages.Pages.Admin.Users
                 if (user == null)
                 {
                     TempData["Error"] = "User not found.";
-                    return RedirectToPage("/Admin/Users");
+                    return RedirectToPage("/Admin/Users/Index");
                 }
 
                 // Populate form with user data
@@ -85,10 +79,8 @@ namespace BD.RazorPages.Pages.Admin.Users
                 BloodType = user.BloodType ?? string.Empty;
                 Address = user.Address;
                 RoleId = user.Role?.RoleId ?? 0;
-                IsDeleted = user.IsDeleted ?? false;
 
-                // Store original values for validation
-                OriginalEmail = Email;
+                // Store original values for validation - only phone now since email is not editable
                 OriginalPhone = Phone;
                 
                 return Page();
@@ -96,7 +88,7 @@ namespace BD.RazorPages.Pages.Admin.Users
             catch (Exception ex)
             {
                 TempData["Error"] = "Error loading user: " + ex.Message;
-                return RedirectToPage("/Admin/Users");
+                return RedirectToPage("/Admin/Users/Index");
             }
         }
 
@@ -104,13 +96,12 @@ namespace BD.RazorPages.Pages.Admin.Users
         {
             await LoadRolesAsync();
 
-            // Store original values for validation
+            // Store original values for validation - only phone now since email is not editable
             try
             {
                 var existingUser = await _userService.GetByIdAsync(UserId);
                 if (existingUser != null)
                 {
-                    OriginalEmail = existingUser.Email ?? string.Empty;
                     OriginalPhone = existingUser.Phone ?? string.Empty;
                 }
             }
@@ -123,7 +114,7 @@ namespace BD.RazorPages.Pages.Admin.Users
             // Additional custom validation
             ValidateUserInput();
 
-            // Check for existing email and phone (excluding current user)
+            // Check for existing phone (excluding current user) - email is no longer editable
             await ValidateExistingUserAsync();
 
             if (!ModelState.IsValid)
@@ -140,20 +131,19 @@ namespace BD.RazorPages.Pages.Admin.Users
                     Phone = Phone.Trim(),
                     BloodType = BloodType,
                     Address = string.IsNullOrWhiteSpace(Address) ? null : Address.Trim(),
-                    RoleId = RoleId,
-                    Password = string.IsNullOrEmpty(NewPassword) ? null : NewPassword // Only update password if provided
+                    RoleId = RoleId
                 };
 
-                await _userService.UpdateAsync(UserId, userRequest);
-                
-                // Update IsDeleted status if needed
-                if (IsDeleted)
+                // Only set password if provided
+                if (!string.IsNullOrEmpty(NewPassword))
                 {
-                    await _userService.DeleteAsync(UserId);
+                    userRequest.Password = NewPassword;
                 }
 
+                await _userService.UpdateAsync(UserId, userRequest);
+
                 TempData["Success"] = "User updated successfully!";
-                return RedirectToPage("/Admin/Users");
+                return RedirectToPage("/Admin/Users/Index");
             }
             catch (Exception ex)
             {
@@ -201,17 +191,6 @@ namespace BD.RazorPages.Pages.Admin.Users
                 ModelState.AddModelError(nameof(Name), "Name cannot contain only numbers");
             }
 
-            // Validate email format more strictly
-            if (!string.IsNullOrEmpty(Email))
-            {
-                var emailTrimmed = Email.Trim();
-                if (emailTrimmed.StartsWith(".") || emailTrimmed.EndsWith(".") || 
-                    emailTrimmed.Contains("..") || emailTrimmed.Split('@').Length != 2)
-                {
-                    ModelState.AddModelError(nameof(Email), "Please enter a valid email address");
-                }
-            }
-
             // Validate phone number format
             if (!string.IsNullOrEmpty(Phone))
             {
@@ -243,17 +222,7 @@ namespace BD.RazorPages.Pages.Admin.Users
         {
             try
             {
-                // Check if email already exists (excluding current user)
-                if (!string.IsNullOrEmpty(Email) && !Email.Equals(OriginalEmail, StringComparison.OrdinalIgnoreCase))
-                {
-                    var existingUserByEmail = await _userService.GetByEmailAsync(Email.Trim().ToLower());
-                    if (existingUserByEmail != null && existingUserByEmail.UserId != UserId)
-                    {
-                        ModelState.AddModelError(nameof(Email), "This email address is already registered by another user");
-                    }
-                }
-
-                // Check if phone already exists (excluding current user)
+                // Check if phone already exists (excluding current user) - email validation removed since it's no longer editable
                 if (!string.IsNullOrEmpty(Phone) && !Phone.Equals(OriginalPhone, StringComparison.OrdinalIgnoreCase))
                 {
                     var existingUserByPhone = await _userService.GetByPhoneAsync(Phone.Trim());
