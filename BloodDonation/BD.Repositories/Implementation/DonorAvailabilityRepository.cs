@@ -33,6 +33,9 @@ namespace BD.Repositories.Implementation
         public async Task<IEnumerable<DonorAvailability>> GetAllDonorAvailabilitiesAsync()
         {
             return await _context.DonorAvailabilities
+                .Include(da => da.User)
+                .ThenInclude(u => u.Role)
+                .Include(da => da.StatusDonor)
                 .Where(da => da.IsDeleted != true)
                 .ToListAsync();
         }
@@ -40,12 +43,18 @@ namespace BD.Repositories.Implementation
         public async Task<DonorAvailability?> GetDonorAvailabilityByIdAsync(int id)
         {
             return await _context.DonorAvailabilities
+                .Include(da => da.User)
+                .ThenInclude(u => u.Role)
+                .Include(da => da.StatusDonor)
                 .FirstOrDefaultAsync(da => da.AvailabilityId == id && da.IsDeleted != true);
         }
 
         public async Task<DonorAvailability?> GetLatestDonorAvailabilityByUserIdAsync(int userId)
         {
             return await _context.DonorAvailabilities
+                .Include(da => da.User)
+                .ThenInclude(u => u.Role)
+                .Include(da => da.StatusDonor)
                 .Where(da => da.UserId == userId && da.IsDeleted != true)
                 .OrderByDescending(da => da.AvailableDate)
                 .FirstOrDefaultAsync();
@@ -56,6 +65,16 @@ namespace BD.Repositories.Implementation
             _context.DonorAvailabilities.Update(donorAvailability);
             await _context.SaveChangesAsync();
             return donorAvailability;
+        }
+
+        public async Task<IEnumerable<DonorAvailability>> GetAllAvailableDonorAsync()
+        {
+            return await _context.DonorAvailabilities
+                .Include(da => da.User)
+                .ThenInclude(u => u.Role)
+                .Include(da => da.StatusDonor)
+                .Where(da => da.IsDeleted != true && da.StatusDonorId == 1)
+                .ToListAsync();
         }
     }
 }

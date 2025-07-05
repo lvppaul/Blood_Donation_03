@@ -15,5 +15,7 @@ namespace BD.Repositories.Interfaces
         Task<DonorAvailability> AddDonorAvailabilityAsync(DonorAvailability donorAvailability);
         Task<DonorAvailability> UpdateDonorAvailabilityAsync(DonorAvailability donorAvailability);
         Task DeleteDonorAvailabilityAsync(DonorAvailability donorAvailability);
+
+        Task<IEnumerable<DonorAvailability>> GetAllAvailableDonorAsync();
     }
 }

@@ -7,17 +7,20 @@ namespace BD.RazorPages.Pages.Admin
     public class DashboardModel : PageModel
     {
         private readonly IUserService _userService;
+        private readonly IDonorAvailabilityService _donorAvailabilityService;
         private readonly IDonationHistoryService _donationHistoryService;
         private readonly IBloodInventoryService _bloodInventoryService;
         private readonly IBloodRequestService _bloodRequestService;
 
         public DashboardModel(
             IUserService userService,
+            IDonorAvailabilityService donorAvailabilityService,
             IDonationHistoryService donationHistoryService,
             IBloodInventoryService bloodInventoryService,
             IBloodRequestService bloodRequestService)
         {
             _userService = userService;
+            _donorAvailabilityService = donorAvailabilityService;
             _donationHistoryService = donationHistoryService;
             _bloodInventoryService = bloodInventoryService;
             _bloodRequestService = bloodRequestService;
@@ -25,7 +28,7 @@ namespace BD.RazorPages.Pages.Admin
 
         // Dashboard Statistics
         public int TotalUsers { get; set; }
-        public int TotalDonors { get; set; }
+        public int ActiveDonors { get; set; }
         public int TotalBloodUnits { get; set; }
         public int PendingRequests { get; set; }
 
@@ -43,6 +46,7 @@ namespace BD.RazorPages.Pages.Admin
             try
             {
                 // Get all data with null checks and error handling
+                var donorAvailabilities = await SafeGetDataAsync(() => _donorAvailabilityService.GetAllAvailableDonorsAsync()) ?? Enumerable.Empty<DonorAvailabilityResponse>();
                 var users = await SafeGetDataAsync(() => _userService.GetAllAsync()) ?? Enumerable.Empty<UserResponse>();
                 var donations = await SafeGetDataAsync(() => _donationHistoryService.GetAllAsync()) ?? Enumerable.Empty<DonationHistoryResponse>();
                 var bloodInventory = await SafeGetDataAsync(() => _bloodInventoryService.GetAllAsync()) ?? Enumerable.Empty<BloodInventoryResponse>();
@@ -50,7 +54,7 @@ namespace BD.RazorPages.Pages.Admin
 
                 // Calculate statistics with null checks
                 TotalUsers = users?.Count() ?? 0;
-                TotalDonors = users?.Count(u => IsUserDonor(u)) ?? 0;
+                ActiveDonors = donorAvailabilities?.Select(da => da.User?.UserId).Distinct().Count() ?? 0;
                 TotalBloodUnits = bloodInventory?.Sum(b => b?.Amount ?? 0) ?? 0;
                 PendingRequests = bloodRequests?.Count(r => IsPendingRequest(r)) ?? 0;
 
@@ -78,6 +82,7 @@ namespace BD.RazorPages.Pages.Admin
                     .Where(d => d?.DonationDate != null && d.DonationDate >= sixMonthsAgo)
                     .GroupBy(d => d.DonationDate?.ToString("yyyy-MM") ?? "Unknown")
                     .Where(g => !string.IsNullOrEmpty(g.Key) && g.Key != "Unknown")
+                    .OrderBy(g => g.Key)
                     .ToDictionary(g => g.Key, g => g.Count()) ?? new Dictionary<string, int>();
 
                 // Blood inventory by type with null checks
@@ -112,10 +117,10 @@ namespace BD.RazorPages.Pages.Admin
             }
         }
 
-        private static bool IsUserDonor(UserResponse? user)
-        {
-            return user?.Role?.Name?.ToLower() is "member" or "donor";
-        }
+        // private static bool IsUserDonor(UserResponse? user)
+        // {
+        //     return user?.Role?.Name?.ToLower() is "member" or "donor";
+        // }
 
         private static bool IsPendingRequest(BloodRequestResponse? request)
         {
@@ -125,7 +130,7 @@ namespace BD.RazorPages.Pages.Admin
         private void SetDefaultValues()
         {
             TotalUsers = 0;
-            TotalDonors = 0;
+            ActiveDonors = 0;
             TotalBloodUnits = 0;
             PendingRequests = 0;
             RecentDonations = Enumerable.Empty<DonationHistoryResponse>();

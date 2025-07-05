@@ -40,6 +40,20 @@ namespace BD.Repositories.Implementation
                                 .FirstOrDefaultAsync(f => f.UserId == id && f.IsDeleted != true);
         }
 
+        public async Task<User?> GetByEmailAsync(string email)
+        {
+            return await _context.Users
+                                .Include(u => u.Role)
+                                .FirstOrDefaultAsync(f => f.Email != null && f.Email.ToLower() == email.ToLower() && f.IsDeleted != true);
+        }
+
+        public async Task<User?> GetByPhoneAsync(string phone)
+        {
+            return await _context.Users
+                                .Include(u => u.Role)
+                                .FirstOrDefaultAsync(f => f.Phone != null && f.Phone == phone && f.IsDeleted != true);
+        }
+
         public async Task<User> UpdateAsync(User user)
         {
             _context.Users.Update(user);

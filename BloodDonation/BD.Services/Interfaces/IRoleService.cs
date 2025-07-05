@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BD.Repositories.Models.DTOs.Responses;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +9,7 @@ namespace BD.Services.Interfaces
 {
     public interface IRoleService
     {
-        Task<IEnumerable<string>> GetAllRolesAsync();
+        Task<IEnumerable<RoleResponse>> GetAllRolesAsync();
         Task<bool> RoleExistsAsync(string roleName);
         Task AddRoleAsync(string roleName);
         Task RemoveRoleAsync(string roleName);

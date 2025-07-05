@@ -58,5 +58,17 @@ namespace BD.Services.Implementation
             }
             return null;
         }
+
+        public async Task<UserResponse?> GetByEmailAsync(string email)
+        {
+            var user = await _repository.GetByEmailAsync(email);
+            return user == null ? null : UserMapper.ToResponse(user);
+        }
+
+        public async Task<UserResponse?> GetByPhoneAsync(string phone)
+        {
+            var user = await _repository.GetByPhoneAsync(phone);
+            return user == null ? null : UserMapper.ToResponse(user);
+        }
     }
 }
