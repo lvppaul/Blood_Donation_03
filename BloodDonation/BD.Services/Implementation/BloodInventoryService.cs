@@ -148,5 +148,18 @@ namespace BD.Services.Implementation
             }   
            
         }
+        public async Task<(IEnumerable<BloodInventoryResponse>, int TotalCount)> GetFilteredAsync(
+    string searchTerm = null,
+    string bloodType = null,
+    int? facilityId = null,
+    int pageNumber = 1,
+    int pageSize = 10)
+        {
+            var (bloodInventories, totalCount) = await _bloodInventoryRepository.GetFilteredBloodInventoriesAsync(
+                searchTerm, bloodType, facilityId, pageNumber, pageSize);
+
+            var response = bloodInventories.Select(bi => BloodInventoryMapper.ToResponse(bi));
+            return (response, totalCount);
+        }
     }
 }
