@@ -2,6 +2,33 @@
 @model BD.RazorPages.Pages.Admin.BloodUnitsModel
 @{
     ViewData["Title"] = "Manage Blood Units";
+    var statusClasses = new Dictionary<string, string>
+{
+    { "Available", "bg-green-100 text-green-800" },
+    { "Reserved", "bg-blue-100 text-blue-800" },
+    { "Expired", "bg-red-100 text-red-800" },
+    { "Low Stock", "bg-yellow-100 text-yellow-800" },
+    { "Out of Stock", "bg-gray-200 text-gray-800" }
+};
+    var componentClasses = new Dictionary<string, string>
+{
+    { "Red Blood Cells", "bg-red-100 text-red-800" },
+    { "White Blood Cells", "bg-indigo-100 text-indigo-800" },
+    { "Plasma", "bg-yellow-100 text-yellow-800" },
+    { "Platelets", "bg-green-100 text-green-800" }
+};
+    var bloodTypeClasses = new Dictionary<string, string>
+{
+    { "O+",  "bg-red-100 text-red-800" },
+    { "A+",  "bg-blue-100 text-blue-800" },
+    { "B+",  "bg-green-100 text-green-800" },
+    { "AB+", "bg-yellow-100 text-yellow-800" },
+    { "O-",  "bg-gray-100 text-gray-800" },
+    { "A-",  "bg-blue-100 text-blue-800" },
+    { "B-",  "bg-yellow-100 text-yellow-800" },
+    { "AB-", "bg-green-100 text-green-800" }
+};
+    var defaultClass = "bg-gray-200 text-gray-500";
 }
 
 <div class="space-y-6">
@@ -9,154 +36,33 @@
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <div class="flex items-center justify-between">
             <div>
-                <h2 class="text-3xl font-bold text-gray-900 mb-2">Blood Units Management</h2>
+                <h2 class="text-3xl font-bold text-gray-900 mb-2">Blood Inventory Management</h2>
                 <p class="text-gray-600">Monitor and manage blood inventory across all facilities</p>
             </div>
             <button class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors">
-                <i class="fas fa-plus mr-2"></i>Add Blood Unit
+                <i class="fas fa-plus mr-2"></i>Add Blood Inventory
             </button>
         </div>
     </div>
 
     <!-- Blood Type Overview -->
     <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
-        <!-- A+ -->
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-            <div class="text-center">
-                <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                    <span class="text-red-600 font-bold text-lg">A+</span>
-                </div>
-                <p class="text-2xl font-bold text-gray-900">245</p>
-                <p class="text-sm text-gray-500">Units</p>
-                <div class="mt-2">
-                    <div class="bg-gray-200 rounded-full h-2">
-                        <div class="bg-green-500 h-2 rounded-full" style="width: 78%"></div>
-                    </div>
-                    <p class="text-xs text-green-600 mt-1">78% capacity</p>
-                </div>
-            </div>
-        </div>
+        @foreach (var item in Model.BloodTypeOverviews)
+        {
+            var fontSize = item.BloodType.Length > 2 ? "text-sm" : "text-lg";
+            var backgroundColorClass = bloodTypeClasses.GetValueOrDefault(item.BloodType, defaultClass);
+              <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+                  <div class="text-center">
+                 <div class="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-2 @backgroundColorClass">
+                   <span class="font-bold @fontSize">@item.BloodType</span>
+                  </div>
+                    <p class="text-2xl font-bold text-gray-900">@item.Volume</p>
+                    <p class="text-sm text-gray-500">Volume</p>
 
-        <!-- A- -->
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-            <div class="text-center">
-                <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                    <span class="text-red-600 font-bold text-lg">A-</span>
-                </div>
-                <p class="text-2xl font-bold text-gray-900">156</p>
-                <p class="text-sm text-gray-500">Units</p>
-                <div class="mt-2">
-                    <div class="bg-gray-200 rounded-full h-2">
-                        <div class="bg-yellow-500 h-2 rounded-full" style="width: 52%"></div>
-                    </div>
-                    <p class="text-xs text-yellow-600 mt-1">52% capacity</p>
                 </div>
             </div>
-        </div>
-
-        <!-- B+ -->
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-            <div class="text-center">
-                <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                    <span class="text-red-600 font-bold text-lg">B+</span>
-                </div>
-                <p class="text-2xl font-bold text-gray-900">198</p>
-                <p class="text-sm text-gray-500">Units</p>
-                <div class="mt-2">
-                    <div class="bg-gray-200 rounded-full h-2">
-                        <div class="bg-green-500 h-2 rounded-full" style="width: 66%"></div>
-                    </div>
-                    <p class="text-xs text-green-600 mt-1">66% capacity</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- B- -->
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-            <div class="text-center">
-                <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                    <span class="text-red-600 font-bold text-lg">B-</span>
-                </div>
-                <p class="text-2xl font-bold text-gray-900">89</p>
-                <p class="text-sm text-gray-500">Units</p>
-                <div class="mt-2">
-                    <div class="bg-gray-200 rounded-full h-2">
-                        <div class="bg-yellow-500 h-2 rounded-full" style="width: 30%"></div>
-                    </div>
-                    <p class="text-xs text-yellow-600 mt-1">30% capacity</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- O+ -->
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-            <div class="text-center">
-                <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                    <span class="text-red-600 font-bold text-lg">O+</span>
-                </div>
-                <p class="text-2xl font-bold text-gray-900">342</p>
-                <p class="text-sm text-gray-500">Units</p>
-                <div class="mt-2">
-                    <div class="bg-gray-200 rounded-full h-2">
-                        <div class="bg-green-500 h-2 rounded-full" style="width: 85%"></div>
-                    </div>
-                    <p class="text-xs text-green-600 mt-1">85% capacity</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- O- -->
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-            <div class="text-center">
-                <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                    <span class="text-red-600 font-bold text-lg">O-</span>
-                </div>
-                <p class="text-2xl font-bold text-gray-900">42</p>
-                <p class="text-sm text-gray-500">Units</p>
-                <div class="mt-2">
-                    <div class="bg-gray-200 rounded-full h-2">
-                        <div class="bg-red-500 h-2 rounded-full" style="width: 14%"></div>
-                    </div>
-                    <p class="text-xs text-red-600 mt-1">14% capacity</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- AB+ -->
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-            <div class="text-center">
-                <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                    <span class="text-red-600 font-bold text-sm">AB+</span>
-                </div>
-                <p class="text-2xl font-bold text-gray-900">67</p>
-                <p class="text-sm text-gray-500">Units</p>
-                <div class="mt-2">
-                    <div class="bg-gray-200 rounded-full h-2">
-                        <div class="bg-yellow-500 h-2 rounded-full" style="width: 45%"></div>
-                    </div>
-                    <p class="text-xs text-yellow-600 mt-1">45% capacity</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- AB- -->
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-            <div class="text-center">
-                <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                    <span class="text-red-600 font-bold text-sm">AB-</span>
-                </div>
-                <p class="text-2xl font-bold text-gray-900">23</p>
-                <p class="text-sm text-gray-500">Units</p>
-                <div class="mt-2">
-                    <div class="bg-gray-200 rounded-full h-2">
-                        <div class="bg-red-500 h-2 rounded-full" style="width: 23%"></div>
-                    </div>
-                    <p class="text-xs text-red-600 mt-1">23% capacity</p>
-                </div>
-            </div>
-        </div>
+        }
     </div>
-
     <!-- Filters and Actions -->
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <div class="flex flex-col md:flex-row gap-4 items-center justify-between">
@@ -183,14 +89,6 @@
                     <option value="branch2">Branch Hospital 2</option>
                 </select>
             </div>
-            <div class="flex gap-2">
-                <button class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors">
-                    <i class="fas fa-download mr-2"></i>Export
-                </button>
-                <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-                    <i class="fas fa-sync mr-2"></i>Refresh
-                </button>
-            </div>
         </div>
     </div>
 
@@ -202,99 +100,52 @@
                     <tr>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Unit ID</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Blood Type</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Component Type</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Volume</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Donor</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Collection Date</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Expiry Date</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                     </tr>
                 </thead>
+
                 <tbody class="bg-white divide-y divide-gray-200">
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">BU-2024-001</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="inline-flex px-3 py-1 text-sm font-semibold rounded-full bg-red-100 text-red-800">O+</span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">450ml</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">John Doe</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Jan 20, 2024</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Mar 20, 2024</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Available</span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <div class="flex space-x-2">
-                                <button class="text-blue-600 hover:text-blue-900">View</button>
-                                <button class="text-yellow-600 hover:text-yellow-900">Transfer</button>
-                                <button class="text-red-600 hover:text-red-900">Dispose</button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">BU-2024-002</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="inline-flex px-3 py-1 text-sm font-semibold rounded-full bg-red-100 text-red-800">A-</span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">450ml</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Jane Smith</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Jan 18, 2024</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Mar 18, 2024</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">Reserved</span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <div class="flex space-x-2">
-                                <button class="text-blue-600 hover:text-blue-900">View</button>
-                                <button class="text-gray-400 cursor-not-allowed">Transfer</button>
-                                <button class="text-red-600 hover:text-red-900">Dispose</button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">BU-2024-003</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="inline-flex px-3 py-1 text-sm font-semibold rounded-full bg-red-100 text-red-800">O-</span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">450ml</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Mike Johnson</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Jan 15, 2024</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Mar 15, 2024</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Available</span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <div class="flex space-x-2">
-                                <button class="text-blue-600 hover:text-blue-900">View</button>
-                                <button class="text-yellow-600 hover:text-yellow-900">Transfer</button>
-                                <button class="text-red-600 hover:text-red-900">Dispose</button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr class="hover:bg-gray-50 bg-yellow-50">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">BU-2023-789</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="inline-flex px-3 py-1 text-sm font-semibold rounded-full bg-red-100 text-red-800">B+</span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">450ml</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Sarah Wilson</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Dec 25, 2023</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-red-500">Feb 25, 2024</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">Expiring Soon</span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <div class="flex space-x-2">
-                                <button class="text-blue-600 hover:text-blue-900">View</button>
-                                <button class="text-yellow-600 hover:text-yellow-900">Transfer</button>
-                                <button class="text-red-600 hover:text-red-900">Dispose</button>
-                            </div>
-                        </td>
-                    </tr>
+
+                    @foreach (var unit in Model.BloodUnits)
+                    {
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">@unit.InventoryId</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="inline-flex px-3 py-1 text-sm font-semibold rounded-full @(bloodTypeClasses.GetValueOrDefault(unit.BloodType, "bg-gray-100 text-gray-800"))">
+                                    @unit.BloodType
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="inline-flex px-3 py-1 text-sm font-semibold rounded-full @(componentClasses.GetValueOrDefault(unit.ComponentType, defaultClass))">
+                                    @unit.ComponentType
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">@unit.Amount</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">@unit.LastUpdated?.ToString("MMM dd, yyyy")</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">@unit.ExpiredDate.ToString("MMM dd, yyyy")</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full @(statusClasses.GetValueOrDefault(unit.StatusBloodInventory.StatusName, defaultClass))">
+                                    @unit.StatusBloodInventory.StatusName
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <div class="flex space-x-2">
+                                    <button class="text-blue-600 hover:text-blue-900">View</button>
+                                    <button class="text-yellow-600 hover:text-yellow-900">Transfer</button>
+                                    <button class="text-red-600 hover:text-red-900">Dispose</button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
                 </tbody>
             </table>
         </div>
-        
+
         <!-- Pagination -->
         <div class="bg-gray-50 px-6 py-3 flex items-center justify-between border-t border-gray-200">
             <div class="flex-1 flex justify-between sm:hidden">
