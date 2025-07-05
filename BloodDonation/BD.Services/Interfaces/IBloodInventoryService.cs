@@ -15,5 +15,11 @@ namespace BD.Services.Interfaces
         Task<IEnumerable<BloodInventoryResponse>> GetAllBloodInventoriesByBloodTypeAsync(string type);
         Task<int> TotalBloodInventoriesByBloodTypeAsync(string type);
         Task<IEnumerable<BloodTypeOverview>> GetBloodTypeOverviewAsync();
+        Task<(IEnumerable<BloodInventoryResponse>, int TotalCount)> GetFilteredAsync(
+     string searchTerm = null,
+     string bloodType = null,
+     int? facilityId = null,
+     int pageNumber = 1,
+     int pageSize = 10);
     }
 }
