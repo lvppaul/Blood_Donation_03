@@ -45,7 +45,7 @@
 </head>
 <body>
 
-@if(role == "admin")
+@if(role == "admin" || role == "staff")
 {
     <!-- Admin Layout with Sidebar -->
     <div class="flex h-screen bg-gray-100">
@@ -123,6 +123,20 @@
                         <a href="/admin/blood-units/compatibility" class="flex items-center gap-3 p-3 pl-10 rounded-lg @(isCompatibilityActive ? "bg-red-500 text-white" : "hover:bg-red-300") transition-colors group hover:text-white text-sm">
                             <i class="fas fa-dna text-sm"></i>
                             <span>Compatibility</span>
+                        </a>
+                    </li>
+                    
+                    <!-- Blog Management Section -->
+                    <li>
+                        <div class="mt-6 mb-2">
+                            <h3 class="text-red-300 text-xs uppercase tracking-wider font-bold">Content Management</h3>
+                        </div>
+                        @{
+                            var isBlogActive = Context.Request.Path.StartsWithSegments("/admin/blog");
+                        }
+                        <a href="/admin/blog" class="flex items-center gap-3 p-3 rounded-lg @(isBlogActive ? "bg-red-500 text-white" : "hover:bg-red-300") transition-colors group hover:text-white">
+                            <i class="fas fa-newspaper text-lg"></i>
+                            <span class="font-medium">Blog Management</span>
                         </a>
                     </li>
                 </ul>
