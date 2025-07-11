@@ -1,0 +1,230 @@
+﻿@page
+@model BD.RazorPages.Pages.BloodInfoModel
+@{
+    ViewData["Title"] = "Blood Compatibility Search";
+}
+
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="container mx-auto px-4">
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-8">
+            <div>
+                <h1 class="text-4xl font-bold text-gray-800 mb-2">Blood Compatibility Search</h1>
+                <div class="h-1 w-20 bg-red-500 rounded"></div>
+            </div>
+            <a href="/profile" class="bg-gray-600 hover:bg-gray-700 text-white py-2 px-4 rounded-lg inline-flex items-center transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i> Back to Profile
+            </a>
+        </div>
+
+        <!-- Search Form -->
+        <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-6 flex items-center">
+                <i class="fas fa-search text-red-500 mr-3"></i>
+                Search Compatibility
+            </h2>
+
+            <form method="post" class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-3">Search Mode</label>
+                        <select asp-for="SearchMode" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors">
+                            <option value="WholeBlood">Whole Blood</option>
+                            <option value="Component">By Blood Component</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-3">Recipient Blood Type</label>
+                        <select asp-for="RecipientBloodType" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors">
+                            <option value="">-- Select Blood Type --</option>
+                            @foreach (var blood in Model.AllBloodTypes)
+                            {
+                                <option value="@blood">@blood</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+
+                @if (Model.SearchMode == "Component")
+                {
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-3">Component Type</label>
+                        <select asp-for="ComponentType" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors">
+                            @foreach (var comp in Model.AllComponentTypes)
+                            {
+                                <option value="@comp">@comp</option>
+                            }
+                        </select>
+                    </div>
+                }
+
+                <button type="submit" class="bg-red-500 hover:bg-red-600 text-white py-3 px-8 rounded-lg transition-colors flex items-center font-semibold">
+                    <i class="fas fa-search mr-2"></i> Search Compatibility
+                </button>
+            </form>
+        </div>
+
+        <!-- Results Section -->
+        @if (Model.HasSearched)
+        {
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6">
+                    Compatibility Results
+                    <div class="h-1 w-16 bg-red-500 rounded mt-2"></div>
+                </h2>
+
+                @if (Model.DonorMatches.Any())
+                {
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        @foreach (var type in Model.DonorMatches)
+                        {
+                            <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow">
+                                <div class="flex items-center justify-between mb-4">
+                                    <span class="text-4xl font-bold text-red-500">@type.Name</span>
+                                    <i class="fas fa-check-circle text-green-500 text-2xl"></i>
+                                </div>
+
+                                <div class="mb-4">
+                                    <div class="bg-red-500 h-2 rounded-full mb-2"></div>
+                                    <span class="text-sm text-gray-600">Compatible Blood Type</span>
+                                </div>
+
+                                <div class="space-y-2">
+                                    <div class="flex items-center text-sm text-gray-700">
+                                        <i class="fas fa-heart text-red-400 mr-2"></i>
+                                        <span>Can donate to @Model.RecipientBloodType</span>
+                                    </div>
+                                    <div class="flex items-center text-sm text-gray-700">
+                                        <i class="fas fa-shield-alt text-blue-400 mr-2"></i>
+                                        <span>Safe for transfusion</span>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-6 text-center">
+                        <i class="fas fa-exclamation-triangle text-yellow-500 text-4xl mb-4"></i>
+                        <h3 class="text-xl font-semibold text-yellow-800 mb-2">No Compatible Blood Types Found</h3>
+                        <p class="text-yellow-700">Please check your search criteria and try again.</p>
+                    </div>
+                }
+            </div>
+        }
+
+        <!-- Blood Types Reference -->
+        <div class="bg-white rounded-xl shadow-lg p-8">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-6 flex items-center">
+                <i class="fas fa-info-circle text-blue-500 mr-3"></i>
+                Blood Types Reference
+            </h2>
+
+            <!-- Rh-Positive Blood Types -->
+            <h3 class="text-xl font-bold text-gray-700 mb-4">Rh-Positive Types (O⁺, A⁺, B⁺, AB⁺)</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <!-- O+ -->
+                <div class="bg-gradient-to-br from-red-50 to-red-100 rounded-lg p-6 border border-red-200">
+                    <div class="text-3xl font-bold text-red-600 mb-2">O+</div>
+                    <div class="bg-red-500 h-2 rounded-full mb-3"></div>
+                    <div class="text-sm text-gray-600 mb-2">37% of population</div>
+                    <div class="text-sm font-medium text-gray-700">Common Donor</div>
+                    <p class="text-sm text-gray-700">Can donate to A+, B+, AB+, O+</p>
+                </div>
+
+                <!-- A+ -->
+                <div class="bg-gradient-to-br from-red-50 to-red-100 rounded-lg p-6 border border-red-200">
+                    <div class="text-3xl font-bold text-red-600 mb-2">A+</div>
+                    <div class="bg-red-500 h-2 rounded-full mb-3"></div>
+                    <div class="text-sm text-gray-600 mb-2">36% of population</div>
+                    <div class="text-sm font-medium text-gray-700">Common Blood Type</div>
+                    <p class="text-sm text-gray-700">Can receive from A+, A-, O+, O-</p>
+                </div>
+
+                <!-- B+ -->
+                <div class="bg-gradient-to-br from-red-50 to-red-100 rounded-lg p-6 border border-red-200">
+                    <div class="text-3xl font-bold text-red-600 mb-2">B+</div>
+                    <div class="bg-red-500 h-2 rounded-full mb-3"></div>
+                    <div class="text-sm text-gray-600 mb-2">8% of population</div>
+                    <div class="text-sm font-medium text-gray-700">Less Common Type</div>
+                    <p class="text-sm text-gray-700">Can receive from B+, B-, O+, O-</p>
+                </div>
+
+                <!-- AB+ -->
+                <div class="bg-gradient-to-br from-red-50 to-red-100 rounded-lg p-6 border border-red-200">
+                    <div class="text-3xl font-bold text-red-600 mb-2">AB+</div>
+                    <div class="bg-red-500 h-2 rounded-full mb-3"></div>
+                    <div class="text-sm text-gray-600 mb-2">3% of population</div>
+                    <div class="text-sm font-medium text-gray-700">Universal Recipient</div>
+                    <p class="text-sm text-gray-700">Can receive from all blood types</p>
+                </div>
+            </div>
+
+            <!-- Rh-Negative Blood Types -->
+            <h3 class="text-xl font-bold text-gray-700 mb-4">Rh-Negative Types (O⁻, A⁻, B⁻, AB⁻)</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- O- -->
+                <div class="bg-gradient-to-br from-gray-50 to-red-100 rounded-lg p-6 border border-red-200">
+                    <div class="text-3xl font-bold text-red-600 mb-2">O-</div>
+                    <div class="bg-red-500 h-2 rounded-full mb-3 w-full"></div>
+                    <div class="text-sm text-gray-600 mb-2">6% of population</div>
+                    <div class="text-sm font-semibold text-gray-800">Universal Donor</div>
+                    <p class="text-sm text-gray-700">Can donate red cells to all blood types</p>
+                </div>
+
+                <!-- A- -->
+                <div class="bg-gradient-to-br from-gray-50 to-red-100 rounded-lg p-6 border border-red-200">
+                    <div class="text-3xl font-bold text-red-600 mb-2">A-</div>
+                    <div class="bg-red-500 h-2 rounded-full mb-3 w-full"></div>
+                    <div class="text-sm text-gray-600 mb-2">6% of population</div>
+                    <div class="text-sm font-semibold text-gray-800">Rare Type</div>
+                    <p class="text-sm text-gray-700">Can donate to A+, A-, AB+, AB-</p>
+                </div>
+
+                <!-- B- -->
+                <div class="bg-gradient-to-br from-gray-50 to-red-100 rounded-lg p-6 border border-red-200">
+                    <div class="text-3xl font-bold text-red-600 mb-2">B-</div>
+                    <div class="bg-red-500 h-2 rounded-full mb-3 w-full"></div>
+                    <div class="text-sm text-gray-600 mb-2">2% of population</div>
+                    <div class="text-sm font-semibold text-gray-800">Very Rare</div>
+                    <p class="text-sm text-gray-700">Can donate to B+, B-, AB+, AB-</p>
+                </div>
+
+                <!-- AB- -->
+                <div class="bg-gradient-to-br from-gray-50 to-red-100 rounded-lg p-6 border border-red-200">
+                    <div class="text-3xl font-bold text-red-600 mb-2">AB-</div>
+                    <div class="bg-red-500 h-2 rounded-full mb-3 w-full"></div>
+                    <div class="text-sm text-gray-600 mb-2">1% of population</div>
+                    <div class="text-sm font-semibold text-gray-800">Rarest Type</div>
+                    <p class="text-sm text-gray-700">Can receive from all Rh-negative types</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<style>
+    .container {
+        max-width: 1200px;
+    }
+
+    .form-control:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+    }
+
+    .hover\:shadow-xl:hover {
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+
+    .transition-shadow {
+        transition: box-shadow 0.3s ease;
+    }
+
+    .transition-colors {
+        transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+</style>
