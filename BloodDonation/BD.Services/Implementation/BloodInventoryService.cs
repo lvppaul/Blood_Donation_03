@@ -21,10 +21,22 @@ namespace BD.Services.Implementation
 
         public async Task<BloodInventoryResponse> AddAsync(BloodInventoryRequest bloodInventory)
         {
-            var bloodInventoryObject = BloodInventoryMapper.ToEntity(bloodInventory);
-            var createBloodInventory = await _bloodInventoryRepository.AddBloodInventoryAsync(bloodInventoryObject);
+            try
+            {
+                if (bloodInventory == null)
+                {
+                    throw new ArgumentNullException(nameof(bloodInventory), "Blood inventory request cannot be null");
+                }
 
-            return BloodInventoryMapper.ToResponse(createBloodInventory);
+                var bloodInventoryObject = BloodInventoryMapper.ToEntity(bloodInventory);
+                var createBloodInventory = await _bloodInventoryRepository.AddBloodInventoryAsync(bloodInventoryObject);
+
+                return BloodInventoryMapper.ToResponse(createBloodInventory);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error adding blood inventory: {ex.Message}", ex);
+            }
         }
 
         public async Task DeleteAsync(int id)

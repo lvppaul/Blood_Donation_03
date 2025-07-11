@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace BD.Services.Implementation
 {
@@ -63,6 +64,43 @@ namespace BD.Services.Implementation
                 return MedicalFacilityMapper.ToResponse(updatedFacility);
             }
             return null;
+        }
+        public async Task<List<SelectListItem>> GetFacilitSelectListAsync()
+        {
+            try
+            {
+                var list = await _repository.GetAllFacilitiesAsync();
+
+                if (list == null || !list.Any())
+                {
+                    return new List<SelectListItem>
+                    {
+                        new SelectListItem { Value = "", Text = "No facilities available" }
+                    };
+                }
+
+                var selectList = list.Select(c => new SelectListItem
+                {
+                    Value = c.FacilityId.ToString(),
+                    Text = c.Name ?? "Unnamed Facility"
+                }).ToList();
+
+                selectList.Insert(0, new SelectListItem
+                {
+                    Value = "",
+                    Text = "Select a Facility"
+                });
+
+                return selectList;
+            }
+            catch (Exception ex)
+            {
+                // Log the error if you have logging
+                return new List<SelectListItem>
+                {
+                    new SelectListItem { Value = "", Text = "Error loading facilities" }
+                };
+            }
         }
     }
 }

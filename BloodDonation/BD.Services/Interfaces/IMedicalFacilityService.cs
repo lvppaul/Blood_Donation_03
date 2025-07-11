@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace BD.Services.Interfaces
 {
@@ -15,5 +16,6 @@ namespace BD.Services.Interfaces
         Task<MedicalFacilityResponse> AddAsync(MedicalFacilityRequest request);
         Task<MedicalFacilityResponse?> UpdateAsync(int id, MedicalFacilityRequest request);
         Task DeleteAsync(int id);
+        Task<List<SelectListItem>> GetFacilitSelectListAsync();
     }
 }

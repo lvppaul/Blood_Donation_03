@@ -4,7 +4,7 @@ using BD.Services.Others;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace BD.RazorPages.Pages.Admin
+namespace BD.RazorPages.Pages.Admin.Inventory
 {
     public class BloodUnitsModel : PageModel
     {
@@ -18,6 +18,7 @@ namespace BD.RazorPages.Pages.Admin
         // Pagination properties
         [BindProperty(SupportsGet = true)]
         public int CurrentPage { get; set; } = 1;
+        [BindProperty(SupportsGet = true)]
         public int PageSize { get; set; } = 10;
         public int TotalBloodUnits { get; set; }
         public int TotalPages => (int)Math.Ceiling((double)TotalBloodUnits / PageSize);
@@ -66,6 +67,39 @@ namespace BD.RazorPages.Pages.Admin
                 MedicalFacilities = Enumerable.Empty<MedicalFacilityResponse>();
                 TotalBloodUnits = 0;
             }
+        }
+
+        public async Task<IActionResult> OnPostDisposeAsync(int id)
+        {
+            try
+            {
+                // Get the blood unit to dispose
+                var bloodUnit = await _bloodInventoryService.GetByIdAsync(id);
+                if (bloodUnit == null)
+                {
+                    TempData["ErrorMessage"] = "Blood unit not found.";
+                    return RedirectToPage();
+                }
+
+                // Perform soft delete (dispose)
+                await _bloodInventoryService.DeleteAsync(id);
+
+                TempData["SuccessMessage"] = $"Blood unit #{id} has been successfully disposed. Blood Type: {bloodUnit.BloodType}, Component: {bloodUnit.ComponentType}, Amount: {bloodUnit.Amount} units.";
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Error disposing blood unit: {ex.Message}";
+            }
+
+            // Redirect back to the same page with current filters and pagination
+            return RedirectToPage(new 
+            { 
+                SearchTerm = SearchTerm,
+                SelectedBloodType = SelectedBloodType,
+                SelectedFacilityId = SelectedFacilityId,
+                CurrentPage = CurrentPage,
+                PageSize = PageSize
+            });
         }
     }
 }

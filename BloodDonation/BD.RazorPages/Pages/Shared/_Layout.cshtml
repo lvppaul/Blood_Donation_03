@@ -103,12 +103,12 @@
                             <h3 class="text-red-300 text-xs uppercase tracking-wider font-bold">Blood Management</h3>
                         </div>
                         @{
-                            var isBloodUnitsActive = Context.Request.Path.StartsWithSegments("/admin/blood-units") && !Context.Request.Path.StartsWithSegments("/admin/blood-units/inventory") && !Context.Request.Path.StartsWithSegments("/admin/blood-units/requests") && !Context.Request.Path.StartsWithSegments("/admin/blood-units/compatibility");
+                            var isBloodUnitsActive = Context.Request.Path.StartsWithSegments("/admin/inventory");
                             var isInventoryActive = Context.Request.Path.StartsWithSegments("/admin/blood-units/inventory");
                             var isRequestsActive = Context.Request.Path.StartsWithSegments("/admin/blood-units/requests");
                             var isCompatibilityActive = Context.Request.Path.StartsWithSegments("/admin/blood-units/compatibility");
                         }
-                        <a href="/admin/blood-units" class="flex items-center gap-3 p-3 rounded-lg @(isBloodUnitsActive ? "bg-red-500 text-white" : "hover:bg-red-300") transition-colors group hover:text-white">
+                        <a href="/admin/inventory" class="flex items-center gap-3 p-3 rounded-lg @(isBloodUnitsActive ? "bg-red-500 text-white" : "hover:bg-red-300") transition-colors group hover:text-white">
                             <i class="fas fa-flask text-lg"></i>
                             <span class="font-medium">Manage Blood Units</span>
                         </a>
