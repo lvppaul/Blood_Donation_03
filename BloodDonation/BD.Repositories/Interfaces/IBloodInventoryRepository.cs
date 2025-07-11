@@ -14,5 +14,7 @@ namespace BD.Repositories.Interfaces
         Task<BloodInventory> AddBloodInventoryAsync(BloodInventory bloodInventory);
         Task<BloodInventory> UpdateBloodInventoryAsync(BloodInventory bloodInventory);
         Task DeleteBloodInventoryAsync(BloodInventory bloodInventory);
+        Task<IEnumerable<BloodInventory>> GetAllBloodInventoriesByBloodTypeAsync(string type);
+        Task<(List<BloodInventory>, int TotalCount)> GetFilteredBloodInventoriesAsync(string searchTerm = null, string bloodType = null, int? facilityId = null, int pageNumber = 1, int pageSize = 10);
     }
 }

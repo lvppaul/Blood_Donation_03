@@ -2,6 +2,38 @@
 @model BD.RazorPages.Pages.Admin.BloodUnitsModel
 @{
     ViewData["Title"] = "Manage Blood Units";
+    var statusClasses = new Dictionary<string, string>
+    {
+        { "Available", "bg-green-100 text-green-800" },
+        { "Reserved", "bg-blue-100 text-blue-800" },
+        { "Expired", "bg-red-100 text-red-800" },
+        { "Low Stock", "bg-yellow-100 text-yellow-800" },
+        { "Out of Stock", "bg-gray-200 text-gray-800" }
+    };
+    var componentClasses = new Dictionary<string, string>
+    {
+        { "Red Blood Cells", "bg-red-100 text-red-800" },
+        { "White Blood Cells", "bg-indigo-100 text-indigo-800" },
+        { "Plasma", "bg-yellow-100 text-yellow-800" },
+        { "Platelets", "bg-green-100 text-green-800" }
+    };
+    var bloodTypeClasses = new Dictionary<string, string>
+    {
+        { "O+",  "bg-red-100 text-red-800" },
+        { "A+",  "bg-blue-100 text-blue-800" },
+        { "B+",  "bg-green-100 text-green-800" },
+        { "AB+", "bg-yellow-100 text-yellow-800" },
+        { "O-",  "bg-gray-100 text-gray-800" },
+        { "A-",  "bg-blue-100 text-blue-800" },
+        { "B-",  "bg-yellow-100 text-yellow-800" },
+        { "AB-", "bg-green-100 text-green-800" }
+    };
+    var defaultClass = "bg-gray-200 text-gray-500";
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
 }
 
 <div class="space-y-6">
@@ -9,189 +41,75 @@
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <div class="flex items-center justify-between">
             <div>
-                <h2 class="text-3xl font-bold text-gray-900 mb-2">Blood Units Management</h2>
+                <h2 class="text-3xl font-bold text-gray-900 mb-2">Blood Inventory Management</h2>
                 <p class="text-gray-600">Monitor and manage blood inventory across all facilities</p>
             </div>
             <button class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors">
-                <i class="fas fa-plus mr-2"></i>Add Blood Unit
+                <i class="fas fa-plus mr-2"></i>Add Blood Inventory
             </button>
         </div>
     </div>
 
     <!-- Blood Type Overview -->
     <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
-        <!-- A+ -->
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-            <div class="text-center">
-                <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                    <span class="text-red-600 font-bold text-lg">A+</span>
-                </div>
-                <p class="text-2xl font-bold text-gray-900">245</p>
-                <p class="text-sm text-gray-500">Units</p>
-                <div class="mt-2">
-                    <div class="bg-gray-200 rounded-full h-2">
-                        <div class="bg-green-500 h-2 rounded-full" style="width: 78%"></div>
+        @foreach (var item in Model.BloodTypeOverviews)
+        {
+            var fontSize = item.BloodType.Length > 2 ? "text-sm" : "text-lg";
+            var backgroundColorClass = bloodTypeClasses.GetValueOrDefault(item.BloodType, defaultClass);
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+                <div class="text-center">
+                    <div class="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-2 @backgroundColorClass">
+                        <span class="font-bold @fontSize">@item.BloodType</span>
                     </div>
-                    <p class="text-xs text-green-600 mt-1">78% capacity</p>
+                    <p class="text-2xl font-bold text-gray-900">@item.Volume</p>
+                    <p class="text-sm text-gray-500">Volume</p>
                 </div>
             </div>
-        </div>
-
-        <!-- A- -->
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-            <div class="text-center">
-                <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                    <span class="text-red-600 font-bold text-lg">A-</span>
-                </div>
-                <p class="text-2xl font-bold text-gray-900">156</p>
-                <p class="text-sm text-gray-500">Units</p>
-                <div class="mt-2">
-                    <div class="bg-gray-200 rounded-full h-2">
-                        <div class="bg-yellow-500 h-2 rounded-full" style="width: 52%"></div>
-                    </div>
-                    <p class="text-xs text-yellow-600 mt-1">52% capacity</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- B+ -->
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-            <div class="text-center">
-                <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                    <span class="text-red-600 font-bold text-lg">B+</span>
-                </div>
-                <p class="text-2xl font-bold text-gray-900">198</p>
-                <p class="text-sm text-gray-500">Units</p>
-                <div class="mt-2">
-                    <div class="bg-gray-200 rounded-full h-2">
-                        <div class="bg-green-500 h-2 rounded-full" style="width: 66%"></div>
-                    </div>
-                    <p class="text-xs text-green-600 mt-1">66% capacity</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- B- -->
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-            <div class="text-center">
-                <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                    <span class="text-red-600 font-bold text-lg">B-</span>
-                </div>
-                <p class="text-2xl font-bold text-gray-900">89</p>
-                <p class="text-sm text-gray-500">Units</p>
-                <div class="mt-2">
-                    <div class="bg-gray-200 rounded-full h-2">
-                        <div class="bg-yellow-500 h-2 rounded-full" style="width: 30%"></div>
-                    </div>
-                    <p class="text-xs text-yellow-600 mt-1">30% capacity</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- O+ -->
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-            <div class="text-center">
-                <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                    <span class="text-red-600 font-bold text-lg">O+</span>
-                </div>
-                <p class="text-2xl font-bold text-gray-900">342</p>
-                <p class="text-sm text-gray-500">Units</p>
-                <div class="mt-2">
-                    <div class="bg-gray-200 rounded-full h-2">
-                        <div class="bg-green-500 h-2 rounded-full" style="width: 85%"></div>
-                    </div>
-                    <p class="text-xs text-green-600 mt-1">85% capacity</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- O- -->
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-            <div class="text-center">
-                <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                    <span class="text-red-600 font-bold text-lg">O-</span>
-                </div>
-                <p class="text-2xl font-bold text-gray-900">42</p>
-                <p class="text-sm text-gray-500">Units</p>
-                <div class="mt-2">
-                    <div class="bg-gray-200 rounded-full h-2">
-                        <div class="bg-red-500 h-2 rounded-full" style="width: 14%"></div>
-                    </div>
-                    <p class="text-xs text-red-600 mt-1">14% capacity</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- AB+ -->
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-            <div class="text-center">
-                <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                    <span class="text-red-600 font-bold text-sm">AB+</span>
-                </div>
-                <p class="text-2xl font-bold text-gray-900">67</p>
-                <p class="text-sm text-gray-500">Units</p>
-                <div class="mt-2">
-                    <div class="bg-gray-200 rounded-full h-2">
-                        <div class="bg-yellow-500 h-2 rounded-full" style="width: 45%"></div>
-                    </div>
-                    <p class="text-xs text-yellow-600 mt-1">45% capacity</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- AB- -->
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-            <div class="text-center">
-                <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                    <span class="text-red-600 font-bold text-sm">AB-</span>
-                </div>
-                <p class="text-2xl font-bold text-gray-900">23</p>
-                <p class="text-sm text-gray-500">Units</p>
-                <div class="mt-2">
-                    <div class="bg-gray-200 rounded-full h-2">
-                        <div class="bg-red-500 h-2 rounded-full" style="width: 23%"></div>
-                    </div>
-                    <p class="text-xs text-red-600 mt-1">23% capacity</p>
-                </div>
-            </div>
-        </div>
+        }
     </div>
 
     <!-- Filters and Actions -->
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <div class="flex flex-col md:flex-row gap-4 items-center justify-between">
+        <form method="get" class="flex flex-col md:flex-row gap-4 items-center justify-between">
             <div class="flex flex-col md:flex-row gap-4 flex-1">
                 <div class="relative">
                     <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                    <input type="text" placeholder="Search blood units..." class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500">
+                    <input type="text" name="SearchTerm" value="@Model.SearchTerm" placeholder="Search blood units..."
+                           class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500">
                 </div>
-                <select class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500">
+                <select name="SelectedBloodType" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500">
                     <option value="">All Blood Types</option>
-                    <option value="A+">A+</option>
-                    <option value="A-">A-</option>
-                    <option value="B+">B+</option>
-                    <option value="B-">B-</option>
-                    <option value="O+">O+</option>
-                    <option value="O-">O-</option>
-                    <option value="AB+">AB+</option>
-                    <option value="AB-">AB-</option>
+                    <option value="A+" selected="@(Model.SelectedBloodType == "A+")">A+</option>
+                    <option value="A-" selected="@(Model.SelectedBloodType == "A-")">A-</option>
+                    <option value="B+" selected="@(Model.SelectedBloodType == "B+")">B+</option>
+                    <option value="B-" selected="@(Model.SelectedBloodType == "B-")">B-</option>
+                    <option value="O+" selected="@(Model.SelectedBloodType == "O+")">O+</option>
+                    <option value="O-" selected="@(Model.SelectedBloodType == "O-")">O-</option>
+                    <option value="AB+" selected="@(Model.SelectedBloodType == "AB+")">AB+</option>
+                    <option value="AB-" selected="@(Model.SelectedBloodType == "AB-")">AB-</option>
                 </select>
-                <select class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500">
+                <select name="SelectedFacilityId" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500">
                     <option value="">All Facilities</option>
-                    <option value="main">Main Hospital</option>
-                    <option value="branch1">Branch Hospital 1</option>
-                    <option value="branch2">Branch Hospital 2</option>
+                    @foreach (var facility in Model.MedicalFacilities)
+                    {
+                        <option value="@facility.FacilityId" selected="@(Model.SelectedFacilityId.HasValue && Model.SelectedFacilityId == facility.FacilityId)">@facility.Name</option>
+                    }
+                </select>
+                <select name="PageSize" onchange="this.form.submit()" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500">
+                    <option value="10" selected="@(Model.PageSize == 10)">10 per page</option>
+                    <option value="25" selected="@(Model.PageSize == 25)">25 per page</option>
+                    <option value="50" selected="@(Model.PageSize == 50)">50 per page</option>
                 </select>
             </div>
             <div class="flex gap-2">
-                <button class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors">
-                    <i class="fas fa-download mr-2"></i>Export
+                <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors">
+                    <i class="fas fa-search mr-2"></i>Filter
                 </button>
-                <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-                    <i class="fas fa-sync mr-2"></i>Refresh
-                </button>
+                <a asp-page="./BloodUnits" class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors">
+                    <i class="fas fa-times mr-2"></i>Clear
+                </a>
             </div>
-        </div>
+        </form>
     </div>
 
     <!-- Blood Units Table -->
@@ -201,9 +119,10 @@
                 <thead class="bg-gray-50">
                     <tr>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Unit ID</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Facility</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Blood Type</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Component Type</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Volume</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Donor</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Collection Date</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Expiry Date</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
@@ -211,113 +130,200 @@
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">BU-2024-001</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="inline-flex px-3 py-1 text-sm font-semibold rounded-full bg-red-100 text-red-800">O+</span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">450ml</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">John Doe</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Jan 20, 2024</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Mar 20, 2024</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Available</span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <div class="flex space-x-2">
-                                <button class="text-blue-600 hover:text-blue-900">View</button>
-                                <button class="text-yellow-600 hover:text-yellow-900">Transfer</button>
-                                <button class="text-red-600 hover:text-red-900">Dispose</button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">BU-2024-002</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="inline-flex px-3 py-1 text-sm font-semibold rounded-full bg-red-100 text-red-800">A-</span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">450ml</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Jane Smith</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Jan 18, 2024</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Mar 18, 2024</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">Reserved</span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <div class="flex space-x-2">
-                                <button class="text-blue-600 hover:text-blue-900">View</button>
-                                <button class="text-gray-400 cursor-not-allowed">Transfer</button>
-                                <button class="text-red-600 hover:text-red-900">Dispose</button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">BU-2024-003</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="inline-flex px-3 py-1 text-sm font-semibold rounded-full bg-red-100 text-red-800">O-</span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">450ml</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Mike Johnson</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Jan 15, 2024</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Mar 15, 2024</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Available</span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <div class="flex space-x-2">
-                                <button class="text-blue-600 hover:text-blue-900">View</button>
-                                <button class="text-yellow-600 hover:text-yellow-900">Transfer</button>
-                                <button class="text-red-600 hover:text-red-900">Dispose</button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr class="hover:bg-gray-50 bg-yellow-50">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">BU-2023-789</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="inline-flex px-3 py-1 text-sm font-semibold rounded-full bg-red-100 text-red-800">B+</span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">450ml</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Sarah Wilson</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Dec 25, 2023</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-red-500">Feb 25, 2024</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">Expiring Soon</span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <div class="flex space-x-2">
-                                <button class="text-blue-600 hover:text-blue-900">View</button>
-                                <button class="text-yellow-600 hover:text-yellow-900">Transfer</button>
-                                <button class="text-red-600 hover:text-red-900">Dispose</button>
-                            </div>
-                        </td>
-                    </tr>
+                    @if (Model.BloodUnits.Any())
+                    {
+                        @foreach (var unit in Model.BloodUnits)
+                        {
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">@unit.InventoryId</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">@unit.Facility.Name</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="inline-flex px-3 py-1 text-sm font-semibold rounded-full @(bloodTypeClasses.GetValueOrDefault(unit.BloodType, defaultClass))">
+                                        @unit.BloodType
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="inline-flex px-3 py-1 text-sm font-semibold rounded-full @(componentClasses.GetValueOrDefault(unit.ComponentType, defaultClass))">
+                                        @unit.ComponentType
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">@unit.Amount</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">@unit.LastUpdated?.ToString("MMM dd, yyyy")</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">@unit.ExpiredDate.ToString("MMM dd, yyyy")</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full @(statusClasses.GetValueOrDefault(unit.StatusBloodInventory.StatusName, defaultClass))">
+                                        @unit.StatusBloodInventory.StatusName
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    <div class="flex space-x-2">
+                                        <button class="text-blue-600 hover:text-blue-900">View</button>
+                                        <button class="text-yellow-600 hover:text-yellow-900">Transfer</button>
+                                        <button class="text-red-600 hover:text-red-900">Dispose</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="9" class="px-6 py-4 text-center text-gray-500">
+                                No blood units found matching your criteria.
+                            </td>
+                        </tr>
+                    }
                 </tbody>
             </table>
         </div>
-        
+
         <!-- Pagination -->
         <div class="bg-gray-50 px-6 py-3 flex items-center justify-between border-t border-gray-200">
             <div class="flex-1 flex justify-between sm:hidden">
-                <button class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">Previous</button>
-                <button class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">Next</button>
+                @if (Model.CurrentPage > 1)
+                {
+                    <a asp-page="./BloodUnits"
+                       asp-route-CurrentPage="@(Model.CurrentPage - 1)"
+                       asp-route-SearchTerm="@Model.SearchTerm"
+                       asp-route-SelectedBloodType="@Model.SelectedBloodType"
+                       asp-route-SelectedFacilityId="@Model.SelectedFacilityId"
+                       asp-route-PageSize="@Model.PageSize"
+                       class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                        Previous
+                    </a>
+                }
+                else
+                {
+                    <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-400 bg-gray-100 cursor-not-allowed">
+                        Previous
+                    </span>
+                }
+
+                @if (Model.CurrentPage < Model.TotalPages)
+                {
+                    <a asp-page="./BloodUnits"
+                       asp-route-CurrentPage="@(Model.CurrentPage + 1)"
+                       asp-route-SearchTerm="@Model.SearchTerm"
+                       asp-route-SelectedBloodType="@Model.SelectedBloodType"
+                       asp-route-SelectedFacilityId="@Model.SelectedFacilityId"
+                       asp-route-PageSize="@Model.PageSize"
+                       class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                        Next
+                    </a>
+                }
+                else
+                {
+                    <span class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-400 bg-gray-100 cursor-not-allowed">
+                        Next
+                    </span>
+                }
             </div>
             <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
                 <div>
                     <p class="text-sm text-gray-700">
-                        Showing <span class="font-medium">1</span> to <span class="font-medium">4</span> of <span class="font-medium">1,162</span> blood units
+                        Showing <span class="font-medium">@(((Model.CurrentPage - 1) * Model.PageSize) + 1)</span> to
+                        <span class="font-medium">@(Math.Min(Model.CurrentPage * Model.PageSize, Model.TotalBloodUnits))</span> of
+                        <span class="font-medium">@Model.TotalBloodUnits</span> blood units
                     </p>
                 </div>
                 <div>
                     <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
-                        <button class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                            <i class="fas fa-chevron-left"></i>
-                        </button>
-                        <button class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">1</button>
-                        <button class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-red-50 text-sm font-medium text-red-600">2</button>
-                        <button class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">3</button>
-                        <button class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                            <i class="fas fa-chevron-right"></i>
-                        </button>
+                        @if (Model.CurrentPage > 1)
+                        {
+                            <a asp-page="./BloodUnits"
+                               asp-route-CurrentPage="@(Model.CurrentPage - 1)"
+                               asp-route-SearchTerm="@Model.SearchTerm"
+                               asp-route-SelectedBloodType="@Model.SelectedBloodType"
+                               asp-route-SelectedFacilityId="@Model.SelectedFacilityId"
+                               asp-route-PageSize="@Model.PageSize"
+                               class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                <i class="fas fa-chevron-left"></i>
+                            </a>
+                        }
+                        else
+                        {
+                            <span class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-gray-100 text-sm font-medium text-gray-400 cursor-not-allowed">
+                                <i class="fas fa-chevron-left"></i>
+                            </span>
+                        }
+
+                        @{
+                            var startPage = Math.Max(1, Model.CurrentPage - 2);
+                            var endPage = Math.Min(Model.TotalPages, Model.CurrentPage + 2);
+                        }
+
+                        @if (startPage > 1)
+                        {
+                            <a asp-page="./BloodUnits"
+                               asp-route-CurrentPage="1"
+                               asp-route-SearchTerm="@Model.SearchTerm"
+                               asp-route-SelectedBloodType="@Model.SelectedBloodType"
+                               asp-route-SelectedFacilityId="@Model.SelectedFacilityId"
+                               asp-route-PageSize="@Model.PageSize"
+                               class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                                1
+                            </a>
+                            @if (startPage > 2)
+                            {
+                                <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">...</span>
+                            }
+                        }
+
+                        @for (int i = startPage; i <= endPage; i++)
+                        {
+                            @if (i == Model.CurrentPage)
+                            {
+                                <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-red-50 text-sm font-medium text-red-600">@i</span>
+                            }
+                            else
+                            {
+                                <a asp-page="./BloodUnits"
+                                   asp-route-CurrentPage="@i"
+                                   asp-route-SearchTerm="@Model.SearchTerm"
+                                   asp-route-SelectedBloodType="@Model.SelectedBloodType"
+                                   asp-route-SelectedFacilityId="@Model.SelectedFacilityId"
+                                   asp-route-PageSize="@Model.PageSize"
+                                   class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                                    @i
+                                </a>
+                            }
+                        }
+
+                        @if (endPage < Model.TotalPages)
+                        {
+                            @if (endPage < Model.TotalPages - 1)
+                            {
+                                <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">...</span>
+                            }
+                            <a asp-page="./BloodUnits"
+                               asp-route-CurrentPage="@Model.TotalPages"
+                               asp-route-SearchTerm="@Model.SearchTerm"
+                               asp-route-SelectedBloodType="@Model.SelectedBloodType"
+                               asp-route-SelectedFacilityId="@Model.SelectedFacilityId"
+                               asp-route-PageSize="@Model.PageSize"
+                               class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                                @Model.TotalPages
+                            </a>
+                        }
+
+                        @if (Model.CurrentPage < Model.TotalPages)
+                        {
+                            <a asp-page="./BloodUnits"
+                               asp-route-CurrentPage="@(Model.CurrentPage + 1)"
+                               asp-route-SearchTerm="@Model.SearchTerm"
+                               asp-route-SelectedBloodType="@Model.SelectedBloodType"
+                               asp-route-SelectedFacilityId="@Model.SelectedFacilityId"
+                               asp-route-PageSize="@Model.PageSize"
+                               class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        }
+                        else
+                        {
+                            <span class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-gray-100 text-sm font-medium text-gray-400 cursor-not-allowed">
+                                <i class="fas fa-chevron-right"></i>
+                            </span>
+                        }
                     </nav>
                 </div>
             </div>

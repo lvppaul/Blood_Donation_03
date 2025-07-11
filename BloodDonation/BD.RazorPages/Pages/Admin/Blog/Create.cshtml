@@ -1,0 +1,121 @@
+@page "/admin/blog/create"
+@model BD.RazorPages.Pages.Admin.Blog.CreateModel
+@{
+    ViewData["Title"] = "Create Blog Post";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-body">
+                    <form method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="BlogPost.Title" class="form-label">Title <span class="text-danger">*</span></label>
+                            <input asp-for="BlogPost.Title" class="form-control" placeholder="Enter blog post title" />
+                            <span asp-validation-for="BlogPost.Title" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="BlogPost.Category" class="form-label">Category <span class="text-danger">*</span></label>
+                            <select asp-for="BlogPost.Category" class="form-select">
+                                <option value="">Select a category</option>
+                                <option value="Health & Wellness">Health & Wellness</option>
+                                <option value="Blood Donation Tips">Blood Donation Tips</option>
+                                <option value="Success Stories">Success Stories</option>
+                                <option value="Events & Campaigns">Events & Campaigns</option>
+                                <option value="Medical Research">Medical Research</option>
+                                <option value="Community Impact">Community Impact</option>
+                                <option value="Donor Recognition">Donor Recognition</option>
+                                <option value="News & Updates">News & Updates</option>
+                            </select>
+                            <span asp-validation-for="BlogPost.Category" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="BlogPost.Content" class="form-label">Content <span class="text-danger">*</span></label>
+                            <textarea asp-for="BlogPost.Content" class="form-control" rows="15" 
+                                     placeholder="Write your blog post content here..."></textarea>
+                            <span asp-validation-for="BlogPost.Content" class="text-danger"></span>
+                            <div class="form-text">You can use basic HTML tags for formatting.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input name="BlogPost.IsDocument" type="checkbox" value="true" class="form-check-input" 
+                                       @(Model.BlogPost.IsDocument == true ? "checked" : "") />
+                                <input name="BlogPost.IsDocument" type="hidden" value="false" />
+                                <label for="BlogPost_IsDocument" class="form-check-label">
+                                    Mark as Document
+                                </label>
+                            </div>
+                            <div class="form-text">Check if this post contains important documents or resources.</div>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="/admin/blog" class="btn btn-secondary">
+                                <i class="mdi mdi-arrow-left me-1"></i>Cancel
+                            </a>
+                            <div>
+                                <button type="submit" name="action" value="draft" class="btn btn-outline-primary me-2">
+                                    <i class="mdi mdi-content-save me-1"></i>Save as Draft
+                                </button>
+                                <button type="submit" name="action" value="publish" class="btn btn-primary">
+                                    <i class="mdi mdi-publish me-1"></i>Publish Post
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Publishing Guidelines</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="mdi mdi-check-circle text-success me-2"></i>
+                            Use clear, engaging titles
+                        </li>
+                        <li class="mb-2">
+                            <i class="mdi mdi-check-circle text-success me-2"></i>
+                            Write informative content
+                        </li>
+                        <li class="mb-2">
+                            <i class="mdi mdi-check-circle text-success me-2"></i>
+                            Choose appropriate categories
+                        </li>
+                        <li class="mb-2">
+                            <i class="mdi mdi-check-circle text-success me-2"></i>
+                            Proofread content before publishing
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Content Tips</h5>
+                    <p class="text-muted">
+                        Write content that educates, inspires, and engages the blood donation community. 
+                        Focus on accurate information, personal stories, and actionable advice.
+                    </p>
+                    <p class="text-muted">
+                        Remember that your content will be read by potential donors, medical professionals, 
+                        and community members interested in supporting blood donation efforts.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

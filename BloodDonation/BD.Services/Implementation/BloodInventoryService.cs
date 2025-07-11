@@ -2,8 +2,11 @@
 using BD.Repositories.Interfaces;
 using BD.Repositories.Models.DTOs.Requests;
 using BD.Repositories.Models.DTOs.Responses;
+using BD.Repositories.Models.Entities;
 using BD.Repositories.Models.Mappers;
+using BD.Services.Enum;
 using BD.Services.Interfaces;
+using BD.Services.Others;
 
 namespace BD.Services.Implementation
 {
@@ -67,6 +70,96 @@ namespace BD.Services.Implementation
             var updatedEntity = await _bloodInventoryRepository.UpdateBloodInventoryAsync(existingInventory);
 
             return BloodInventoryMapper.ToResponse(updatedEntity);
+        }
+        public async Task<IEnumerable<BloodInventoryResponse>> GetAllBloodInventoriesByBloodTypeAsync(string type)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(type))
+                {
+                    throw new ArgumentException("Blood type cannot be null or empty", nameof(type));
+                }
+                var bloodType = type.ToUpper();
+                if (!BloodTypeEnum.GetAllBloodTypes().Contains(bloodType))
+                {
+                    throw new ArgumentException("Invalid blood type", nameof(type));
+                }
+                var bloodInventories = await _bloodInventoryRepository.GetAllBloodInventoriesByBloodTypeAsync(bloodType);
+                return bloodInventories.Select(bi => BloodInventoryMapper.ToResponse(bi));
+            }
+            catch (Exception)
+            {
+
+                throw new Exception("Error at GetAllBloodInventoriesByBloodTypeAsync at BloodInventoryService");
+            }
+
+        }
+        public async Task<int> TotalBloodInventoriesByBloodTypeAsync(string type)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(type))
+                {
+                    throw new ArgumentException("Blood type cannot be null or empty", nameof(type));
+                }
+                var bloodType = type.ToUpper();
+                if (!BloodTypeEnum.GetAllBloodTypes().Contains(bloodType))
+                {
+                    throw new ArgumentException("Invalid blood type", nameof(type));
+                }
+                var bloodInventories = await _bloodInventoryRepository.GetAllBloodInventoriesByBloodTypeAsync(bloodType);
+                if (bloodInventories == null)
+                {
+                    return 0;
+                }
+
+                // Calculate total amount instead of counting items
+                return bloodInventories.Sum(bi => bi.Amount);
+            }
+            catch (Exception)
+            {
+                throw new Exception("Error at TotalBloodInventoriesByBloodTypeAsync at BloodInventoryService");
+            }
+        }
+
+ 
+        public async Task<IEnumerable<BloodTypeOverview>> GetBloodTypeOverviewAsync()
+        {
+            try
+            {
+                var bloodTypeOverview = new List<BloodTypeOverview>();
+                var allBloodTypes = BloodTypeEnum.GetAllBloodTypes();
+
+                foreach (var bloodType in allBloodTypes)
+                {
+                    var volume = await TotalBloodInventoriesByBloodTypeAsync(bloodType);
+                    bloodTypeOverview.Add(new BloodTypeOverview
+                    {
+                        BloodType = bloodType,
+                        Volume = volume
+                    });
+                }
+
+                return bloodTypeOverview;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error at GetBloodTypeOverviewAsync at BloodInventoryService ", ex);
+            }   
+           
+        }
+        public async Task<(IEnumerable<BloodInventoryResponse>, int TotalCount)> GetFilteredAsync(
+    string searchTerm = null,
+    string bloodType = null,
+    int? facilityId = null,
+    int pageNumber = 1,
+    int pageSize = 10)
+        {
+            var (bloodInventories, totalCount) = await _bloodInventoryRepository.GetFilteredBloodInventoriesAsync(
+                searchTerm, bloodType, facilityId, pageNumber, pageSize);
+
+            var response = bloodInventories.Select(bi => BloodInventoryMapper.ToResponse(bi));
+            return (response, totalCount);
         }
     }
 }
