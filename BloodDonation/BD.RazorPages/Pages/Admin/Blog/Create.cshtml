@@ -2,24 +2,10 @@
 @model BD.RazorPages.Pages.Admin.Blog.CreateModel
 @{
     ViewData["Title"] = "Create Blog Post";
-    Layout = "~/Pages/Shared/_AdminLayout.cshtml";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
 <div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
-            <div class="page-title-box">
-                <div class="page-title-right">
-                    <ol class="breadcrumb m-0">
-                        <li class="breadcrumb-item"><a href="/admin/dashboard">Dashboard</a></li>
-                        <li class="breadcrumb-item"><a href="/admin/blog">Blog Management</a></li>
-                        <li class="breadcrumb-item active">Create Blog Post</li>
-                    </ol>
-                </div>
-                <h4 class="page-title">Create New Blog Post</h4>
-            </div>
-        </div>
-    </div>
 
     <div class="row">
         <div class="col-lg-8">
@@ -59,37 +45,15 @@
                         </div>
 
                         <div class="mb-3">
-                            <label asp-for="BlogPost.Summary" class="form-label">Summary</label>
-                            <textarea asp-for="BlogPost.Summary" class="form-control" rows="3" 
-                                     placeholder="Brief summary of the blog post (optional)"></textarea>
-                            <span asp-validation-for="BlogPost.Summary" class="text-danger"></span>
-                            <div class="form-text">This will be shown in blog listings and previews.</div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label asp-for="BlogPost.Tags" class="form-label">Tags</label>
-                            <input asp-for="BlogPost.Tags" class="form-control" 
-                                   placeholder="Enter tags separated by commas (e.g., health, donation, community)" />
-                            <span asp-validation-for="BlogPost.Tags" class="text-danger"></span>
-                            <div class="form-text">Use commas to separate multiple tags.</div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label asp-for="BlogPost.ImageUrl" class="form-label">Featured Image URL</label>
-                            <input asp-for="BlogPost.ImageUrl" class="form-control" type="url"
-                                   placeholder="https://example.com/image.jpg" />
-                            <span asp-validation-for="BlogPost.ImageUrl" class="text-danger"></span>
-                            <div class="form-text">Optional: URL of an image to display with the blog post.</div>
-                        </div>
-
-                        <div class="mb-3">
                             <div class="form-check">
-                                <input asp-for="BlogPost.IsPublished" class="form-check-input" type="checkbox" />
-                                <label asp-for="BlogPost.IsPublished" class="form-check-label">
-                                    Publish immediately
+                                <input name="BlogPost.IsDocument" type="checkbox" value="true" class="form-check-input" 
+                                       @(Model.BlogPost.IsDocument == true ? "checked" : "") />
+                                <input name="BlogPost.IsDocument" type="hidden" value="false" />
+                                <label for="BlogPost_IsDocument" class="form-check-label">
+                                    Mark as Document
                                 </label>
                             </div>
-                            <div class="form-text">If unchecked, the post will be saved as a draft.</div>
+                            <div class="form-text">Check if this post contains important documents or resources.</div>
                         </div>
 
                         <div class="d-flex justify-content-between">
@@ -129,15 +93,7 @@
                         </li>
                         <li class="mb-2">
                             <i class="mdi mdi-check-circle text-success me-2"></i>
-                            Add relevant tags for better discoverability
-                        </li>
-                        <li class="mb-2">
-                            <i class="mdi mdi-check-circle text-success me-2"></i>
-                            Include a compelling summary
-                        </li>
-                        <li class="mb-2">
-                            <i class="mdi mdi-check-circle text-success me-2"></i>
-                            Use high-quality featured images
+                            Proofread content before publishing
                         </li>
                     </ul>
                 </div>
