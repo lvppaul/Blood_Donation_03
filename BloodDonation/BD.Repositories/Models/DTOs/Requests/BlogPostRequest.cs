@@ -24,15 +24,5 @@ namespace BD.Repositories.Models.DTOs.Requests
 
         public bool? IsDocument { get; set; }
         public bool? IsPublished { get; set; }
-
-        [StringLength(500, ErrorMessage = "Summary cannot exceed 500 characters")]
-        public string? Summary { get; set; }
-
-        [StringLength(255, ErrorMessage = "Tags cannot exceed 255 characters")]
-        public string? Tags { get; set; }
-
-        [Url(ErrorMessage = "Please enter a valid URL")]
-        [StringLength(500, ErrorMessage = "Image URL cannot exceed 500 characters")]
-        public string? ImageUrl { get; set; }
     }
 }
