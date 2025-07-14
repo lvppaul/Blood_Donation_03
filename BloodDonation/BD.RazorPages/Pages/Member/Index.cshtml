@@ -1,4 +1,84 @@
 ﻿@page
 @model BD.RazorPages.Pages.Member.IndexModel
+
 @{
+    ViewData["Title"] = "Index";
 }
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.BloodRequest[0].BloodType)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BloodRequest[0].ComponentType)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BloodRequest[0].Amount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BloodRequest[0].UrgencyLevel)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BloodRequest[0].RequestDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BloodRequest[0].FulfilledDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BloodRequest[0].IsDeleted)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BloodRequest[0].StatusRequest)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BloodRequest[0].User)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.BloodRequest) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.BloodType)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ComponentType)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Amount)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UrgencyLevel)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RequestDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FulfilledDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsDeleted)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.StatusRequest.StatusName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.User.BloodType)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.RequestId">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.RequestId">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.RequestId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

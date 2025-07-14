@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace BD.Repositories.Models.DTOs.Responses
+﻿namespace BD.Repositories.Models.DTOs.Responses
 {
     public class BloodRequestResponse
     {
         public int RequestId { get; set; }
+        //public int UserId { get; set; }
+        //public int StatusRequestId { get; set; }
 
         public string BloodType { get; set; } = null!;
 

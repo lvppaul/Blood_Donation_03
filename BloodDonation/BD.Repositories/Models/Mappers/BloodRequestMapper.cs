@@ -1,11 +1,6 @@
 ﻿using BD.Repositories.Models.DTOs.Requests;
 using BD.Repositories.Models.DTOs.Responses;
 using BD.Repositories.Models.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BD.Repositories.Models.Mappers
 {
@@ -39,6 +34,8 @@ namespace BD.Repositories.Models.Mappers
                 RequestDate = entity.RequestDate,
                 FulfilledDate = entity.FulfilledDate,
                 IsDeleted = entity.IsDeleted,
+                //UserId = entity.UserId,
+                //StatusRequestId = entity.StatusRequestId
                 User = new UserResponse
                 {
                     UserId = entity.User.UserId,

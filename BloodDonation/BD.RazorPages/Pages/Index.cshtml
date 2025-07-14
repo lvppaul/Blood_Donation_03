@@ -13,9 +13,9 @@
 <section class="relative py-20 md:py-32 bg-gradient-to-br from-red-50 via-white to-white">
     <div class="absolute inset-0 flex items-center justify-center opacity-30">
         <img src="~/landing.png"
-             alt="Blood donation background"
-             class="object-cover w-full h-full"
-             style="opacity: 0.5;" />
+        alt="Blood donation background"
+        class="object-cover w-full h-full"
+        style="opacity: 0.5;" />
     </div>
     <div class="container mx-auto px-4 relative z-10 text-center">
         <i class="fas fa-tint text-6xl text-red-600 mb-6"></i>
@@ -25,6 +25,31 @@
             <a class="inline-flex bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-8 rounded-lg transition-colors duration-300" href="/RegisterDonation">Become a Donor</a>
             <a class="inline-flex border-2 border-red-700 text-red-700 hover:bg-red-700 hover:text-white font-medium py-3 px-8 rounded-lg transition-colors duration-300" href="/search">Find Blood</a>
         </div>
+
+        @* Emergency Button *@
+
+        <div class="mt-8">
+            @{
+                var role = HttpContext.Session.GetString("UserRole");
+            }
+           @if (role == "staff" || role == "member" || role == "admin")
+            {            
+                <a class="inline-flex bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 px-12 rounded-lg shadow-lg transition-all duration-300 transform hover:scale-105" href="/EmergencyBloodRequest">
+                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                    CẦN MÁU KHẨN CẤP
+                </a>
+            }
+            else
+            {
+                <a class="inline-flex bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 px-12 rounded-lg shadow-lg transition-all duration-300 transform hover:scale-105" href="/Login">
+                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                    CẦN MÁU KHẨN CẤP
+                </a>
+            }
+                <p class="text-sm text-gray-600 mt-2">Dành cho các trường hợp cấp cứu</p>
+            </div>
+        
+        
     </div>
 </section>
 
@@ -63,8 +88,8 @@
                     <i class="fas fa-heart-pulse text-2xl text-red-600"></i>
                 </div>
                 <h3 class="text-xl font-semibold text-red-700 mb-4">Emergency Requests</h3>
-                <p class="text-gray-600 text-sm mb-4">Post and view urgent requests for blood in critical situations.</p>
-                <a class="text-red-700 hover:underline font-medium" href="/emergency">See Requests</a>
+                <p class="text-gray-600 text-sm mb-4">Post urgent requests for blood in critical situations.</p>
+                <a class="text-red-700 hover:underline font-medium" href="/EmergencyBloodRequest">Request Blood Now</a>
             </div>
         </div>
     </div>

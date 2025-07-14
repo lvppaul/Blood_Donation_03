@@ -1,0 +1,73 @@
+﻿@page
+@model BD.RazorPages.Pages.Member.DetailsModel
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>BloodRequest</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.BloodRequest.BloodType)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.BloodRequest.BloodType)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.BloodRequest.ComponentType)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.BloodRequest.ComponentType)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.BloodRequest.Amount)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.BloodRequest.Amount)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.BloodRequest.UrgencyLevel)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.BloodRequest.UrgencyLevel)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.BloodRequest.RequestDate)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.BloodRequest.RequestDate)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.BloodRequest.FulfilledDate)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.BloodRequest.FulfilledDate)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.BloodRequest.IsDeleted)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.BloodRequest.IsDeleted)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.BloodRequest.StatusRequest)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.BloodRequest.StatusRequest.StatusName)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.BloodRequest.User)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.BloodRequest.User.BloodType)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-page="./Edit" asp-route-id="@Model.BloodRequest.RequestId">Edit</a> |
+    <a asp-page="./Index">Back to List</a>
+</div>
