@@ -1,0 +1,220 @@
+@page "/profile/BloodRequests"
+@model BloodRequestsModel
+@{
+    ViewData["Title"] = "My Blood Requests - BloodConnect";
+}
+
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<div class="min-h-screen bg-gradient-to-br from-red-50 via-white to-red-50 py-12">
+    <div class="container mx-auto px-4">
+        <div class="max-w-6xl mx-auto">
+            <!-- Header -->
+            <div class="bg-white rounded-lg shadow-xl p-8 mb-8">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-6">
+                        <div class="bg-red-100 w-16 h-16 rounded-full flex items-center justify-center">
+                            <i class="fas fa-vial text-2xl text-red-600"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-3xl font-bold text-gray-900">My Blood Requests</h1>
+                            <p class="text-gray-600 text-lg">@Model.UserName's Blood Request Records</p>
+                        </div>
+                    </div>
+                    <div class="flex space-x-3">
+                        <a href="/profile" class="bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 inline-flex items-center">
+                            <i class="fas fa-arrow-left mr-2"></i>
+                            Back to Profile
+                        </a>
+                        <a href="/EmergencyBloodRequest" class="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 inline-flex items-center">
+                            <i class="fas fa-plus mr-2"></i>
+                            New Request
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistics Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <div class="flex items-center">
+                        <div class="bg-blue-100 p-3 rounded-full">
+                            <i class="fas fa-clipboard-list text-blue-600 text-xl"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Total Requests</p>
+                            <p class="text-2xl font-bold text-gray-900">@Model.TotalRequests</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <div class="flex items-center">
+                        <div class="bg-yellow-100 p-3 rounded-full">
+                            <i class="fas fa-clock text-yellow-600 text-xl"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Pending</p>
+                            <p class="text-2xl font-bold text-gray-900">@Model.PendingRequests</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <div class="flex items-center">
+                        <div class="bg-green-100 p-3 rounded-full">
+                            <i class="fas fa-check-circle text-green-600 text-xl"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Fulfilled</p>
+                            <p class="text-2xl font-bold text-gray-900">@Model.FulfilledRequests</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <div class="flex items-center">
+                        <div class="bg-red-100 p-3 rounded-full">
+                            <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Emergency</p>
+                            <p class="text-2xl font-bold text-gray-900">@Model.EmergencyRequests</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Blood Requests Table -->
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h2 class="text-xl font-bold text-gray-900 flex items-center">
+                        <i class="fas fa-list text-red-600 mr-3"></i>
+                        Request History
+                    </h2>
+                </div>
+                
+                @if (Model.BloodRequests.Any())
+                {
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Request Info</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Blood Details</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Request Date</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                @foreach (var request in Model.BloodRequests)
+                                {
+                                    <tr class="hover:bg-gray-50">
+                                        <!-- Request Info -->
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <div>
+                                                    <div class="text-sm font-medium text-gray-900">Request #@request.RequestId</div>
+                                                    @if (request.UrgencyLevel?.ToLower() == "emergency")
+                                                    {
+                                                        <div class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                                            <i class="fas fa-exclamation-triangle mr-1"></i>
+                                                            EMERGENCY
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                            <i class="fas fa-calendar mr-1"></i>
+                                                            NORMAL
+                                                        </div>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </td>
+                                        
+                                        <!-- Blood Details -->
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center space-x-2">
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                                    <i class="fas fa-tint mr-1"></i>
+                                                    @request.BloodType
+                                                </span>
+                                                <span class="text-sm text-gray-900">@request.ComponentType</span>
+                                            </div>
+                                            <div class="text-sm text-gray-500 mt-1">
+                                                <i class="fas fa-flask mr-1"></i>
+                                                @request.Amount ml
+                                            </div>
+                                        </td>
+                                        
+                                        <!-- Status -->
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            @switch (request.StatusBloodRequestResponse.StatusRequestId)
+                                            {
+                                                case 1:
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                                        <i class="fas fa-clock mr-1"></i>
+                                                        Pending
+                                                    </span>
+                                                    break;
+                                                case 2:
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                        <i class="fas fa-check mr-1"></i>
+                                                        Approved
+                                                    </span>
+                                                    break;
+                                                case 3:
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                                        <i class="fas fa-ban mr-1"></i>
+                                                        Cancelled
+                                                    </span>
+                                                    break;
+                                                case 4:
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                        <i class="fas fa-check-circle mr-1"></i>
+                                                        Fulfilled
+                                                    </span>
+                                                    break;
+                                                case 5:
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                                        <i class="fas fa-times mr-1"></i>
+                                                        Rejected
+                                                    </span>
+                                                    break;
+                                            }
+                                            @if (request.FulfilledDate.HasValue)
+                                            {
+                                                <div class="text-xs text-gray-500 mt-1">
+                                                    Fulfilled: @request.FulfilledDate.Value.ToString("MMM dd, yyyy")
+                                                </div>
+                                            }
+                                        </td>
+                                        
+                                        <!-- Request Date -->
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                            <div class="flex items-center">
+                                                <i class="fas fa-calendar text-gray-400 mr-2"></i>
+                                                @(request.RequestDate?.ToString("MMM dd, yyyy HH:mm") ?? "Unknown")
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-12">
+                        <i class="fas fa-vial text-6xl text-gray-300 mb-4"></i>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">No Blood Requests</h3>
+                        <p class="text-gray-500 mb-6">You haven't made any blood requests yet.</p>
+                        <a href="/EmergencyBloodRequest" class="bg-red-600 hover:bg-red-700 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200 inline-flex items-center">
+                            <i class="fas fa-plus mr-2"></i>
+                            Create Blood Request
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

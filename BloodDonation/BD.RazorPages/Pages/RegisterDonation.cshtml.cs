@@ -1,7 +1,7 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using BD.Repositories.Interfaces;
 using BD.Repositories.Models.Entities;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.ComponentModel.DataAnnotations;
 
 namespace BD.RazorPages.Pages
@@ -42,6 +42,10 @@ namespace BD.RazorPages.Pages
         public DateTime AvailableDate { get; set; }
 
         [BindProperty]
+        [Required(ErrorMessage = "Component type is required")]
+        public string ComponentType { get; set; } = "Whole Blood";
+
+        [BindProperty]
         public DateTime RecoveryReminderDate { get; set; } // Auto-calculated
 
         [BindProperty]
@@ -75,6 +79,7 @@ namespace BD.RazorPages.Pages
             // Set default available date to tomorrow
             AvailableDate = DateTime.Today.AddDays(1);
             RecoveryReminderDate = CalculateRecoveryReminderDate(AvailableDate);
+            ComponentType = "Whole Blood"; // Set default component type
 
             return Page();
         }
@@ -123,8 +128,10 @@ namespace BD.RazorPages.Pages
                 // Create donor availability record
                 await CreateDonorAvailabilityAsync(userId);
 
-                SuccessMessage = "Your availability for blood donation has been registered successfully! Our team will contact you when needed.";
-                _logger.LogInformation("Donor availability registered for user {UserId}", userId);
+                SuccessMessage = $"Your blood donation registration has been completed successfully! " +
+                    $"Component: {ComponentType} | Available Date: {AvailableDate:MMM dd, yyyy} | " +
+                    $"Your donation request is now in the system with 'Waiting' status. Our team will contact you when needed.";
+                _logger.LogInformation("Donor availability and donation history registered for user {UserId}", userId);
 
                 // Clear form data after successful submission
                 ClearFormData();
@@ -199,12 +206,12 @@ namespace BD.RazorPages.Pages
             // For demo accounts, just log the registration
             if (userId.StartsWith("demo-"))
             {
-                _logger.LogInformation("Demo donor availability: {UserName}, Available: {AvailableDate}, Recovery: {RecoveryDate}", 
+                _logger.LogInformation("Demo donor availability: {UserName}, Available: {AvailableDate}, Recovery: {RecoveryDate}",
                     UserName, AvailableDate, RecoveryReminderDate);
                 return;
             }
 
-            // For real users, always create a new donor availability record
+            // For real users, create both donor availability and donation history records
             if (int.TryParse(userId, out int userIdInt))
             {
                 // Create new donor availability record
@@ -225,6 +232,37 @@ namespace BD.RazorPages.Pages
                 }
 
                 await _donorAvailabilityRepository.AddDonorAvailabilityAsync(donorAvailability);
+
+                // Create donation history record with "Waiting" status
+                try
+                {
+                    // Get user data to populate blood type
+                    var user = await _userRepository.GetByIdAsync(userIdInt);
+                    var userBloodType = user?.BloodType ?? "Unknown";
+
+                    var donationHistory = new DonationHistory
+                    {
+                        UserId = userIdInt,
+                        RequestId = null, // Default value - can be updated later when linked to a specific request
+                        FacilityId = 1, // Default facility ID - can be configured or made configurable
+                        Amount = 0, // Will be set when donation is confirmed
+                        BloodType = userBloodType, // Use actual user blood type
+                        ComponentType = ComponentType ?? "Whole Blood", // Use selected component type
+                        Status = DonationStatus.Waiting, // Set initial status to Waiting
+                        CreatedDate = DateTime.Now,
+                        IsDeleted = false
+                    };
+
+                    await _donationHistoryRepository.AddDonationHistoryAsync(donationHistory);
+                    _logger.LogInformation("Successfully created donation history for user {UserId} with blood type {BloodType}", userIdInt, userBloodType);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error creating donation history for user {UserId}", userIdInt);
+                    // Continue execution - don't fail the entire registration if only donation history fails
+                }
+
+                _logger.LogInformation("Created donor availability and donation history for user {UserId}", userIdInt);
             }
         }
 
@@ -239,6 +277,7 @@ namespace BD.RazorPages.Pages
             // Clear form fields after successful submission
             AvailableDate = DateTime.Today.AddDays(1);
             RecoveryReminderDate = CalculateRecoveryReminderDate(AvailableDate);
+            ComponentType = "Whole Blood";
             AdditionalNotes = string.Empty;
             AgreesToTerms = false;
         }
