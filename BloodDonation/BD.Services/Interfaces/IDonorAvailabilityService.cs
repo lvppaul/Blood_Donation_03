@@ -16,5 +16,7 @@ namespace BD.Services.Interfaces
         Task<DonorAvailabilityResponse?> UpdateAsync(int id, DonorAvailabilityRequest donorAvailability);
         Task DeleteAsync(int id);
         Task<IEnumerable<DonorAvailabilityResponse>> GetAllAvailableDonorsAsync();
+        Task<IEnumerable<DonorAvailabilityResponse>> GetAvailableDonorsByBloodTypeAsync(string bloodType);
+        Task<IEnumerable<DonorAvailabilityResponse>> SearchCompatibleDonorsAsync(string recipientBloodType);
     }
 }

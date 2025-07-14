@@ -51,6 +51,21 @@ namespace BD.Services.Implementation
         public async Task<IEnumerable<BloodRequestResponse>> GetAllAsync()
         {
             var bloodRequests = await _bloodRequestRepository.GetAllBloodRequestsAsync();
+            foreach (var request in bloodRequests)
+            {
+                var userEntity = await _userRepository.GetByIdAsync(request.UserId);
+                if (userEntity == null)
+                {
+                    throw new Exception("User not found");
+                }
+                var statusEntity = await _statusRequestRepository.GetByIdAsync(request.StatusRequestId);
+                if (statusEntity == null)
+                {
+                    throw new Exception("Status request not found");
+                }
+                request.User = userEntity;
+                request.StatusRequest = statusEntity;
+            }
 
             return bloodRequests.Select(br => BloodRequestMapper.ToResponse(br));
         }
@@ -62,6 +77,18 @@ namespace BD.Services.Implementation
             {
                 return null;
             }
+            var userEntity = await _userRepository.GetByIdAsync(bloodRequest.UserId);
+            if (userEntity == null)
+            {
+                throw new Exception("User not found");
+            }
+            var statusEntity = await _statusRequestRepository.GetByIdAsync(bloodRequest.StatusRequestId);
+            if (statusEntity == null)
+            {
+                throw new Exception("Status request not found");
+            }
+            bloodRequest.User = userEntity;
+            bloodRequest.StatusRequest = statusEntity;
             return BloodRequestMapper.ToResponse(bloodRequest);
         }
 
@@ -83,6 +110,18 @@ namespace BD.Services.Implementation
             existingRequest.FulfilledDate = request.FulfilledDate;
 
             var updated = await _bloodRequestRepository.UpdateBloodRequestAsync(existingRequest);
+            var userEntity = await _userRepository.GetByIdAsync(updated.UserId);
+            if (userEntity == null)
+            {
+                throw new Exception("User not found");
+            }
+            var statusEntity = await _statusRequestRepository.GetByIdAsync(updated.StatusRequestId);
+            if (statusEntity == null)
+            {
+                throw new Exception("Status request not found");
+            }
+            updated.User = userEntity;
+            updated.StatusRequest = statusEntity;
 
             return BloodRequestMapper.ToResponse(updated);
         }

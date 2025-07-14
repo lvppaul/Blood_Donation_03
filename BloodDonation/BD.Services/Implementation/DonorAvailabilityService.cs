@@ -70,5 +70,17 @@ namespace BD.Services.Implementation
             var availableDonors = await _repository.GetAllAvailableDonorAsync();
             return availableDonors.Select(DonorAvailabilityMapper.ToResponse);
         }
+
+        public async Task<IEnumerable<DonorAvailabilityResponse>> GetAvailableDonorsByBloodTypeAsync(string bloodType)
+        {
+            var availableDonors = await _repository.GetAvailableDonorsByBloodTypeAsync(bloodType);
+            return availableDonors.Select(DonorAvailabilityMapper.ToResponse);
+        }
+
+        public async Task<IEnumerable<DonorAvailabilityResponse>> SearchCompatibleDonorsAsync(string recipientBloodType)
+        {
+            var compatibleDonors = await _repository.SearchCompatibleDonorsAsync(recipientBloodType);
+            return compatibleDonors.Select(DonorAvailabilityMapper.ToResponse);
+        }
     }
 }
