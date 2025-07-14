@@ -17,5 +17,7 @@ namespace BD.Repositories.Interfaces
         Task DeleteDonorAvailabilityAsync(DonorAvailability donorAvailability);
 
         Task<IEnumerable<DonorAvailability>> GetAllAvailableDonorAsync();
+        Task<IEnumerable<DonorAvailability>> GetAvailableDonorsByBloodTypeAsync(string bloodType);
+        Task<IEnumerable<DonorAvailability>> SearchCompatibleDonorsAsync(string recipientBloodType);
     }
 }

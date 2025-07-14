@@ -64,17 +64,97 @@ namespace BD.Repositories.Implementation
         {
             _context.DonorAvailabilities.Update(donorAvailability);
             await _context.SaveChangesAsync();
-            return donorAvailability;
+            
+            // Reload entity with navigation properties
+            var updatedEntity = await _context.DonorAvailabilities
+                .Include(da => da.User)
+                .ThenInclude(u => u.Role)
+                .Include(da => da.StatusDonor)
+                .FirstOrDefaultAsync(da => da.AvailabilityId == donorAvailability.AvailabilityId);
+                
+            return updatedEntity ?? donorAvailability;
         }
 
         public async Task<IEnumerable<DonorAvailability>> GetAllAvailableDonorAsync()
         {
-            return await _context.DonorAvailabilities
+            // First, get all available donors with their data
+            var allAvailableDonors = await _context.DonorAvailabilities
                 .Include(da => da.User)
                 .ThenInclude(u => u.Role)
                 .Include(da => da.StatusDonor)
                 .Where(da => da.IsDeleted != true && da.StatusDonorId == 1)
                 .ToListAsync();
+            
+            // Then group by UserId and get the latest availability for each user
+            var latestAvailabilityPerUser = allAvailableDonors
+                .GroupBy(da => da.UserId)
+                .Select(g => g.OrderByDescending(da => da.AvailableDate).First())
+                .ToList();
+            
+            return latestAvailabilityPerUser;
+        }
+
+        public async Task<IEnumerable<DonorAvailability>> GetAvailableDonorsByBloodTypeAsync(string bloodType)
+        {
+            // First, get all available donors with specific blood type
+            var allAvailableDonors = await _context.DonorAvailabilities
+                .Include(da => da.User)
+                .ThenInclude(u => u.Role)
+                .Include(da => da.StatusDonor)
+                .Where(da => da.IsDeleted != true 
+                    && da.StatusDonorId == 1 
+                    && da.User.BloodType == bloodType)
+                .ToListAsync();
+            
+            // Then group by UserId and get the latest availability for each user
+            var latestAvailabilityPerUser = allAvailableDonors
+                .GroupBy(da => da.UserId)
+                .Select(g => g.OrderByDescending(da => da.AvailableDate).First())
+                .ToList();
+            
+            return latestAvailabilityPerUser;
+        }
+
+        public async Task<IEnumerable<DonorAvailability>> SearchCompatibleDonorsAsync(string recipientBloodType)
+        {
+            // Blood compatibility logic - simplified version
+            var compatibleBloodTypes = GetCompatibleBloodTypes(recipientBloodType);
+            
+            // First, get all compatible donors with their data
+            var allCompatibleDonors = await _context.DonorAvailabilities
+                .Include(da => da.User)
+                .ThenInclude(u => u.Role)
+                .Include(da => da.StatusDonor)
+                .Where(da => da.IsDeleted != true 
+                    && da.StatusDonorId == 1 
+                    && compatibleBloodTypes.Contains(da.User.BloodType))
+                .ToListAsync();
+            
+            // Then group by UserId and get the latest availability for each user
+            var latestAvailabilityPerUser = allCompatibleDonors
+                .GroupBy(da => da.UserId)
+                .Select(g => g.OrderByDescending(da => da.AvailableDate).First())
+                .OrderBy(da => da.User.BloodType == recipientBloodType ? 0 : 1) // Exact match first
+                .ToList();
+            
+            return latestAvailabilityPerUser;
+        }
+
+        private List<string> GetCompatibleBloodTypes(string recipientBloodType)
+        {
+            // Basic blood compatibility rules
+            return recipientBloodType switch
+            {
+                "A+" => new List<string> { "A+", "A-", "O+", "O-" },
+                "A-" => new List<string> { "A-", "O-" },
+                "B+" => new List<string> { "B+", "B-", "O+", "O-" },
+                "B-" => new List<string> { "B-", "O-" },
+                "AB+" => new List<string> { "A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-" },
+                "AB-" => new List<string> { "A-", "B-", "AB-", "O-" },
+                "O+" => new List<string> { "O+", "O-" },
+                "O-" => new List<string> { "O-" },
+                _ => new List<string>()
+            };
         }
     }
 }

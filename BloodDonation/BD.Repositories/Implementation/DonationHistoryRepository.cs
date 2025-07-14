@@ -46,6 +46,8 @@ namespace BD.Repositories.Implementation
         }        public async Task<DonationHistory?> GetDonationHistoryByIdAsync(int id)
         {
             return await _context.DonationHistories
+                .Include(dh => dh.User)
+                    .ThenInclude(u => u.Role)
                 .Include(dh => dh.Facility)
                 .FirstOrDefaultAsync(dh => dh.DonationId == id && dh.IsDeleted != true);
         }
@@ -73,6 +75,41 @@ namespace BD.Repositories.Implementation
             _context.DonationHistories.Update(donationHistory);
             await _context.SaveChangesAsync();
             return donationHistory;
+        }
+
+        public async Task<bool> UpdateDonationStatusAsync(int donationId, DonationStatus status)
+        {
+            var donation = await _context.DonationHistories
+                .FirstOrDefaultAsync(dh => dh.DonationId == donationId && dh.IsDeleted != true);
+
+            if (donation == null) return false;
+
+            donation.Status = status;
+
+            // Update timestamps based on status
+            switch (status)
+            {
+                case DonationStatus.Confirmed:
+                    donation.ConfirmedDate = DateTime.Now;
+                    break;
+                case DonationStatus.Donated:
+                    donation.DonationDate = DateTime.Now; // DonationDate represents completion time
+                    break;
+            }
+
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<IEnumerable<DonationHistory>> GetByStatusAsync(DonationStatus status)
+        {
+            return await _context.DonationHistories
+                .Include(dh => dh.Facility)
+                .Include(dh => dh.User)
+                .Include(dh => dh.Request)
+                .Where(dh => dh.Status == status && dh.IsDeleted != true)
+                .OrderByDescending(dh => dh.CreatedDate)
+                .ToListAsync();
         }
     }
 }

@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BD.Repositories.Migrations
 {
     [DbContext(typeof(BloodDonationDbContext))]
-    [Migration("20250621010239_init")]
+    [Migration("20250714132412_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -266,8 +266,11 @@ namespace BD.Repositories.Migrations
             modelBuilder.Entity("BD.Repositories.Models.Entities.DonationHistory", b =>
                 {
                     b.Property<int>("DonationId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasColumnName("donation_id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DonationId"));
 
                     b.Property<int>("Amount")
                         .HasColumnType("int")
@@ -286,6 +289,16 @@ namespace BD.Repositories.Migrations
                         .HasColumnType("nvarchar(50)")
                         .HasColumnName("component_type");
 
+                    b.Property<DateTime?>("ConfirmedDate")
+                        .HasColumnType("datetime")
+                        .HasColumnName("confirmed_date");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasColumnName("created_date")
+                        .HasDefaultValueSql("(getdate())");
+
                     b.Property<DateTime?>("DonationDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime")
@@ -302,9 +315,13 @@ namespace BD.Repositories.Migrations
                         .HasDefaultValue(false)
                         .HasColumnName("is_Deleted");
 
-                    b.Property<int>("RequestId")
+                    b.Property<int?>("RequestId")
                         .HasColumnType("int")
                         .HasColumnName("request_id");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int")
+                        .HasColumnName("status");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int")
@@ -731,7 +748,6 @@ namespace BD.Repositories.Migrations
                     b.HasOne("BD.Repositories.Models.Entities.BloodRequest", "Request")
                         .WithMany("DonationHistories")
                         .HasForeignKey("RequestId")
-                        .IsRequired()
                         .HasConstraintName("FK__DonationH__reque__6FE99F9F");
 
                     b.HasOne("BD.Repositories.Models.Entities.User", "User")

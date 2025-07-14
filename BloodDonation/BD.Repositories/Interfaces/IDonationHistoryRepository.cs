@@ -15,6 +15,8 @@ namespace BD.Repositories.Interfaces
         Task<DonationHistory?> GetLatestDonationByUserIdAsync(int userId);
         Task<DonationHistory> AddDonationHistoryAsync(DonationHistory donationHistory);
         Task<DonationHistory> UpdateDonationHistoryAsync(DonationHistory donationHistory);
+        Task<bool> UpdateDonationStatusAsync(int donationId, DonationStatus status);
+        Task<IEnumerable<DonationHistory>> GetByStatusAsync(DonationStatus status);
         Task DeleteDonationHistoryAsync(DonationHistory donationHistory);
     }
 }

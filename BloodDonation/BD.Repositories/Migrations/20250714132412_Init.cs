@@ -289,14 +289,18 @@ namespace BD.Repositories.Migrations
                 name: "DonationHistory",
                 columns: table => new
                 {
-                    donation_id = table.Column<int>(type: "int", nullable: false),
+                    donation_id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     user_id = table.Column<int>(type: "int", nullable: false),
-                    request_id = table.Column<int>(type: "int", nullable: false),
+                    request_id = table.Column<int>(type: "int", nullable: true),
                     facility_id = table.Column<int>(type: "int", nullable: false),
                     amount = table.Column<int>(type: "int", nullable: false),
                     donation_date = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())"),
                     blood_type = table.Column<string>(type: "varchar(10)", unicode: false, maxLength: 10, nullable: false),
                     component_type = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    status = table.Column<int>(type: "int", nullable: false),
+                    created_date = table.Column<DateTime>(type: "datetime", nullable: false, defaultValueSql: "(getdate())"),
+                    confirmed_date = table.Column<DateTime>(type: "datetime", nullable: true),
                     is_Deleted = table.Column<bool>(type: "bit", nullable: true, defaultValue: false)
                 },
                 constraints: table =>
