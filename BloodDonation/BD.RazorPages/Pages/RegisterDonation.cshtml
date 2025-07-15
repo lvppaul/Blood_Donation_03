@@ -220,20 +220,10 @@
                         <i class="fas fa-times mr-2"></i>
                         Cancel
                     </a>
-                    @if (Model.RecoveryReminderDate.Date > DateTime.Now.Date)
-                    {
-                        <button type="button" class="bg-gray-400 text-white font-medium py-3 px-6 rounded-lg cursor-not-allowed inline-flex items-center" disabled>
-                            <i class="fas fa-ban mr-2"></i>
-                            Cannot Register (Recovery Period)
-                        </button>
-                    }
-                    else
-                    {
-                        <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200 inline-flex items-center">
-                            <i class="fas fa-calendar-check mr-2"></i>
-                            Register Availability
-                        </button>
-                    }
+                    <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200 inline-flex items-center">
+                        <i class="fas fa-calendar-check mr-2"></i>
+                        Register Availability
+                    </button>
                 </div>
             </form>
         </div>
@@ -257,6 +247,9 @@
     
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Get last donation date from server
+            const lastDonationDate = '@Model.LastDonationDateDisplay';
+            
             // Set minimum date for available date (tomorrow)
             const availableDateInput = document.querySelector('input[name="AvailableDate"]');
             const recoveryDateInput = document.querySelector('input[name="RecoveryReminderDate"]');
@@ -266,36 +259,79 @@
                 tomorrow.setDate(tomorrow.getDate() + 1);
                 availableDateInput.min = tomorrow.toISOString().split('T')[0];
                 
-                // Auto-calculate recovery reminder date when available date changes
+                // Auto-calculate predicted recovery reminder date when available date changes
+                // This is for display purposes only - server-side validation uses DB data
                 availableDateInput.addEventListener('change', function() {
                     if (this.value) {
                         const availableDate = new Date(this.value);
-                        const recoveryDate = new Date(availableDate);
-                        recoveryDate.setDate(recoveryDate.getDate() + 90); // Add 3 months (90 days)
+                        const predictedRecoveryDate = new Date(availableDate);
+                        predictedRecoveryDate.setDate(predictedRecoveryDate.getDate() + 90); // Add 3 months (90 days)
                         
                         if (recoveryDateInput) {
-                            recoveryDateInput.value = recoveryDate.toISOString().split('T')[0];
+                            recoveryDateInput.value = predictedRecoveryDate.toISOString().split('T')[0];
                         }
                     }
                 });
                 
-                // Initialize recovery date on page load if available date is set
+                // Initialize predicted recovery date on page load if available date is set
                 if (availableDateInput.value && recoveryDateInput) {
                     const availableDate = new Date(availableDateInput.value);
-                    const recoveryDate = new Date(availableDate);
-                    recoveryDate.setDate(recoveryDate.getDate() + 90);
-                    recoveryDateInput.value = recoveryDate.toISOString().split('T')[0];
+                    const predictedRecoveryDate = new Date(availableDate);
+                    predictedRecoveryDate.setDate(predictedRecoveryDate.getDate() + 90);
+                    recoveryDateInput.value = predictedRecoveryDate.toISOString().split('T')[0];
+                }
+                
+                // Check and update register button state based on last donation date
+                updateRegisterButtonState();
+            }
+            
+            // Function to check last donation date and update register button state
+            function updateRegisterButtonState() {
+                const registerButton = document.querySelector('button[type="submit"]');
+                
+                if (registerButton && lastDonationDate && lastDonationDate !== 'No previous donations' && 
+                    !lastDonationDate.includes('Demo') && !lastDonationDate.includes('Unable to load')) {
+                    
+                    // Parse the last donation date (MM/dd/yyyy format)
+                    const lastDonation = new Date(lastDonationDate);
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    lastDonation.setHours(0, 0, 0, 0);
+                    
+                    // Check if today is 90 days or more after the last donation
+                    const eligibleDate = new Date(lastDonation);
+                    eligibleDate.setDate(eligibleDate.getDate() + 90);
+                    
+                    if (today < eligibleDate) {
+                        // User is still in recovery period - disable button
+                        registerButton.disabled = true;
+                        registerButton.classList.remove('bg-red-600', 'hover:bg-red-700');
+                        registerButton.classList.add('bg-gray-400', 'cursor-not-allowed');
+                        registerButton.innerHTML = '<i class="fas fa-ban mr-2"></i>Cannot Register (Recovery Period)';
+                    } else {
+                        // User can donate - enable button
+                        registerButton.disabled = false;
+                        registerButton.classList.remove('bg-gray-400', 'cursor-not-allowed');
+                        registerButton.classList.add('bg-red-600', 'hover:bg-red-700');
+                        registerButton.innerHTML = '<i class="fas fa-calendar-check mr-2"></i>Register Availability';
+                    }
+                } else if (registerButton) {
+                    // For new users or demo users - enable button
+                    registerButton.disabled = false;
+                    registerButton.classList.remove('bg-gray-400', 'cursor-not-allowed');
+                    registerButton.classList.add('bg-red-600', 'hover:bg-red-700');
+                    registerButton.innerHTML = '<i class="fas fa-calendar-check mr-2"></i>Register Availability';
                 }
             }
 
             // Auto-dismiss messages
-            const messages = document.querySelectorAll('.bg-green-50, .bg-red-50');
-            messages.forEach(message => {
-                setTimeout(() => {
-                    message.style.opacity = '0';
-                    setTimeout(() => message.remove(), 300);
-                }, 5000);
-            });
+            // const messages = document.querySelectorAll('.bg-green-50, .bg-red-50');
+            // messages.forEach(message => {
+            //     setTimeout(() => {
+            //         message.style.opacity = '0';
+            //         setTimeout(() => message.remove(), 300);
+            //     }, 5000);
+            // });
 
             // Form validation
             const form = document.querySelector('form');
@@ -303,16 +339,22 @@
                 form.addEventListener('submit', function(e) {
                     let isValid = true;
                     
-                    // Check recovery period
-                    const recoveryDateInput = document.querySelector('input[name="RecoveryReminderDate"]');
-                    if (recoveryDateInput && recoveryDateInput.value) {
-                        const recoveryDate = new Date(recoveryDateInput.value);
+                    // Check if user is eligible based on last donation date + 90 days
+                    if (lastDonationDate && lastDonationDate !== 'No previous donations' && 
+                        !lastDonationDate.includes('Demo') && !lastDonationDate.includes('Unable to load')) {
+                        
+                        // Parse the last donation date (MM/dd/yyyy format)
+                        const lastDonation = new Date(lastDonationDate);
                         const today = new Date();
                         today.setHours(0, 0, 0, 0);
-                        recoveryDate.setHours(0, 0, 0, 0);
+                        lastDonation.setHours(0, 0, 0, 0);
                         
-                        if (recoveryDate > today) {
-                            alert('You are still in recovery period. You can donate again after ' + recoveryDate.toDateString());
+                        // Check if today is 90 days or more after the last donation
+                        const eligibleDate = new Date(lastDonation);
+                        eligibleDate.setDate(eligibleDate.getDate() + 90);
+                        
+                        if (today < eligibleDate) {
+                            alert('You are still in recovery period. You can donate again after ' + eligibleDate.toDateString());
                             isValid = false;
                         }
                     }

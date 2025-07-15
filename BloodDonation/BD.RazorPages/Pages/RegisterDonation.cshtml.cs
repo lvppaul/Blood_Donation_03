@@ -122,21 +122,26 @@ namespace BD.RazorPages.Pages
                 return RedirectToPage("/Profile");
             }
 
-            // Auto-calculate recovery reminder date
-            RecoveryReminderDate = CalculateRecoveryReminderDate(AvailableDate);
-
             // Custom validation
             if (AvailableDate <= DateTime.Now.Date)
             {
                 ModelState.AddModelError(nameof(AvailableDate), "Available date must be in the future.");
             }
 
+            // Get current recovery date from database and compare with predicted recovery date
+            await CalculateRecoveryDateAsync(userId);
+            var predictedRecoveryDate = CalculateRecoveryReminderDate(AvailableDate);
+
             // Check if user is still in recovery period
-            if (RecoveryReminderDate.Date > DateTime.Now.Date)
+            // Allow donation if predicted recovery date is greater than current recovery date in DB
+            if (RecoveryReminderDate.Date > DateTime.Now.Date && predictedRecoveryDate.Date <= RecoveryReminderDate.Date)
             {
-                ModelState.AddModelError(nameof(RecoveryReminderDate), 
+                ModelState.AddModelError(nameof(RecoveryReminderDate),
                     $"You are still in recovery period. You can donate again after {RecoveryReminderDate:MMM dd, yyyy}.");
             }
+
+            // Update recovery reminder date for saving to database
+            RecoveryReminderDate = predictedRecoveryDate;
 
             if (!AgreesToTerms)
             {
@@ -306,27 +311,27 @@ namespace BD.RazorPages.Pages
                 return;
             }
 
-            // For real users, calculate based on last donation
+            // For real users, get recovery date from latest donor availability record
             if (int.TryParse(userId, out int userIdInt))
             {
                 try
                 {
-                    var lastDonation = await _donationHistoryRepository.GetLatestDonationByUserIdAsync(userIdInt);
-                    if (lastDonation != null && lastDonation.DonationDate.HasValue)
+                    var latestDonorAvailability = await _donorAvailabilityRepository.GetLatestDonorAvailabilityByUserIdAsync(userIdInt);
+                    if (latestDonorAvailability != null && latestDonorAvailability.RecoveryReminderDate.HasValue)
                     {
-                        // Calculate recovery date (3 months from last donation)
-                        RecoveryReminderDate = lastDonation.DonationDate.Value.AddDays(90);
+                        // Use recovery date from latest donor availability record
+                        RecoveryReminderDate = latestDonorAvailability.RecoveryReminderDate.Value.ToDateTime(TimeOnly.MinValue);
                     }
                     else
                     {
-                        // No previous donation, user can donate immediately
+                        // No previous donor availability record, user can donate immediately
                         RecoveryReminderDate = DateTime.Today.AddDays(-1);
                     }
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Error calculating recovery date for user {UserId}", userIdInt);
-                    // Default to allow donation if we can't calculate
+                    _logger.LogError(ex, "Error getting recovery date from donor availability for user {UserId}", userIdInt);
+                    // Default to allow donation if we can't get recovery date
                     RecoveryReminderDate = DateTime.Today.AddDays(-1);
                 }
             }
@@ -351,7 +356,8 @@ namespace BD.RazorPages.Pages
 
         private DateTime CalculateRecoveryReminderDate(DateTime availableDate)
         {
-            // Add 3 months (90 days) to the available date for recovery reminder
+            // Add 3 months (90 days) to the available date for predicted recovery reminder
+            // This calculates when the user will be able to donate again after this donation
             return availableDate.AddDays(90);
         }
 
@@ -359,12 +365,12 @@ namespace BD.RazorPages.Pages
         {
             // Clear form fields after successful submission
             AvailableDate = DateTime.Today.AddDays(1);
-            RecoveryReminderDate = CalculateRecoveryReminderDate(AvailableDate);
             ComponentType = "Whole Blood";
             MedicalFacilityId = 0;
             Amount = 450; // Reset to default amount
             AdditionalNotes = string.Empty;
             AgreesToTerms = false;
+            // RecoveryReminderDate will be recalculated based on user's donor availability history
         }
 
         private string GetDemoEmail(string userId)

@@ -158,12 +158,6 @@
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium @GetStatusBadgeColor(request.StatusBloodRequestResponse.StatusRequestId)">
                                 @GetStatusName(request.StatusBloodRequestResponse.StatusRequestId)
                             </span>
-                            @if (request.FulfilledDate.HasValue)
-                            {
-                                <div class="text-xs text-gray-500 mt-1">
-                                    Fulfilled: @request.FulfilledDate.Value.ToString("MMM dd, yyyy")
-                                </div>
-                            }
                         </td>
 
                         <!-- Actions -->

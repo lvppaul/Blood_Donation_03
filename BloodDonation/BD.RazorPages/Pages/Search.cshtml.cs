@@ -27,7 +27,7 @@ namespace BD.RazorPages.Pages
 
         public async Task OnGetAsync()
         {
-            // Load all available donors initially
+            // Use repository method to get all available donors (already filtered by status and latest availability)
             AvailableDonors = await _donorAvailabilityService.GetAllAvailableDonorsAsync();
         }
 
@@ -37,16 +37,19 @@ namespace BD.RazorPages.Pages
 
             if (string.IsNullOrEmpty(SearchRequest.BloodType))
             {
+                // Get all available donors if no blood type specified
                 AvailableDonors = await _donorAvailabilityService.GetAllAvailableDonorsAsync();
                 return Page();
             }
 
+            // Filter by blood type based on search type
             if (SearchRequest.SearchType == "exact")
             {
                 AvailableDonors = await _donorAvailabilityService.GetAvailableDonorsByBloodTypeAsync(SearchRequest.BloodType);
             }
             else
             {
+                // Use repository method for compatible blood type search
                 AvailableDonors = await _donorAvailabilityService.SearchCompatibleDonorsAsync(SearchRequest.BloodType);
             }
 

@@ -7,19 +7,28 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace BD.RazorPages.Pages.Admin.Users
 {
+    // Request model for updating donor status
+    public class UpdateDonorStatusRequest
+    {
+        public int UserId { get; set; }
+        public int Status { get; set; }
+    }
+
     public class DonorsModel : PageModel
     {
         private readonly IUserService _userService;
         private readonly IDonationHistoryService _donationHistoryService;
         private readonly IDonorAvailabilityService _donorAvailabilityService;
         private readonly IStatusBloodDonorService _statusBloodDonorService;
+        private readonly IBloodInventoryService _bloodInventoryService;
 
-        public DonorsModel(IUserService userService, IDonationHistoryService donationHistoryService, IDonorAvailabilityService donorAvailabilityService, IStatusBloodDonorService statusBloodDonorService)
+        public DonorsModel(IUserService userService, IDonationHistoryService donationHistoryService, IDonorAvailabilityService donorAvailabilityService, IStatusBloodDonorService statusBloodDonorService, IBloodInventoryService bloodInventoryService)
         {
             _userService = userService;
             _donationHistoryService = donationHistoryService;
             _donorAvailabilityService = donorAvailabilityService;
             _statusBloodDonorService = statusBloodDonorService;
+            _bloodInventoryService = bloodInventoryService;
         }
 
         // Danh sách donor để hiển thị
@@ -36,6 +45,8 @@ namespace BD.RazorPages.Pages.Admin.Users
         public int PendingDonations { get; set; }
         public int ConfirmedDonations { get; set; }
         public int CompletedDonations { get; set; }
+        public int RejectedDonations { get; set; }
+        public int CanceledDonations { get; set; }
 
         // Tìm kiếm
         [BindProperty(SupportsGet = true)]
@@ -62,12 +73,19 @@ namespace BD.RazorPages.Pages.Admin.Users
             try
             {
                 var donorAvailabilities = await _donorAvailabilityService.GetAllAsync();
-                var donorUserIds = donorAvailabilities
+
+                // Lấy donor availability gần nhất theo available date của từng user
+                var latestDonorAvailabilities = donorAvailabilities
                     .Where(d => d.User != null)
+                    .GroupBy(d => d.User.UserId)
+                    .Select(g => g.OrderByDescending(d => d.AvailableDate).First())
+                    .ToList();
+
+                var donorUserIds = latestDonorAvailabilities
                     .Select(d => d.User.UserId)
                     .Distinct()
                     .ToList();
-                
+
                 var allUsers = await _userService.GetAllAsync();
                 var donors = allUsers.Where(u => donorUserIds.Contains(u.UserId));
 
@@ -101,29 +119,21 @@ namespace BD.RazorPages.Pages.Admin.Users
                 TotalDonors = Donors.Count;
             }
 
-            // Lấy donation histories từ donors có trong DonorAvailabilities
+            // Lấy tất cả donation histories (không cần lọc theo latest availability)
             try
             {
-                // Lấy danh sách donor user IDs từ DonorAvailabilities
-                var donorAvailabilities = await _donorAvailabilityService.GetAllAsync();
-                var donorUserIds = donorAvailabilities
-                    .Where(d => d.User != null)
-                    .Select(d => d.User.UserId)
-                    .Distinct()
-                    .ToHashSet();
-
-                // Lấy tất cả donation histories
+                // Lấy tất cả donation histories từ users có role Member
                 var allDonations = await _donationHistoryService.GetAllAsync();
-                
-                // Lọc chỉ lấy donations từ donors
-                var donorDonations = allDonations.Where(d => d.User != null && donorUserIds.Contains(d.User.UserId));
-                
-                DonationHistories = donorDonations.ToList();
+                var memberDonations = allDonations.Where(d => d.User?.Role?.Name?.Equals("Member", StringComparison.OrdinalIgnoreCase) == true);
+
+                DonationHistories = memberDonations.ToList();
 
                 // Tính toán thống kê
                 PendingDonations = DonationHistories.Count(d => GetDonationStatus(d) == DonationStatus.Waiting);
                 ConfirmedDonations = DonationHistories.Count(d => GetDonationStatus(d) == DonationStatus.Confirmed);
                 CompletedDonations = DonationHistories.Count(d => GetDonationStatus(d) == DonationStatus.Donated);
+                RejectedDonations = DonationHistories.Count(d => GetDonationStatus(d) == DonationStatus.Rejected);
+                CanceledDonations = DonationHistories.Count(d => GetDonationStatus(d) == DonationStatus.Canceled);
             }
             catch (Exception)
             {
@@ -133,12 +143,14 @@ namespace BD.RazorPages.Pages.Admin.Users
                     // Fallback - lấy tất cả donations từ users có role Member
                     var allDonations = await _donationHistoryService.GetAllAsync();
                     var memberDonations = allDonations.Where(d => d.User?.Role?.Name?.Equals("Member", StringComparison.OrdinalIgnoreCase) == true);
-                    
+
                     DonationHistories = memberDonations.ToList();
-                    
+
                     PendingDonations = DonationHistories.Count(d => GetDonationStatus(d) == DonationStatus.Waiting);
                     ConfirmedDonations = DonationHistories.Count(d => GetDonationStatus(d) == DonationStatus.Confirmed);
                     CompletedDonations = DonationHistories.Count(d => GetDonationStatus(d) == DonationStatus.Donated);
+                    RejectedDonations = DonationHistories.Count(d => GetDonationStatus(d) == DonationStatus.Rejected);
+                    CanceledDonations = DonationHistories.Count(d => GetDonationStatus(d) == DonationStatus.Canceled);
                 }
                 catch (Exception)
                 {
@@ -147,6 +159,8 @@ namespace BD.RazorPages.Pages.Admin.Users
                     PendingDonations = 0;
                     ConfirmedDonations = 0;
                     CompletedDonations = 0;
+                    RejectedDonations = 0;
+                    CanceledDonations = 0;
                 }
             }
         }
@@ -163,19 +177,46 @@ namespace BD.RazorPages.Pages.Admin.Users
         {
             try
             {
+                // Get current donation details before update
+                var currentDonation = await _donationHistoryService.GetByIdAsync(donationId);
+                if (currentDonation == null)
+                {
+                    TempData["ErrorMessage"] = "Donation not found.";
+                    return RedirectToPage(new { ActiveTab = "donations" });
+                }
+
+                // Check if current status is already Donated, Rejected, or Canceled - prevent further updates
+                if (currentDonation.Status == DonationStatus.Donated ||
+                    currentDonation.Status == DonationStatus.Rejected ||
+                    currentDonation.Status == DonationStatus.Canceled)
+                {
+                    TempData["ErrorMessage"] = "Can't update status because donation has been completed.";
+                    return RedirectToPage(new { ActiveTab = "donations" });
+                }
+
+                // Update donation status
                 var success = await _donationHistoryService.UpdateStatusAsync(donationId, newStatus);
                 if (success)
                 {
-                    TempData["SuccessMessage"] = "Cập nhật trạng thái thành công!";
+                    // If status changed to Donated, update blood inventory and donor availability
+                    if (newStatus == DonationStatus.Donated)
+                    {
+                        await UpdateBloodInventoryAsync(currentDonation);
+                        await UpdateDonorAvailabilityStatusAsync(currentDonation.User.UserId, 3); // Set status_donor_id to 3
+                    }
+
+                    TempData["SuccessMessage"] = newStatus == DonationStatus.Donated
+                        ? "Update Successfully! Blood Inventory and donor status has been updated."
+                        : "Update Successfully!";
                 }
                 else
                 {
-                    TempData["ErrorMessage"] = "Không tìm thấy donation để cập nhật.";
+                    TempData["ErrorMessage"] = "Donation not found.";
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                TempData["ErrorMessage"] = "Có lỗi xảy ra khi cập nhật trạng thái.";
+                TempData["ErrorMessage"] = $"Error when update status:: {ex.Message}";
             }
 
             return RedirectToPage(new { ActiveTab = "donations" });
@@ -193,19 +234,22 @@ namespace BD.RazorPages.Pages.Admin.Users
         // Donor status methods
         public string GetDonorStatusClass(UserResponse donor)
         {
-            // Find corresponding donor availability for this user
-            var donorAvailability = _donorAvailabilityService.GetAllAsync().Result
-                .FirstOrDefault(d => d.User?.UserId == donor.UserId);
+            // Find latest donor availability for this user
+            var donorAvailabilities = _donorAvailabilityService.GetAllAsync().Result;
+            var latestDonorAvailability = donorAvailabilities
+                .Where(d => d.User?.UserId == donor.UserId)
+                .OrderByDescending(d => d.AvailableDate)
+                .FirstOrDefault();
 
-            if (donorAvailability?.StatusDonor == null)
+            if (latestDonorAvailability?.StatusDonor == null)
                 return "bg-gray-100 text-gray-800"; // Default if no status
 
             // Map status names to Tailwind CSS classes
-            var statusName = donorAvailability.StatusDonor.StatusName?.ToLower();
+            var statusName = latestDonorAvailability.StatusDonor.StatusName?.ToLower();
             return statusName switch
             {
                 "available" => "bg-green-100 text-green-800",
-                "unavailable" => "bg-yellow-100 text-yellow-800", 
+                "unavailable" => "bg-yellow-100 text-yellow-800",
                 "recovery period" => "bg-blue-100 text-blue-800",
                 "medical hold" => "bg-red-100 text-red-800",
                 _ => "bg-gray-100 text-gray-800" // Unknown
@@ -214,22 +258,28 @@ namespace BD.RazorPages.Pages.Admin.Users
 
         public string GetDonorStatusText(UserResponse donor)
         {
-            var donorAvailability = _donorAvailabilityService.GetAllAsync().Result
-                .FirstOrDefault(d => d.User?.UserId == donor.UserId);
+            var donorAvailabilities = _donorAvailabilityService.GetAllAsync().Result;
+            var latestDonorAvailability = donorAvailabilities
+                .Where(d => d.User?.UserId == donor.UserId)
+                .OrderByDescending(d => d.AvailableDate)
+                .FirstOrDefault();
 
-            if (donorAvailability?.StatusDonor == null)
+            if (latestDonorAvailability?.StatusDonor == null)
                 return "Not Set";
 
             // Return the actual status name from database
-            return donorAvailability.StatusDonor.StatusName ?? "Not Set";
+            return latestDonorAvailability.StatusDonor.StatusName ?? "Not Set";
         }
 
         public int GetDonorStatus(UserResponse donor)
         {
-            var donorAvailability = _donorAvailabilityService.GetAllAsync().Result
-                .FirstOrDefault(d => d.User?.UserId == donor.UserId);
+            var donorAvailabilities = _donorAvailabilityService.GetAllAsync().Result;
+            var latestDonorAvailability = donorAvailabilities
+                .Where(d => d.User?.UserId == donor.UserId)
+                .OrderByDescending(d => d.AvailableDate)
+                .FirstOrDefault();
 
-            return donorAvailability?.StatusDonor?.StatusDonorId ?? 1; // Default to Available
+            return latestDonorAvailability?.StatusDonor?.StatusDonorId ?? 1; // Default to Available
         }
 
         // Get all status as JSON for JavaScript
@@ -291,6 +341,101 @@ namespace BD.RazorPages.Pages.Admin.Users
             catch (Exception ex)
             {
                 return new JsonResult(new { success = false, message = $"Error: {ex.Message}" });
+            }
+        }
+
+        // Cập nhật blood inventory khi donation status thành Donated
+        private async Task UpdateBloodInventoryAsync(BD.Repositories.Models.DTOs.Responses.DonationHistoryResponse donation)
+        {
+            try
+            {
+                // Get existing blood inventory for the same facility, blood type, and component type
+                var inventories = await _bloodInventoryService.GetFilteredAsync(
+                    facilityId: donation.Facility.FacilityId,
+                    bloodType: donation.BloodType
+                );
+
+                // Find matching inventory by component type
+                var matchingInventory = inventories.Item1.FirstOrDefault(i =>
+                    i.ComponentType == donation.ComponentType &&
+                    i.IsDeleted != true);
+
+                if (matchingInventory != null)
+                {
+                    // Update existing inventory - increase amount
+                    var updateRequest = new BD.Repositories.Models.DTOs.Requests.BloodInventoryRequest
+                    {
+                        FacilityId = matchingInventory.Facility.FacilityId,
+                        ComponentType = matchingInventory.ComponentType,
+                        Amount = matchingInventory.Amount + donation.Amount, // Add donated amount
+                        ExpiredDate = matchingInventory.ExpiredDate,
+                        StatusInventoryId = matchingInventory.StatusBloodInventory.StatusInventoryId,
+                        BloodType = matchingInventory.BloodType
+                    };
+
+                    await _bloodInventoryService.UpdateAsync(matchingInventory.InventoryId, updateRequest);
+                }
+                else
+                {
+                    // Create new inventory entry
+                    var createRequest = new BD.Repositories.Models.DTOs.Requests.BloodInventoryRequest
+                    {
+                        FacilityId = donation.Facility.FacilityId,
+                        ComponentType = donation.ComponentType,
+                        Amount = donation.Amount,
+                        ExpiredDate = DateOnly.FromDateTime(DateTime.Today.AddDays(42)), // Default 42 days expiry
+                        StatusInventoryId = 1, // Assuming 1 is "Available" status
+                        BloodType = donation.BloodType
+                    };
+
+                    await _bloodInventoryService.AddAsync(createRequest);
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log the error but don't fail the main operation
+                throw new Exception($"Fail updating Blood Inventory: {ex.Message}");
+            }
+        }
+
+        // Cập nhật trạng thái donor khi donation hoàn thành
+        private async Task UpdateDonorAvailabilityStatusAsync(int userId, int statusDonorId)
+        {
+            try
+            {
+                // Get all donor availability records for this user
+                var donorAvailabilities = await _donorAvailabilityService.GetAllAsync();
+                var userDonorAvailabilities = donorAvailabilities
+                    .Where(d => d.User?.UserId == userId)
+                    .ToList();
+
+                if (userDonorAvailabilities.Any())
+                {
+                    // Update the most recent donor availability record
+                    var latestDonorAvailability = userDonorAvailabilities
+                        .OrderByDescending(d => d.AvailableDate)
+                        .FirstOrDefault();
+
+                    if (latestDonorAvailability != null)
+                    {
+                        // Create update request
+                        var updateRequest = new BD.Repositories.Models.DTOs.Requests.DonorAvailabilityRequest
+                        {
+                            UserId = latestDonorAvailability.User.UserId,
+                            AvailableDate = latestDonorAvailability.AvailableDate,
+                            StatusDonorId = statusDonorId, // Set to 3 for donated status
+                            // LastDonationDate = DateOnly.FromDateTime(DateTime.Today), // Update last donation date
+                            //RecoveryReminderDate = DateOnly.FromDateTime(DateTime.Today.AddDays(56)) // 8 weeks recovery period
+                        };
+
+                        await _donorAvailabilityService.UpdateAsync(latestDonorAvailability.AvailabilityId, updateRequest);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log the error but don't fail the main operation
+                throw new Exception($"Fail updating Blood donor: {ex.Message}");
             }
         }
     }
