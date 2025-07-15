@@ -49,12 +49,12 @@ namespace BD.Repositories.Models.Mappers
                         Name = entity.User.Role.Name
                     }
                 },
-                StatusDonor = new StatusBloodDonorResponse
+                StatusDonor = entity.StatusDonor != null ? new StatusBloodDonorResponse
                 {
                     StatusDonorId = entity.StatusDonor.StatusDonorId,
                     StatusName = entity.StatusDonor.StatusName,
                     IsDeleted = entity.StatusDonor.IsDeleted
-                }
+                } : null
             };
         }
     }

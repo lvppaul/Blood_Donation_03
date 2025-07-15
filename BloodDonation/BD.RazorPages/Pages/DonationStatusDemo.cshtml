@@ -1,0 +1,64 @@
+@page
+@model BD.RazorPages.Pages.DonationStatusDemoModel
+@{
+    ViewData["Title"] = "Demo - Trạng thái hiến máu";
+}
+
+<div class="min-h-screen bg-gray-50 py-8 px-4">
+    <div class="max-w-6xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">Demo - Trạng thái hiến máu</h1>
+            <p class="text-gray-600">Xem trước các trạng thái khác nhau của quá trình hiến máu</p>
+        </div>
+
+        <!-- All Status Examples -->
+        <div class="space-y-8">
+            @foreach (var status in Model.AllStatuses)
+            {
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                        Trạng thái: @switch (status)
+                        {
+                            case BD.Repositories.Models.Entities.DonationStatus.Waiting:
+                                <span class="text-yellow-600">Chờ xác nhận</span>
+                                break;
+                            case BD.Repositories.Models.Entities.DonationStatus.Confirmed:
+                                <span class="text-green-600">Đã xác nhận</span>
+                                break;
+                            case BD.Repositories.Models.Entities.DonationStatus.Donated:
+                                <span class="text-red-600">Đã hiến máu</span>
+                                break;
+                        }
+                    </h3>
+
+                    <!-- Detailed Status Flow with Real Dates -->
+                    <div class="mb-6">
+                        <h4 class="font-medium text-gray-700 mb-3">Chi tiết với ngày tháng thực (Detailed with Real Dates):</h4>
+                        <partial name="_DonationStatusFlowWithDates" model="Model.CreateDemoViewModel(status)" />
+                    </div>
+
+                    <!-- Detailed Status Flow -->
+                    <div class="mb-6">
+                        <h4 class="font-medium text-gray-700 mb-3">Chi tiết cơ bản (Basic Detailed View):</h4>
+                        <partial name="_DonationStatusFlow" model="status" />
+                    </div>
+
+                    <!-- Simple Status Flow -->
+                    <div>
+                        <h4 class="font-medium text-gray-700 mb-3">Đơn giản (Simple View):</h4>
+                        <partial name="_SimpleDonationStatus" model="status" />
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Navigation -->
+        <div class="mt-8 text-center">
+            <a href="/DonationStatus" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
+                <i class="fas fa-eye mr-2"></i>
+                Xem trang quản lý trạng thái
+            </a>
+        </div>
+    </div>
+</div>

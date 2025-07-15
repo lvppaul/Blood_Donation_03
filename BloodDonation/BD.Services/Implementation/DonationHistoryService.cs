@@ -1,6 +1,7 @@
 ﻿using BD.Repositories.Interfaces;
 using BD.Repositories.Models.DTOs.Requests;
 using BD.Repositories.Models.DTOs.Responses;
+using BD.Repositories.Models.Entities;
 using BD.Repositories.Models.Mappers;
 using BD.Services.Interfaces;
 using System;
@@ -66,6 +67,23 @@ namespace BD.Services.Implementation
             var updated = await _donationHistoryRepository.UpdateDonationHistoryAsync(existing);
 
             return DonationHistoryMapper.ToResponse(updated);
+        }
+
+        public async Task<bool> UpdateStatusAsync(int donationId, DonationStatus status)
+        {
+            return await _donationHistoryRepository.UpdateDonationStatusAsync(donationId, status);
+        }
+
+        public async Task<IEnumerable<DonationHistoryResponse>> GetByStatusAsync(DonationStatus status)
+        {
+            var donationHistories = await _donationHistoryRepository.GetByStatusAsync(status);
+            return donationHistories.Select(DonationHistoryMapper.ToResponse);
+        }
+
+        public async Task<IEnumerable<DonationHistoryResponse>> GetByUserIdAsync(int userId)
+        {
+            var donationHistories = await _donationHistoryRepository.GetByUserIdAsync(userId);
+            return donationHistories.Select(DonationHistoryMapper.ToResponse);
         }
     }
 }

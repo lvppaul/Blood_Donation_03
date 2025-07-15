@@ -20,6 +20,6 @@ namespace BD.Repositories.Models.DTOs.Responses
 
         public UserResponse User { get; set; } = null!;
 
-        public StatusBloodDonorResponse StatusDonor { get; set; } = null!;
+        public StatusBloodDonorResponse? StatusDonor { get; set; }
     }
 }

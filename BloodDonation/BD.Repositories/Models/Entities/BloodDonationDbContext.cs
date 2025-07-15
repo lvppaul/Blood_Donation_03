@@ -210,7 +210,7 @@ public partial class BloodDonationDbContext : DbContext
             entity.ToTable("DonationHistory");
 
             entity.Property(e => e.DonationId)
-                .ValueGeneratedNever()
+                .ValueGeneratedOnAdd()
                 .HasColumnName("donation_id");
             entity.Property(e => e.Amount).HasColumnName("amount");
             entity.Property(e => e.BloodType)
@@ -225,6 +225,16 @@ public partial class BloodDonationDbContext : DbContext
                 .HasColumnType("datetime")
                 .HasColumnName("donation_date");
             entity.Property(e => e.FacilityId).HasColumnName("facility_id");
+            entity.Property(e => e.Status)
+                .HasConversion<int>()
+                .HasColumnName("status");
+            entity.Property(e => e.CreatedDate)
+                .HasColumnName("created_date")
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.ConfirmedDate)
+                .HasColumnName("confirmed_date")
+                .HasColumnType("datetime");
             entity.Property(e => e.IsDeleted)
                 .HasDefaultValue(false)
                 .HasColumnName("is_Deleted");

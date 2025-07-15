@@ -22,6 +22,12 @@ namespace BD.Repositories.Models.DTOs.Responses
 
         public bool IsDeleted { get; set; }
 
+        public Entities.DonationStatus Status { get; set; } = Entities.DonationStatus.Waiting;
+
+        public DateTime CreatedDate { get; set; } = DateTime.Now;
+
+        public DateTime? ConfirmedDate { get; set; }
+
         public UserResponse User { get; set; } = null!;
 
         public MedicalFacilityResponse Facility { get; set; } = null!;

@@ -1,0 +1,182 @@
+@model BD.RazorPages.Models.DonationStatusViewModel
+
+<div class="bg-white rounded-lg shadow-sm border p-6 mb-6">
+    <h3 class="text-lg font-semibold text-gray-900 mb-4">
+        <i class="fas fa-heart text-red-500 mr-2"></i>
+        Trạng thái hiến máu
+    </h3>
+    
+    <div class="flex items-center justify-between relative">
+        <!-- Chờ -->
+        <div class="flex flex-col items-center relative z-10">
+            <div class="flex items-center justify-center w-12 h-12 rounded-full border-2 transition-all duration-300 @(Model.Status >= BD.Repositories.Models.Entities.DonationStatus.Waiting ? "bg-blue-500 border-blue-500 text-white shadow-lg" : "bg-gray-200 border-gray-300 text-gray-400")">
+                <i class="fas fa-clock text-lg"></i>
+            </div>
+            <span class="mt-3 text-sm font-medium @(Model.Status >= BD.Repositories.Models.Entities.DonationStatus.Waiting ? "text-blue-600" : "text-gray-400")">
+                Chờ
+            </span>
+            <span class="text-xs text-gray-500 mt-1 text-center max-w-20">
+                Đang chờ xác nhận
+            </span>
+        </div>
+
+        <!-- Progress Line 1 -->
+        <div class="flex-1 h-2 mx-4 rounded-full relative top-[-24px] transition-all duration-500 @(Model.Status >= BD.Repositories.Models.Entities.DonationStatus.Confirmed ? "bg-gradient-to-r from-blue-500 to-green-500" : "bg-gray-200")">
+            @if (Model.Status >= BD.Repositories.Models.Entities.DonationStatus.Confirmed)
+            {
+                <div class="h-full bg-gradient-to-r from-blue-500 to-green-500 rounded-full animate-pulse"></div>
+            }
+        </div>
+
+        <!-- Đã xác nhận -->
+        <div class="flex flex-col items-center relative z-10">
+            <div class="flex items-center justify-center w-12 h-12 rounded-full border-2 transition-all duration-300 @(Model.Status >= BD.Repositories.Models.Entities.DonationStatus.Confirmed ? "bg-green-500 border-green-500 text-white shadow-lg" : "bg-gray-200 border-gray-300 text-gray-400")">
+                <i class="fas fa-check text-lg"></i>
+            </div>
+            <span class="mt-3 text-sm font-medium @(Model.Status >= BD.Repositories.Models.Entities.DonationStatus.Confirmed ? "text-green-600" : "text-gray-400")">
+                Đã xác nhận
+            </span>
+            <span class="text-xs text-gray-500 mt-1 text-center max-w-20">
+                Được phê duyệt
+            </span>
+        </div>
+
+        <!-- Progress Line 2 -->
+        <div class="flex-1 h-2 mx-4 rounded-full relative top-[-24px] transition-all duration-500 @(Model.Status >= BD.Repositories.Models.Entities.DonationStatus.Donated ? "bg-gradient-to-r from-green-500 to-red-500" : "bg-gray-200")">
+            @if (Model.Status >= BD.Repositories.Models.Entities.DonationStatus.Donated)
+            {
+                <div class="h-full bg-gradient-to-r from-green-500 to-red-500 rounded-full animate-pulse"></div>
+            }
+        </div>
+
+        <!-- Đã hiến -->
+        <div class="flex flex-col items-center relative z-10">
+            <div class="flex items-center justify-center w-12 h-12 rounded-full border-2 transition-all duration-300 @(Model.Status >= BD.Repositories.Models.Entities.DonationStatus.Donated ? "bg-red-500 border-red-500 text-white shadow-lg" : "bg-gray-200 border-gray-300 text-gray-400")">
+                <i class="fas fa-heart text-lg"></i>
+            </div>
+            <span class="mt-3 text-sm font-medium @(Model.Status >= BD.Repositories.Models.Entities.DonationStatus.Donated ? "text-red-600" : "text-gray-400")">
+                Đã hiến
+            </span>
+            <span class="text-xs text-gray-500 mt-1 text-center max-w-20">
+                Hoàn thành
+            </span>
+        </div>
+    </div>
+
+    <!-- Status Details -->
+    <div class="mt-8 p-4 rounded-lg border-l-4 @(GetStatusCardClass(Model.Status))">
+        <div class="flex items-start">
+            <div class="flex-shrink-0 mt-1">
+                <i class="@(GetStatusIcon(Model.Status)) text-lg"></i>
+            </div>
+            <div class="ml-3">
+                <h4 class="text-sm font-semibold mb-1">@(GetStatusTitle(Model.Status))</h4>
+                <p class="text-sm text-gray-600">@(GetStatusDescription(Model.Status))</p>
+                
+                <!-- Real timestamps -->
+                <div class="mt-3 space-y-1 text-xs text-gray-500">
+                    <div class="flex items-center">
+                        <i class="fas fa-calendar-plus mr-1"></i>
+                        <span>Ngày đăng ký: @Model.CreatedDate.ToString("dd/MM/yyyy HH:mm")</span>
+                    </div>
+                    
+                    @if (Model.ConfirmedDate.HasValue)
+                    {
+                        <div class="flex items-center">
+                            <i class="fas fa-calendar-check mr-1"></i>
+                            <span>Ngày xác nhận: @Model.ConfirmedDate.Value.ToString("dd/MM/yyyy HH:mm")</span>
+                        </div>
+                    }
+                    
+                    @if (Model.DonationDate.HasValue)
+                    {
+                        <div class="flex items-center">
+                            <i class="fas fa-heart mr-1"></i>
+                            <span>Ngày hiến máu: @Model.DonationDate.Value.ToString("dd/MM/yyyy HH:mm")</span>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="mt-6">
+        <div class="flex justify-between text-xs text-gray-500 mb-1">
+            <span>Tiến trình</span>
+            <span>@(GetProgressPercentage(Model.Status))%</span>
+        </div>
+        <div class="w-full bg-gray-200 rounded-full h-2">
+            <div class="@(GetProgressBarClass(Model.Status)) h-2 rounded-full transition-all duration-700 ease-in-out" 
+                 style="width: @(GetProgressPercentage(Model.Status))%"></div>
+        </div>
+    </div>
+</div>
+
+@functions {
+    private string GetStatusCardClass(BD.Repositories.Models.Entities.DonationStatus status)
+    {
+        return status switch
+        {
+            BD.Repositories.Models.Entities.DonationStatus.Waiting => "bg-blue-50 border-blue-400",
+            BD.Repositories.Models.Entities.DonationStatus.Confirmed => "bg-green-50 border-green-400",
+            BD.Repositories.Models.Entities.DonationStatus.Donated => "bg-red-50 border-red-400",
+            _ => "bg-gray-50 border-gray-400"
+        };
+    }
+
+    private string GetStatusIcon(BD.Repositories.Models.Entities.DonationStatus status)
+    {
+        return status switch
+        {
+            BD.Repositories.Models.Entities.DonationStatus.Waiting => "fas fa-clock text-blue-500",
+            BD.Repositories.Models.Entities.DonationStatus.Confirmed => "fas fa-check-circle text-green-500",
+            BD.Repositories.Models.Entities.DonationStatus.Donated => "fas fa-heart text-red-500",
+            _ => "fas fa-question-circle text-gray-500"
+        };
+    }
+
+    private string GetStatusTitle(BD.Repositories.Models.Entities.DonationStatus status)
+    {
+        return status switch
+        {
+            BD.Repositories.Models.Entities.DonationStatus.Waiting => "Đang chờ xác nhận",
+            BD.Repositories.Models.Entities.DonationStatus.Confirmed => "Đã được xác nhận",
+            BD.Repositories.Models.Entities.DonationStatus.Donated => "Đã hoàn thành hiến máu",
+            _ => "Trạng thái không xác định"
+        };
+    }
+
+    private string GetStatusDescription(BD.Repositories.Models.Entities.DonationStatus status)
+    {
+        return status switch
+        {
+            BD.Repositories.Models.Entities.DonationStatus.Waiting => "Đăng ký hiến máu của bạn đang được xem xét. Chúng tôi sẽ liên hệ sớm nhất có thể.",
+            BD.Repositories.Models.Entities.DonationStatus.Confirmed => "Đăng ký của bạn đã được phê duyệt. Vui lòng đến đúng giờ hẹn để hiến máu.",
+            BD.Repositories.Models.Entities.DonationStatus.Donated => "Cảm ơn bạn đã hiến máu! Hành động cao đẹp của bạn có thể cứu sống nhiều người.",
+            _ => "Trạng thái hiện tại không xác định."
+        };
+    }
+
+    private int GetProgressPercentage(BD.Repositories.Models.Entities.DonationStatus status)
+    {
+        return status switch
+        {
+            BD.Repositories.Models.Entities.DonationStatus.Waiting => 33,
+            BD.Repositories.Models.Entities.DonationStatus.Confirmed => 66,
+            BD.Repositories.Models.Entities.DonationStatus.Donated => 100,
+            _ => 0
+        };
+    }
+
+    private string GetProgressBarClass(BD.Repositories.Models.Entities.DonationStatus status)
+    {
+        return status switch
+        {
+            BD.Repositories.Models.Entities.DonationStatus.Waiting => "bg-blue-500",
+            BD.Repositories.Models.Entities.DonationStatus.Confirmed => "bg-green-500",
+            BD.Repositories.Models.Entities.DonationStatus.Donated => "bg-red-500",
+            _ => "bg-gray-500"
+        };
+    }
+}

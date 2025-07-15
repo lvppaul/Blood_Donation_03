@@ -38,6 +38,10 @@
                                 <i class="fas fa-history mr-2"></i>
                                 Donation History
                             </a>
+                            <a href="/profile/BloodRequests" class="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 inline-flex items-center">
+                                <i class="fas fa-vial mr-2"></i>
+                                My Blood Requests
+                            </a>
                             <a href="/profile?edit=true" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 inline-flex items-center">
                                 <i class="fas fa-edit mr-2"></i>
                                 Edit Profile
@@ -250,7 +254,7 @@
                         }
                         else if (Model.UserRole == "member")
                         {
-                            <a href="/register" class="bg-blue-100 hover:bg-blue-200 text-blue-700 p-4 rounded-lg transition-colors text-center">
+                            <a href="/RegisterDonation" class="bg-blue-100 hover:bg-blue-200 text-blue-700 p-4 rounded-lg transition-colors text-center">
                                 <i class="fas fa-user-circle text-2xl mb-2"></i>
                                 <div class="font-medium">Donor Profile</div>
                             </a>
@@ -258,7 +262,7 @@
                                 <i class="fas fa-heartbeat text-2xl mb-2"></i>
                                 <div class="font-medium">Find Blood</div>
                             </a>
-                            <a href="/emergency" class="bg-blue-100 hover:bg-blue-200 text-blue-700 p-4 rounded-lg transition-colors text-center">
+                            <a href="/EmergencyBloodRequest" class="bg-blue-100 hover:bg-blue-200 text-blue-700 p-4 rounded-lg transition-colors text-center">
                                 <i class="fas fa-exclamation-triangle text-2xl mb-2"></i>
                                 <div class="font-medium">Emergency Requests</div>
                             </a>

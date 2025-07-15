@@ -29,6 +29,10 @@ namespace BD.Repositories.Models.Mappers
         {
             return new DonationHistoryResponse
             {
+                DonationId = donationHistory.DonationId,
+                Status = donationHistory.Status,
+                CreatedDate = donationHistory.CreatedDate,
+                ConfirmedDate = donationHistory.ConfirmedDate,
                 User = new UserResponse
                 {
                     UserId = donationHistory.User.UserId,
