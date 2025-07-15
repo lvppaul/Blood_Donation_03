@@ -1,5 +1,6 @@
 using BD.Repositories.Interfaces;
 using BD.Repositories.Models.Entities;
+using BD.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.ComponentModel.DataAnnotations;
@@ -11,17 +12,20 @@ namespace BD.RazorPages.Pages
         private readonly IUserRepository _userRepository;
         private readonly IDonationHistoryRepository _donationHistoryRepository;
         private readonly IDonorAvailabilityRepository _donorAvailabilityRepository;
+        private readonly IMedicalFacilityService _medicalFacilityService;
         private readonly ILogger<RegisterDonationModel> _logger;
 
         public RegisterDonationModel(
             IUserRepository userRepository,
             IDonationHistoryRepository donationHistoryRepository,
             IDonorAvailabilityRepository donorAvailabilityRepository,
+            IMedicalFacilityService medicalFacilityService,
             ILogger<RegisterDonationModel> logger)
         {
             _userRepository = userRepository;
             _donationHistoryRepository = donationHistoryRepository;
             _donorAvailabilityRepository = donorAvailabilityRepository;
+            _medicalFacilityService = medicalFacilityService;
             _logger = logger;
         }
 
@@ -56,6 +60,18 @@ namespace BD.RazorPages.Pages
         [Required(ErrorMessage = "You must agree to the terms and conditions")]
         public bool AgreesToTerms { get; set; }
 
+        [BindProperty]
+        [Required(ErrorMessage = "Please select a medical facility")]
+        public int MedicalFacilityId { get; set; }
+
+        [BindProperty]
+        [Required(ErrorMessage = "Amount is required")]
+        [Range(100, 500, ErrorMessage = "Amount must be between 100ml and 500ml")]
+        public int Amount { get; set; } = 450; // Default standard donation amount
+
+        // Medical facilities dictionary loaded from database (Id -> Name)
+        public Dictionary<int, string> MedicalFacilities { get; set; } = new Dictionary<int, string>();
+
         public async Task<IActionResult> OnGetAsync()
         {
             // Check if user is logged in
@@ -76,9 +92,14 @@ namespace BD.RazorPages.Pages
             // Load user data and last donation information
             await LoadUserDataAsync(userId);
 
+            // Load medical facilities from database
+            await LoadMedicalFacilitiesAsync();
+
+            // Calculate recovery reminder date based on last donation
+            await CalculateRecoveryDateAsync(userId);
+
             // Set default available date to tomorrow
             AvailableDate = DateTime.Today.AddDays(1);
-            RecoveryReminderDate = CalculateRecoveryReminderDate(AvailableDate);
             ComponentType = "Whole Blood"; // Set default component type
 
             return Page();
@@ -110,6 +131,13 @@ namespace BD.RazorPages.Pages
                 ModelState.AddModelError(nameof(AvailableDate), "Available date must be in the future.");
             }
 
+            // Check if user is still in recovery period
+            if (RecoveryReminderDate.Date > DateTime.Now.Date)
+            {
+                ModelState.AddModelError(nameof(RecoveryReminderDate), 
+                    $"You are still in recovery period. You can donate again after {RecoveryReminderDate:MMM dd, yyyy}.");
+            }
+
             if (!AgreesToTerms)
             {
                 ModelState.AddModelError(nameof(AgreesToTerms), "You must agree to the terms and conditions.");
@@ -118,8 +146,9 @@ namespace BD.RazorPages.Pages
             if (!ModelState.IsValid)
             {
                 ErrorMessage = "Please correct the errors below.";
-                // Reload user data
+                // Reload user data and medical facilities
                 await LoadUserDataAsync(userId);
+                await LoadMedicalFacilitiesAsync();
                 return Page();
             }
 
@@ -129,7 +158,8 @@ namespace BD.RazorPages.Pages
                 await CreateDonorAvailabilityAsync(userId);
 
                 SuccessMessage = $"Your blood donation registration has been completed successfully! " +
-                    $"Component: {ComponentType} | Available Date: {AvailableDate:MMM dd, yyyy} | " +
+                    $"Component: {ComponentType} | Amount: {Amount}ml | Available Date: {AvailableDate:MMM dd, yyyy} | " +
+                    $"Medical Facility: {(MedicalFacilities.ContainsKey(MedicalFacilityId) ? MedicalFacilities[MedicalFacilityId] : "Selected Facility")} | " +
                     $"Your donation request is now in the system with 'Waiting' status. Our team will contact you when needed.";
                 _logger.LogInformation("Donor availability and donation history registered for user {UserId}", userId);
 
@@ -140,8 +170,9 @@ namespace BD.RazorPages.Pages
             {
                 _logger.LogError(ex, "Error registering donor availability for user {UserId}", userId);
                 ErrorMessage = "An error occurred while registering your availability. Please try again.";
-                // Reload user data on error
+                // Reload user data and medical facilities on error
                 await LoadUserDataAsync(userId);
+                await LoadMedicalFacilitiesAsync();
             }
 
             return Page();
@@ -244,8 +275,8 @@ namespace BD.RazorPages.Pages
                     {
                         UserId = userIdInt,
                         RequestId = null, // Default value - can be updated later when linked to a specific request
-                        FacilityId = 1, // Default facility ID - can be configured or made configurable
-                        Amount = 0, // Will be set when donation is confirmed
+                        FacilityId = MedicalFacilityId, // Use selected medical facility
+                        Amount = Amount, // Use the amount entered by user
                         BloodType = userBloodType, // Use actual user blood type
                         ComponentType = ComponentType ?? "Whole Blood", // Use selected component type
                         Status = DonationStatus.Waiting, // Set initial status to Waiting
@@ -266,6 +297,58 @@ namespace BD.RazorPages.Pages
             }
         }
 
+        private async Task CalculateRecoveryDateAsync(string userId)
+        {
+            // For demo accounts, set a default recovery date
+            if (userId.StartsWith("demo-"))
+            {
+                RecoveryReminderDate = DateTime.Today.AddDays(-30); // Demo user can donate
+                return;
+            }
+
+            // For real users, calculate based on last donation
+            if (int.TryParse(userId, out int userIdInt))
+            {
+                try
+                {
+                    var lastDonation = await _donationHistoryRepository.GetLatestDonationByUserIdAsync(userIdInt);
+                    if (lastDonation != null && lastDonation.DonationDate.HasValue)
+                    {
+                        // Calculate recovery date (3 months from last donation)
+                        RecoveryReminderDate = lastDonation.DonationDate.Value.AddDays(90);
+                    }
+                    else
+                    {
+                        // No previous donation, user can donate immediately
+                        RecoveryReminderDate = DateTime.Today.AddDays(-1);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error calculating recovery date for user {UserId}", userIdInt);
+                    // Default to allow donation if we can't calculate
+                    RecoveryReminderDate = DateTime.Today.AddDays(-1);
+                }
+            }
+        }
+
+        private async Task LoadMedicalFacilitiesAsync()
+        {
+            try
+            {
+                var facilities = await _medicalFacilityService.GetAllAsync();
+                MedicalFacilities = facilities
+                    .Where(f => f.IsDeleted != true) // Only get non-deleted facilities
+                    .ToDictionary(f => f.FacilityId, f => f.Name);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading medical facilities");
+                // Fallback to empty dictionary if database loading fails
+                MedicalFacilities = new Dictionary<int, string>();
+            }
+        }
+
         private DateTime CalculateRecoveryReminderDate(DateTime availableDate)
         {
             // Add 3 months (90 days) to the available date for recovery reminder
@@ -278,6 +361,8 @@ namespace BD.RazorPages.Pages
             AvailableDate = DateTime.Today.AddDays(1);
             RecoveryReminderDate = CalculateRecoveryReminderDate(AvailableDate);
             ComponentType = "Whole Blood";
+            MedicalFacilityId = 0;
+            Amount = 450; // Reset to default amount
             AdditionalNotes = string.Empty;
             AgreesToTerms = false;
         }
