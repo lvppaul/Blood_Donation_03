@@ -13,42 +13,61 @@ namespace BD.Repositories.Models.Mappers
     {
         public static BloodInventoryResponse ToResponse(BloodInventory entity)
         {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity), "BloodInventory entity cannot be null");
+
             return new BloodInventoryResponse
             {
                 InventoryId = entity.InventoryId,
-                ComponentType = entity.ComponentType,
+                ComponentType = entity.ComponentType ?? string.Empty,
                 Amount = entity.Amount,
                 ExpiredDate = entity.ExpiredDate,
                 LastUpdated = entity.LastUpdated,
-                BloodType = entity.BloodType,
-                StatusBloodInventory = new StatusBloodInventoryResponse
+                BloodType = entity.BloodType ?? string.Empty,
+                StatusBloodInventory = entity.StatusInventory != null ? new StatusBloodInventoryResponse
                 {
                     StatusInventoryId = entity.StatusInventory.StatusInventoryId,
-                    StatusName = entity.StatusInventory.StatusName
+                    StatusName = entity.StatusInventory.StatusName ?? "Unknown Status"
+                } : new StatusBloodInventoryResponse
+                {
+                    StatusInventoryId = 0,
+                    StatusName = "No Status"
                 },
-                Facility = new MedicalFacilityResponse
+                Facility = entity.Facility != null ? new MedicalFacilityResponse
                 {
                     FacilityId = entity.Facility.FacilityId,
-                    Name = entity.Facility.Name,
-                    Address = entity.Facility.Address,
-                    Phone = entity.Facility.Phone,
-                    Email = entity.Facility.Email,
-                    Description = entity.Facility.Description
+                    Name = entity.Facility.Name ?? "Unknown Facility",
+                    Address = entity.Facility.Address ?? string.Empty,
+                    Phone = entity.Facility.Phone ?? string.Empty,
+                    Email = entity.Facility.Email ?? string.Empty,
+                    Description = entity.Facility.Description ?? string.Empty
+                } : new MedicalFacilityResponse
+                {
+                    FacilityId = 0,
+                    Name = "No Facility",
+                    Address = string.Empty,
+                    Phone = string.Empty,
+                    Email = string.Empty,
+                    Description = string.Empty
                 }
             };
         }
 
         public static BloodInventory ToEntity(BloodInventoryRequest request)
         {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request), "BloodInventoryRequest cannot be null");
+
             return new BloodInventory
             {
                 FacilityId = request.FacilityId,
-                ComponentType = request.ComponentType,
+                ComponentType = request.ComponentType ?? string.Empty,
                 Amount = request.Amount,
                 ExpiredDate = request.ExpiredDate,
                 StatusInventoryId = request.StatusInventoryId,
-                BloodType = request.BloodType,
-                LastUpdated = DateTime.UtcNow
+                BloodType = request.BloodType ?? string.Empty,
+                LastUpdated = DateTime.UtcNow,
+                IsDeleted = false
             };
         }
     }

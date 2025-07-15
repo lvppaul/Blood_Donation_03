@@ -39,7 +39,7 @@ namespace BD.Repositories.Implementation
 
         public async Task<BloodInventory?> GetBloodInventoryByIdAsync(int id)
         {
-            return await _context.BloodInventories
+            return await _context.BloodInventories.Include(d=> d.Facility).Include(d => d.StatusInventory)
                 .FirstOrDefaultAsync(bi => bi.InventoryId == id && bi.IsDeleted != true);
         }
 

@@ -1,5 +1,6 @@
 ﻿using BD.Repositories.Models.DTOs.Requests;
 using BD.Repositories.Models.DTOs.Responses;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace BD.Services.Interfaces
 {
@@ -10,5 +11,6 @@ namespace BD.Services.Interfaces
         Task<StatusBloodInventoryResponse> AddAsync(StatusBloodInventoryRequest statusBloodInventory);
         Task<StatusBloodInventoryResponse?> UpdateAsync(int statusBloodInventoryId, StatusBloodInventoryRequest statusBloodInventoryRequest);
         Task DeleteAsync(int id);
+        Task<List<SelectListItem>> GetStatusSelectListAsync();
     }
 }

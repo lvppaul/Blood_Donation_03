@@ -1,70 +1,132 @@
-﻿@page
+﻿@page "/admin/inventory/delete/{id:int?}"
 @model BD.RazorPages.Pages.Admin.Inventory.DeleteModel
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Dispose Blood Unit";
+    
+    // Define styling classes similar to other pages
+    var statusClasses = new Dictionary<string, string>
+    {
+        { "Available", "bg-green-100 text-green-800" },
+        { "Reserved", "bg-blue-100 text-blue-800" },
+        { "Expired", "bg-red-100 text-red-800" },
+        { "Low Stock", "bg-yellow-100 text-yellow-800" },
+        { "Out of Stock", "bg-gray-200 text-gray-800" }
+    };
+    
+    var componentClasses = new Dictionary<string, string>
+    {
+        { "Red Blood Cells", "bg-red-100 text-red-800" },
+        { "White Blood Cells", "bg-indigo-100 text-indigo-800" },
+        { "Plasma", "bg-yellow-100 text-yellow-800" },
+        { "Platelets", "bg-green-100 text-green-800" }
+    };
+    
+    var bloodTypeClasses = new Dictionary<string, string>
+    {
+        { "O+",  "bg-red-100 text-red-800" },
+        { "A+",  "bg-blue-100 text-blue-800" },
+        { "B+",  "bg-green-100 text-green-800" },
+        { "AB+", "bg-yellow-100 text-yellow-800" },
+        { "O-",  "bg-gray-100 text-gray-800" },
+        { "A-",  "bg-blue-100 text-blue-800" },
+        { "B-",  "bg-yellow-100 text-yellow-800" },
+        { "AB-", "bg-green-100 text-green-800" }
+    };
+    
+    var defaultClass = "bg-gray-200 text-gray-500";
 }
 
-<h1>Delete</h1>
+<div class="max-w-4xl mx-auto space-y-6">
+    <!-- Page Header -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <div class="flex-shrink-0">
+                    <div class="w-16 h-16 bg-red-100 text-red-800 rounded-full flex items-center justify-center">
+                        <i class="fas fa-exclamation-triangle text-2xl"></i>
+                    </div>
+                </div>
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900">Dispose Blood Unit</h1>
+                    <p class="text-gray-600">Confirm disposal of blood inventory unit</p>
+                </div>
+            </div>
+            <a asp-page="./BloodUnits" 
+               class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                <i class="fas fa-arrow-left mr-2"></i>Back to Inventory
+            </a>
+        </div>
+    </div>
 
-<h3>Are you sure you want to delete this?</h3>
-<div>
-    <h4>BloodInventory</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.BloodInventory.ComponentType)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.BloodInventory.ComponentType)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.BloodInventory.Amount)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.BloodInventory.Amount)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.BloodInventory.ExpiredDate)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.BloodInventory.ExpiredDate)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.BloodInventory.LastUpdated)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.BloodInventory.LastUpdated)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.BloodInventory.IsDeleted)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.BloodInventory.IsDeleted)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.BloodInventory.BloodType)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.BloodInventory.BloodType)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.BloodInventory.Facility)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.BloodInventory.Facility.Address)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.BloodInventory.StatusInventory)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.BloodInventory.StatusInventory.StatusName)
-        </dd>
-    </dl>
-    
-    <form method="post">
-        <input type="hidden" asp-for="BloodInventory.InventoryId" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-page="./Index">Back to List</a>
-    </form>
+    <!-- Confirmation Card -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div class="mb-6">
+            <div class="flex items-center mb-4">
+                <i class="fas fa-exclamation-triangle text-yellow-500 text-xl mr-3"></i>
+                <h3 class="text-lg font-semibold text-gray-900">Are you sure you want to dispose this blood unit?</h3>
+            </div>
+            <p class="text-gray-600 mb-4">
+                This action will mark the blood unit as disposed and it will no longer be available for use. This action cannot be undone.
+            </p>
+        </div>
+
+        @if (Model.BloodInventory != null)
+        {
+            <!-- Blood Unit Details -->
+            <div class="bg-gray-50 rounded-lg p-6 mb-6">
+                <h4 class="text-lg font-semibold text-gray-900 mb-4">Blood Unit Details</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-3">
+                        <div class="flex justify-between">
+                            <span class="text-sm font-medium text-gray-500">Unit ID:</span>
+                            <span class="text-sm font-bold text-gray-900">#@Model.BloodInventory.InventoryId</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-sm font-medium text-gray-500">Blood Type:</span>
+                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full @(bloodTypeClasses.GetValueOrDefault(Model.BloodInventory.BloodType, defaultClass))">
+                                @Model.BloodInventory.BloodType
+                            </span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-sm font-medium text-gray-500">Component Type:</span>
+                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full @(componentClasses.GetValueOrDefault(Model.BloodInventory.ComponentType, defaultClass))">
+                                @Model.BloodInventory.ComponentType
+                            </span>
+                        </div>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="flex justify-between">
+                            <span class="text-sm font-medium text-gray-500">Amount:</span>
+                            <span class="text-sm font-bold text-gray-900">@Model.BloodInventory.Amount units</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-sm font-medium text-gray-500">Expiry Date:</span>
+                            <span class="text-sm text-gray-900">@Model.BloodInventory.ExpiredDate.ToString("MMM dd, yyyy")</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-sm font-medium text-gray-500">Facility:</span>
+                            <span class="text-sm text-gray-900">@Model.BloodInventory.Facility.Name</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Action Buttons -->
+        <div class="flex justify-end space-x-3">
+            <a asp-page="./BloodUnits" 
+               class="inline-flex items-center px-6 py-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+                <i class="fas fa-times mr-2"></i>Cancel
+            </a>
+            <form method="post" class="inline">
+                <input type="hidden" asp-for="BloodInventory.InventoryId" />
+                <button type="submit" 
+                        class="inline-flex items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                        onclick="return confirm('Are you absolutely sure you want to dispose this blood unit? This action cannot be undone.')">
+                    <i class="fas fa-trash mr-2"></i>Dispose Unit
+                </button>
+            </form>
+        </div>
+    </div>
 </div>
