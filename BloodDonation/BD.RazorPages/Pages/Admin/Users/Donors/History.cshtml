@@ -200,6 +200,12 @@
                                                 </button>
                                             </form>
                                         }
+                                        @if (status == BD.Repositories.Models.Entities.DonationStatus.Donated)
+                                        {
+                                            <span class="text-gray-500 text-sm">
+                                                <i class="fas fa-lock mr-1"></i>Completed
+                                            </span>
+                                        }
                                     </div>
                                 </td>
                             </tr>

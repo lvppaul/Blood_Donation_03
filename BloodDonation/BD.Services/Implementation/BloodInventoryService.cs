@@ -1,8 +1,6 @@
-﻿using Azure.Core;
-using BD.Repositories.Interfaces;
+﻿using BD.Repositories.Interfaces;
 using BD.Repositories.Models.DTOs.Requests;
 using BD.Repositories.Models.DTOs.Responses;
-using BD.Repositories.Models.Entities;
 using BD.Repositories.Models.Mappers;
 using BD.Services.Enum;
 using BD.Services.Interfaces;
@@ -13,30 +11,35 @@ namespace BD.Services.Implementation
     public class BloodInventoryService : IBloodInventoryService
     {
         private readonly IBloodInventoryRepository _bloodInventoryRepository;
+        private readonly IMedicalFacilityRepository _medicalFacilityRepository;
+        private readonly IStatusBloodInventoryRepository _statusInventoryRepository;
 
-        public BloodInventoryService(IBloodInventoryRepository bloodInventoryRepository)
+        public BloodInventoryService(IBloodInventoryRepository bloodInventoryRepository, IMedicalFacilityRepository medicalFacilityRepository, IStatusBloodInventoryRepository statusInventoryRepository)
         {
             _bloodInventoryRepository = bloodInventoryRepository;
+            _medicalFacilityRepository = medicalFacilityRepository;
+            _statusInventoryRepository = statusInventoryRepository;
         }
 
         public async Task<BloodInventoryResponse> AddAsync(BloodInventoryRequest bloodInventory)
         {
-            try
+            var bloodInventoryObject = BloodInventoryMapper.ToEntity(bloodInventory);
+            var facilityEntity = await _medicalFacilityRepository.GetFacilityByIdAsync(bloodInventory.FacilityId);
+            if (facilityEntity == null)
             {
-                if (bloodInventory == null)
-                {
-                    throw new ArgumentNullException(nameof(bloodInventory), "Blood inventory request cannot be null");
-                }
-
-                var bloodInventoryObject = BloodInventoryMapper.ToEntity(bloodInventory);
-                var createBloodInventory = await _bloodInventoryRepository.AddBloodInventoryAsync(bloodInventoryObject);
-
-                return BloodInventoryMapper.ToResponse(createBloodInventory);
+                throw new Exception("Facility not found");
             }
-            catch (Exception ex)
+            var statusEntity = await _statusInventoryRepository.GetByIdAsync(bloodInventory.StatusInventoryId);
+            if (statusEntity == null)
             {
-                throw new Exception($"Error adding blood inventory: {ex.Message}", ex);
+                throw new Exception("Status inventory not found");
             }
+            bloodInventoryObject.Facility = facilityEntity;
+            bloodInventoryObject.StatusInventory = statusEntity;
+
+            var createBloodInventory = await _bloodInventoryRepository.AddBloodInventoryAsync(bloodInventoryObject);
+
+            return BloodInventoryMapper.ToResponse(createBloodInventory);
         }
 
         public async Task DeleteAsync(int id)
@@ -80,6 +83,19 @@ namespace BD.Services.Implementation
             existingInventory.LastUpdated = DateTime.UtcNow;
 
             var updatedEntity = await _bloodInventoryRepository.UpdateBloodInventoryAsync(existingInventory);
+
+            var facilityEntity = await _medicalFacilityRepository.GetFacilityByIdAsync(updatedEntity.FacilityId);
+            if (facilityEntity == null)
+            {
+                throw new Exception("Facility not found");
+            }
+            var statusEntity = await _statusInventoryRepository.GetByIdAsync(updatedEntity.StatusInventoryId);
+            if (statusEntity == null)
+            {
+                throw new Exception("Status inventory not found");
+            }
+            updatedEntity.Facility = facilityEntity;
+            updatedEntity.StatusInventory = statusEntity;
 
             return BloodInventoryMapper.ToResponse(updatedEntity);
         }
@@ -134,7 +150,7 @@ namespace BD.Services.Implementation
             }
         }
 
- 
+
         public async Task<IEnumerable<BloodTypeOverview>> GetBloodTypeOverviewAsync()
         {
             try
@@ -157,8 +173,8 @@ namespace BD.Services.Implementation
             catch (Exception ex)
             {
                 throw new Exception("Error at GetBloodTypeOverviewAsync at BloodInventoryService ", ex);
-            }   
-           
+            }
+
         }
         public async Task<(IEnumerable<BloodInventoryResponse>, int TotalCount)> GetFilteredAsync(
     string searchTerm = null,

@@ -137,7 +137,8 @@
                         
                         <div class="flex gap-4 items-center">
                             <label class="text-sm font-medium text-gray-700">Cập nhật trạng thái:</label>
-                            <select name="newStatus" class="rounded-md border-gray-300 shadow-sm focus:border-red-400 focus:ring focus:ring-red-200 focus:ring-opacity-50">
+                            <select name="newStatus" class="rounded-md border-gray-300 shadow-sm focus:border-red-400 focus:ring focus:ring-red-200 focus:ring-opacity-50" 
+                                    @(Model.DonationDetails.Status == BD.Repositories.Models.Entities.DonationStatus.Donated ? "disabled" : "")>
                                 @{
                                     var currentStatus = Model.DonationDetails.Status;
                                 }
@@ -155,8 +156,6 @@
                                 }
                                 else if (currentStatus == BD.Repositories.Models.Entities.DonationStatus.Donated)
                                 {
-                                    <option value="0">Chờ xác nhận</option>
-                                    <option value="1">Đã xác nhận</option>
                                     <option value="2" selected>Đã hiến máu</option>
                                 }
                                 else
@@ -166,7 +165,8 @@
                                     <option value="2">Đã hiến máu</option>
                                 }
                             </select>
-                            <button type="submit" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:border-blue-900 focus:ring ring-blue-300 disabled:opacity-25 transition ease-in-out duration-150">
+                            <button type="submit" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:border-blue-900 focus:ring ring-blue-300 disabled:opacity-25 transition ease-in-out duration-150"
+                                    @(Model.DonationDetails.Status == BD.Repositories.Models.Entities.DonationStatus.Donated ? "disabled" : "")>
                                 <i class="fas fa-save mr-2"></i>
                                 Cập nhật trạng thái
                             </button>
@@ -176,26 +176,36 @@
                     <!-- Quick Actions -->
                     <div class="flex gap-2 pt-4 border-t border-gray-200">
                         <span class="text-sm text-gray-600">Thao tác nhanh:</span>
-                        @if (Model.DonationDetails.Status == BD.Repositories.Models.Entities.DonationStatus.Waiting)
-                        {
-                            <form method="post" asp-page-handler="UpdateStatus" class="inline">
-                                <input type="hidden" name="donationId" value="@Model.DonationDetails.DonationId" />
-                                <input type="hidden" name="newStatus" value="1" />
-                                <button type="submit" class="inline-flex items-center px-3 py-1 bg-green-500 text-white text-sm rounded hover:bg-green-600 transition-colors">
-                                    <i class="fas fa-check mr-1"></i>Xác nhận
-                                </button>
-                            </form>
-                        }
                         
-                        @if (Model.DonationDetails.Status == BD.Repositories.Models.Entities.DonationStatus.Confirmed)
+                        @if (Model.DonationDetails.Status == BD.Repositories.Models.Entities.DonationStatus.Donated)
                         {
-                            <form method="post" asp-page-handler="UpdateStatus" class="inline">
-                                <input type="hidden" name="donationId" value="@Model.DonationDetails.DonationId" />
-                                <input type="hidden" name="newStatus" value="2" />
-                                <button type="submit" class="inline-flex items-center px-3 py-1 bg-red-500 text-white text-sm rounded hover:bg-red-600 transition-colors">
-                                    <i class="fas fa-heart mr-1"></i>Đánh dấu đã hiến
-                                </button>
-                            </form>
+                            <span class="inline-flex items-center px-3 py-1 bg-green-100 text-green-800 text-sm rounded">
+                                <i class="fas fa-check-circle mr-1"></i>Đã hoàn thành - Không thể cập nhật
+                            </span>
+                        }
+                        else
+                        {
+                            @if (Model.DonationDetails.Status == BD.Repositories.Models.Entities.DonationStatus.Waiting)
+                            {
+                                <form method="post" asp-page-handler="UpdateStatus" class="inline">
+                                    <input type="hidden" name="donationId" value="@Model.DonationDetails.DonationId" />
+                                    <input type="hidden" name="newStatus" value="1" />
+                                    <button type="submit" class="inline-flex items-center px-3 py-1 bg-green-500 text-white text-sm rounded hover:bg-green-600 transition-colors">
+                                        <i class="fas fa-check mr-1"></i>Xác nhận
+                                    </button>
+                                </form>
+                            }
+                            
+                            @if (Model.DonationDetails.Status == BD.Repositories.Models.Entities.DonationStatus.Confirmed)
+                            {
+                                <form method="post" asp-page-handler="UpdateStatus" class="inline">
+                                    <input type="hidden" name="donationId" value="@Model.DonationDetails.DonationId" />
+                                    <input type="hidden" name="newStatus" value="2" />
+                                    <button type="submit" class="inline-flex items-center px-3 py-1 bg-red-500 text-white text-sm rounded hover:bg-red-600 transition-colors">
+                                        <i class="fas fa-heart mr-1"></i>Đánh dấu đã hiến
+                                    </button>
+                                </form>
+                            }
                         }
                     </div>
                 </div>
