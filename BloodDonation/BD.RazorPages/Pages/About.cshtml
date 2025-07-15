@@ -1,0 +1,328 @@
+@page "/about"
+@model BD.RazorPages.Pages.AboutModel
+@{
+    ViewData["Title"] = "About Us";
+}
+
+<div class="container mx-auto px-4 py-8 max-w-6xl">
+    <!-- Hero Section -->
+    <div class="bg-gradient-to-r from-red-600 to-red-700 rounded-lg p-12 text-white text-center mb-12">
+        <h1 class="text-5xl font-bold mb-4">About BloodConnect</h1>
+        <p class="text-xl text-red-100 max-w-3xl mx-auto">
+            Bridging the gap between blood donors and those in need through innovative technology 
+            and compassionate community building.
+        </p>
+    </div>
+
+    <!-- Mission & Vision Section -->
+    <div class="grid md:grid-cols-2 gap-8 mb-16">
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+            <div class="flex items-center mb-6">
+                <div class="bg-red-100 p-3 rounded-full mr-4">
+                    <i class="fas fa-bullseye text-red-600 text-2xl"></i>
+                </div>
+                <h2 class="text-3xl font-bold text-gray-900">Our Mission</h2>
+            </div>
+            <p class="text-gray-700 text-lg leading-relaxed">
+                To save lives by creating a seamless, technology-driven platform that connects willing blood donors 
+                with patients and medical facilities in need, ensuring that no life is lost due to blood shortage.
+            </p>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+            <div class="flex items-center mb-6">
+                <div class="bg-blue-100 p-3 rounded-full mr-4">
+                    <i class="fas fa-eye text-blue-600 text-2xl"></i>
+                </div>
+                <h2 class="text-3xl font-bold text-gray-900">Our Vision</h2>
+            </div>
+            <p class="text-gray-700 text-lg leading-relaxed">
+                To build a world where blood donation is accessible, efficient, and celebrated as a cornerstone 
+                of community health, making every donation count towards saving lives.
+            </p>
+        </div>
+    </div>
+
+    <!-- Our Story Section -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-8 mb-16">
+        <h2 class="text-3xl font-bold text-gray-900 mb-6 text-center">Our Story</h2>
+        <div class="max-w-4xl mx-auto">
+            <p class="text-gray-700 text-lg mb-6 leading-relaxed">
+                BloodConnect was born from a simple yet powerful observation: in our interconnected world, 
+                finding blood donors when lives hang in the balance shouldn't be a matter of chance or desperation.
+            </p>
+            <p class="text-gray-700 text-lg mb-6 leading-relaxed">
+                Founded by a team of healthcare professionals, technology experts, and passionate volunteers, 
+                BloodConnect emerged from real-world experiences in hospitals and emergency rooms where every 
+                minute counts and every drop of blood can mean the difference between life and death.
+            </p>
+            <p class="text-gray-700 text-lg leading-relaxed">
+                Today, we're proud to serve as a bridge between generous donors and those in critical need, 
+                leveraging modern technology to make blood donation more accessible, efficient, and impactful 
+                than ever before.
+            </p>
+        </div>
+    </div>
+
+    <!-- What We Do Section -->
+    <div class="mb-16">
+        <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">What We Do</h2>
+        <div class="grid md:grid-cols-3 gap-8">
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 text-center">
+                <div class="bg-red-100 p-4 rounded-full w-20 h-20 mx-auto mb-4 flex items-center justify-center">
+                    <i class="fas fa-users text-red-600 text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-3">Connect Donors</h3>
+                <p class="text-gray-600">
+                    We bring together willing blood donors from across communities, making it easy for people 
+                    to register and contribute to saving lives.
+                </p>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 text-center">
+                <div class="bg-blue-100 p-4 rounded-full w-20 h-20 mx-auto mb-4 flex items-center justify-center">
+                    <i class="fas fa-hospital text-blue-600 text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-3">Support Hospitals</h3>
+                <p class="text-gray-600">
+                    We provide medical facilities with efficient tools to manage blood inventory, 
+                    request donations, and coordinate with donor networks.
+                </p>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 text-center">
+                <div class="bg-green-100 p-4 rounded-full w-20 h-20 mx-auto mb-4 flex items-center justify-center">
+                    <i class="fas fa-heartbeat text-green-600 text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-3">Save Lives</h3>
+                <p class="text-gray-600">
+                    Through our platform, we've facilitated thousands of life-saving connections, 
+                    ensuring that help reaches those who need it most, when they need it most.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Key Features Section -->
+    <div class="bg-gray-50 rounded-lg p-8 mb-16">
+        <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">How We Make a Difference</h2>
+        <div class="grid md:grid-cols-2 gap-8">
+            <div class="space-y-6">
+                <div class="flex items-start">
+                    <div class="bg-red-500 text-white p-2 rounded-full mr-4 mt-1">
+                        <i class="fas fa-clock text-sm"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2">Real-Time Matching</h3>
+                        <p class="text-gray-600">
+                            Our intelligent system instantly matches blood requests with compatible donors, 
+                            reducing response time from hours to minutes.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flex items-start">
+                    <div class="bg-red-500 text-white p-2 rounded-full mr-4 mt-1">
+                        <i class="fas fa-shield-alt text-sm"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2">Safe & Secure</h3>
+                        <p class="text-gray-600">
+                            We maintain the highest standards of data protection and medical safety, 
+                            ensuring all donations meet strict health guidelines.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flex items-start">
+                    <div class="bg-red-500 text-white p-2 rounded-full mr-4 mt-1">
+                        <i class="fas fa-mobile-alt text-sm"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2">Easy to Use</h3>
+                        <p class="text-gray-600">
+                            Our user-friendly platform makes it simple for anyone to register as a donor 
+                            or request blood assistance.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-6">
+                <div class="flex items-start">
+                    <div class="bg-red-500 text-white p-2 rounded-full mr-4 mt-1">
+                        <i class="fas fa-bell text-sm"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2">Emergency Alerts</h3>
+                        <p class="text-gray-600">
+                            Immediate notifications for urgent blood needs ensure that critical cases 
+                            receive prompt attention from nearby donors.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flex items-start">
+                    <div class="bg-red-500 text-white p-2 rounded-full mr-4 mt-1">
+                        <i class="fas fa-chart-line text-sm"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2">Track Impact</h3>
+                        <p class="text-gray-600">
+                            Donors can see the real impact of their contributions, building a sense of 
+                            community and encouraging continued participation.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flex items-start">
+                    <div class="bg-red-500 text-white p-2 rounded-full mr-4 mt-1">
+                        <i class="fas fa-graduation-cap text-sm"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2">Education & Awareness</h3>
+                        <p class="text-gray-600">
+                            We provide comprehensive resources about blood donation, helping people 
+                            make informed decisions about their health and contribution.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Impact Statistics -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-8 mb-16">
+        <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">Our Impact</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            <div>
+                <div class="text-4xl font-bold text-red-600 mb-2">10,000+</div>
+                <div class="text-gray-600 font-medium">Lives Saved</div>
+            </div>
+            <div>
+                <div class="text-4xl font-bold text-red-600 mb-2">25,000+</div>
+                <div class="text-gray-600 font-medium">Registered Donors</div>
+            </div>
+            <div>
+                <div class="text-4xl font-bold text-red-600 mb-2">500+</div>
+                <div class="text-gray-600 font-medium">Partner Hospitals</div>
+            </div>
+            <div>
+                <div class="text-4xl font-bold text-red-600 mb-2">50+</div>
+                <div class="text-gray-600 font-medium">Cities Served</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Our Values Section -->
+    <div class="mb-16">
+        <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">Our Core Values</h2>
+        <div class="grid md:grid-cols-4 gap-6">
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 text-center">
+                <div class="bg-red-100 p-3 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                    <i class="fas fa-heart text-red-600 text-xl"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Compassion</h3>
+                <p class="text-gray-600 text-sm">
+                    Every action we take is driven by genuine care for human life and wellbeing.
+                </p>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 text-center">
+                <div class="bg-blue-100 p-3 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                    <i class="fas fa-handshake text-blue-600 text-xl"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Trust</h3>
+                <p class="text-gray-600 text-sm">
+                    We build lasting relationships through transparency, reliability, and integrity.
+                </p>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 text-center">
+                <div class="bg-green-100 p-3 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                    <i class="fas fa-rocket text-green-600 text-xl"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Innovation</h3>
+                <p class="text-gray-600 text-sm">
+                    We continuously evolve our technology to better serve our community's needs.
+                </p>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 text-center">
+                <div class="bg-purple-100 p-3 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                    <i class="fas fa-users text-purple-600 text-xl"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Community</h3>
+                <p class="text-gray-600 text-sm">
+                    We believe in the power of collective action to create positive change.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Team Section -->
+    <div class="bg-gray-50 rounded-lg p-8 mb-16">
+        <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">Our Commitment</h2>
+        <div class="max-w-4xl mx-auto text-center">
+            <p class="text-gray-700 text-lg mb-6 leading-relaxed">
+                Behind BloodConnect is a dedicated team of healthcare professionals, software engineers, 
+                and community advocates who understand that every donation matters and every life is precious.
+            </p>
+            <p class="text-gray-700 text-lg mb-6 leading-relaxed">
+                We work tirelessly to ensure our platform remains secure, efficient, and accessible to all, 
+                because we believe that the gift of life should never be hindered by technological barriers.
+            </p>
+            <div class="bg-white rounded-lg p-6 border-l-4 border-red-600">
+                <p class="text-gray-800 font-medium italic">
+                    "Our commitment goes beyond technology. We're building a movement where every person 
+                    has the opportunity to be a hero in someone else's story."
+                </p>
+                <p class="text-gray-600 mt-2">- The BloodConnect Team</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact & Support Section -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-8 mb-8">
+        <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">Get Involved</h2>
+        <div class="grid md:grid-cols-3 gap-8 text-center">
+            <div>
+                <div class="bg-red-100 p-4 rounded-full w-20 h-20 mx-auto mb-4 flex items-center justify-center">
+                    <i class="fas fa-user-plus text-red-600 text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-3">Become a Donor</h3>
+                <p class="text-gray-600 mb-4">
+                    Join thousands of heroes who have already registered to save lives through blood donation.
+                </p>
+            </div>
+
+            <div>
+                <div class="bg-blue-100 p-4 rounded-full w-20 h-20 mx-auto mb-4 flex items-center justify-center">
+                    <i class="fas fa-hospital text-blue-600 text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-3">Healthcare Partners</h3>
+                <p class="text-gray-600 mb-4">
+                    Medical facilities can join our network to access our donor database and management tools.
+                </p>
+            </div>
+
+            <div>
+                <div class="bg-green-100 p-4 rounded-full w-20 h-20 mx-auto mb-4 flex items-center justify-center">
+                    <i class="fas fa-share-alt text-green-600 text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-3">Spread the Word</h3>
+                <p class="text-gray-600 mb-4">
+                    Help us reach more potential donors by sharing our mission with your friends and family.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="text-center">
+        <a href="/" class="text-red-600 hover:text-red-700 inline-flex items-center text-lg">
+            <i class="fas fa-arrow-left mr-2"></i>
+            Back to Home
+        </a>
+    </div>
+</div>
