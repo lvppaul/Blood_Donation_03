@@ -9,14 +9,23 @@ namespace BD.Services.Implementation
     public class UserService : IUserService
     {
         private readonly IUserRepository _repository;
-        public UserService(IUserRepository repository)
+        private readonly IRoleRepository _rolerepository;
+        public UserService(IUserRepository repository, IRoleRepository rolerepository)
         {
             _repository = repository;
+            _rolerepository = rolerepository;
         }
         public async Task<UserResponse> AddAsync(UserRequest user)
         {
             var entity = UserMapper.ToEntity(user);
+            var roleEntity = await _rolerepository.GetByIdAsync(entity.RoleId);
+            if (roleEntity == null)
+            {
+                throw new Exception("Role not found");
+            }
+            entity.Role = roleEntity;
             await _repository.AddAsync(entity);
+
             return UserMapper.ToResponse(entity);
         }
 

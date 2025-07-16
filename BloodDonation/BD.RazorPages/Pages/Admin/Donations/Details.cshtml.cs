@@ -1,8 +1,8 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+using BD.RazorPages.Models;
 using BD.Repositories.Models.Entities;
 using BD.Services.Interfaces;
-using BD.RazorPages.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace BD.RazorPages.Pages.Admin.Donations
 {
@@ -11,12 +11,14 @@ namespace BD.RazorPages.Pages.Admin.Donations
         private readonly IDonationHistoryService _donationHistoryService;
         private readonly IUserService _userService;
         private readonly IBloodInventoryService _bloodInventoryService;
+        private readonly IDonorAvailabilityService _donorAvailabilityService;
 
-        public DetailsModel(IDonationHistoryService donationHistoryService, IUserService userService, IBloodInventoryService bloodInventoryService)
+        public DetailsModel(IDonationHistoryService donationHistoryService, IUserService userService, IBloodInventoryService bloodInventoryService, IDonorAvailabilityService donorAvailabilityService)
         {
             _donationHistoryService = donationHistoryService;
             _userService = userService;
             _bloodInventoryService = bloodInventoryService;
+            _donorAvailabilityService = donorAvailabilityService;
         }
 
         public DonationHistory? DonationDetails { get; set; }
@@ -29,7 +31,7 @@ namespace BD.RazorPages.Pages.Admin.Donations
                 var donation = await _donationHistoryService.GetByIdAsync(id);
                 if (donation == null)
                 {
-                    TempData["ErrorMessage"] = "Không tìm thấy thông tin donation.";
+                    TempData["ErrorMessage"] = "Donation not found.";
                     return RedirectToPage("/Admin/Users/Donors", new { ActiveTab = "donations" });
                 }
 
@@ -72,7 +74,7 @@ namespace BD.RazorPages.Pages.Admin.Donations
             }
             catch (Exception ex)
             {
-                TempData["ErrorMessage"] = $"Có lỗi xảy ra khi tải thông tin donation: {ex.Message}";
+                TempData["ErrorMessage"] = $"Error when loading donation: {ex.Message}";
                 return RedirectToPage("/Admin/Users/Donors", new { ActiveTab = "donations" });
             }
         }
@@ -85,14 +87,14 @@ namespace BD.RazorPages.Pages.Admin.Donations
                 var currentDonation = await _donationHistoryService.GetByIdAsync(donationId);
                 if (currentDonation == null)
                 {
-                    TempData["ErrorMessage"] = "Không tìm thấy donation để cập nhật.";
+                    TempData["ErrorMessage"] = "Donation not found.";
                     return RedirectToPage(new { id = donationId });
                 }
 
                 // Check if current status is already Donated - prevent further updates
                 if (currentDonation.Status == DonationStatus.Donated)
                 {
-                    TempData["ErrorMessage"] = "Không thể cập nhật trạng thái vì donation đã hoàn thành.";
+                    TempData["ErrorMessage"] = "Can't update status because donation has been completed.";
                     return RedirectToPage(new { id = donationId });
                 }
 
@@ -100,24 +102,25 @@ namespace BD.RazorPages.Pages.Admin.Donations
                 var success = await _donationHistoryService.UpdateStatusAsync(donationId, newStatus);
                 if (success)
                 {
-                    // If status changed to Donated, update blood inventory
+                    // If status changed to Donated, update blood inventory and donor availability
                     if (newStatus == DonationStatus.Donated)
                     {
                         await UpdateBloodInventoryAsync(currentDonation);
+                        await UpdateDonorAvailabilityStatusAsync(currentDonation.User.UserId, 3); // Set status_donor_id to 3
                     }
-                    
-                    TempData["SuccessMessage"] = newStatus == DonationStatus.Donated 
-                        ? "Cập nhật trạng thái thành công! Kho máu đã được cập nhật."
-                        : "Cập nhật trạng thái thành công!";
+
+                    TempData["SuccessMessage"] = newStatus == DonationStatus.Donated
+                        ? "Update Successfully! Blood Inventory and donor status has been updated."
+                        : "Update Successfully!";
                 }
                 else
                 {
-                    TempData["ErrorMessage"] = "Không tìm thấy donation để cập nhật.";
+                    TempData["ErrorMessage"] = "Donation not found";
                 }
             }
             catch (Exception ex)
             {
-                TempData["ErrorMessage"] = $"Có lỗi xảy ra khi cập nhật trạng thái: {ex.Message}";
+                TempData["ErrorMessage"] = $"Error when update status: {ex.Message}";
             }
 
             return RedirectToPage(new { id = donationId });
@@ -134,8 +137,8 @@ namespace BD.RazorPages.Pages.Admin.Donations
                 );
 
                 // Find matching inventory by component type
-                var matchingInventory = inventories.Item1.FirstOrDefault(i => 
-                    i.ComponentType == donation.ComponentType && 
+                var matchingInventory = inventories.Item1.FirstOrDefault(i =>
+                    i.ComponentType == donation.ComponentType &&
                     i.IsDeleted != true);
 
                 if (matchingInventory != null)
@@ -172,7 +175,47 @@ namespace BD.RazorPages.Pages.Admin.Donations
             catch (Exception ex)
             {
                 // Log the error but don't fail the main operation
-                throw new Exception($"Lỗi cập nhật kho máu: {ex.Message}");
+                throw new Exception($"Fail Updating Blood Inventory: {ex.Message}");
+            }
+        }
+
+        private async Task UpdateDonorAvailabilityStatusAsync(int userId, int statusDonorId)
+        {
+            try
+            {
+                // Get all donor availability records for this user
+                var donorAvailabilities = await _donorAvailabilityService.GetAllAsync();
+                var userDonorAvailabilities = donorAvailabilities
+                    .Where(d => d.User?.UserId == userId)
+                    .ToList();
+
+                if (userDonorAvailabilities.Any())
+                {
+                    // Update the most recent donor availability record
+                    var latestDonorAvailability = userDonorAvailabilities
+                        .OrderByDescending(d => d.AvailableDate)
+                        .FirstOrDefault();
+
+                    if (latestDonorAvailability != null)
+                    {
+                        // Create update request
+                        var updateRequest = new BD.Repositories.Models.DTOs.Requests.DonorAvailabilityRequest
+                        {
+                            UserId = latestDonorAvailability.User.UserId,
+                            AvailableDate = latestDonorAvailability.AvailableDate,
+                            StatusDonorId = statusDonorId, // Set to 3 for donated status
+                                                           // LastDonationDate = DateOnly.FromDateTime(DateTime.Today), // Update last donation date
+                                                           // RecoveryReminderDate = DateOnly.FromDateTime(DateTime.Today.AddDays(56)) // 8 weeks recovery period
+                        };
+
+                        await _donorAvailabilityService.UpdateAsync(latestDonorAvailability.AvailabilityId, updateRequest);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log the error but don't fail the main operation
+                throw new Exception($"Fail updating Blood donor: {ex.Message}");
             }
         }
     }

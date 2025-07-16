@@ -11,11 +11,13 @@ namespace BD.RazorPages.Pages
     {
         private readonly BloodDonationDbContext _context;
         private readonly ILogger<LoginModel> _logger;
+        private readonly IDonorAvailabilityRepository _donorAvailabilityRepository;
 
-        public LoginModel(BloodDonationDbContext context, ILogger<LoginModel> logger)
+        public LoginModel(BloodDonationDbContext context, ILogger<LoginModel> logger, IDonorAvailabilityRepository donorAvailabilityRepository)
         {
             _context = context;
             _logger = logger;
+            _donorAvailabilityRepository = donorAvailabilityRepository;
         }
 
         [BindProperty]
@@ -69,6 +71,9 @@ namespace BD.RazorPages.Pages
 
                 SetUserSession(user.UserId.ToString(), user.Name, roleName);
 
+                // Update donor availability status if recovery period has passed
+                await UpdateDonorStatusIfRecoveryPeriodPassedAsync(user.UserId.ToString());
+
                 _logger.LogInformation($"User {Email} logged in successfully with role {roleName}");
 
                 // Redirect based on role
@@ -109,6 +114,46 @@ namespace BD.RazorPages.Pages
             {
                 // Set longer session timeout for remember me
                 HttpContext.Session.SetString("RememberMe", "true");
+            }
+        }
+
+        /// <summary>
+        /// Updates donor availability status from Recovery Period to Available if recovery period has passed
+        /// This method is called when user logs in successfully
+        /// </summary>
+        /// <param name="userId">User ID</param>
+        /// <returns></returns>
+        private async Task UpdateDonorStatusIfRecoveryPeriodPassedAsync(string userId)
+        {
+            if (userId.StartsWith("demo-"))
+            {
+                return; // Skip for demo accounts
+            }
+
+            if (int.TryParse(userId, out int userIdInt))
+            {
+                try
+                {
+                    var latestDonorAvailability = await _donorAvailabilityRepository.GetLatestDonorAvailabilityByUserIdAsync(userIdInt);
+                    if (latestDonorAvailability != null && 
+                        latestDonorAvailability.RecoveryReminderDate.HasValue &&
+                        latestDonorAvailability.StatusDonorId == 3) // Recovery Period status
+                    {
+                        var recoveryDate = latestDonorAvailability.RecoveryReminderDate.Value.ToDateTime(TimeOnly.MinValue);
+                        
+                        // Auto-update status if recovery period has passed
+                        if (DateTime.Today >= recoveryDate.Date)
+                        {
+                            latestDonorAvailability.StatusDonorId = 1; // Change to Available
+                            await _donorAvailabilityRepository.UpdateDonorAvailabilityAsync(latestDonorAvailability);
+                            _logger.LogInformation("Auto-updated donor availability status to Available for user {UserId}", userIdInt);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error updating donor availability status for user {UserId}", userIdInt);
+                }
             }
         }
     }

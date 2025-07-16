@@ -1,11 +1,6 @@
 ﻿using BD.Repositories.Interfaces;
 using BD.Repositories.Models.Entities;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BD.Repositories.Implementation
 {
@@ -64,34 +59,63 @@ namespace BD.Repositories.Implementation
         {
             _context.DonorAvailabilities.Update(donorAvailability);
             await _context.SaveChangesAsync();
-            
+
             // Reload entity with navigation properties
             var updatedEntity = await _context.DonorAvailabilities
                 .Include(da => da.User)
                 .ThenInclude(u => u.Role)
                 .Include(da => da.StatusDonor)
                 .FirstOrDefaultAsync(da => da.AvailabilityId == donorAvailability.AvailabilityId);
-                
+
             return updatedEntity ?? donorAvailability;
         }
 
         public async Task<IEnumerable<DonorAvailability>> GetAllAvailableDonorAsync()
         {
-            // First, get all available donors with their data
-            var allAvailableDonors = await _context.DonorAvailabilities
+            // First, get all donor availabilities
+            var allDonorAvailabilities = await _context.DonorAvailabilities
                 .Include(da => da.User)
                 .ThenInclude(u => u.Role)
                 .Include(da => da.StatusDonor)
-                .Where(da => da.IsDeleted != true && da.StatusDonorId == 1)
+                .Where(da => da.IsDeleted != true)
                 .ToListAsync();
-            
+
             // Then group by UserId and get the latest availability for each user
-            var latestAvailabilityPerUser = allAvailableDonors
+            var latestAvailabilityPerUser = allDonorAvailabilities
                 .GroupBy(da => da.UserId)
                 .Select(g => g.OrderByDescending(da => da.AvailableDate).First())
                 .ToList();
-            
-            return latestAvailabilityPerUser;
+
+            // Finally, filter only those with available status (StatusDonorId == 1)
+            var availableDonors = latestAvailabilityPerUser
+                .Where(da => da.StatusDonorId == 1)
+                .ToList();
+
+            return availableDonors;
+        }
+
+        public async Task<IEnumerable<DonorAvailability>> GetAllAvailableDonorSearchAsync()
+        {
+            // First, get all donor availabilities
+            var allDonorAvailabilities = await _context.DonorAvailabilities
+                .Include(da => da.User)
+                .ThenInclude(u => u.Role)
+                .Include(da => da.StatusDonor)
+                .Where(da => da.IsDeleted != true)
+                .ToListAsync();
+
+            // Then group by UserId and get the latest availability for each user
+            var latestAvailabilityPerUser = allDonorAvailabilities
+                .GroupBy(da => da.UserId)
+                .Select(g => g.OrderByDescending(da => da.AvailableDate).First())
+                .ToList();
+
+            // Finally, filter only those with available status (StatusDonorId == 1)
+            var availableDonors = latestAvailabilityPerUser
+                .Where(da => da.StatusDonorId == 1)
+                .ToList();
+
+            return availableDonors;
         }
 
         public async Task<IEnumerable<DonorAvailability>> GetAvailableDonorsByBloodTypeAsync(string bloodType)
@@ -101,17 +125,17 @@ namespace BD.Repositories.Implementation
                 .Include(da => da.User)
                 .ThenInclude(u => u.Role)
                 .Include(da => da.StatusDonor)
-                .Where(da => da.IsDeleted != true 
-                    && da.StatusDonorId == 1 
+                .Where(da => da.IsDeleted != true
+                    && da.StatusDonorId == 1
                     && da.User.BloodType == bloodType)
                 .ToListAsync();
-            
+
             // Then group by UserId and get the latest availability for each user
             var latestAvailabilityPerUser = allAvailableDonors
                 .GroupBy(da => da.UserId)
                 .Select(g => g.OrderByDescending(da => da.AvailableDate).First())
                 .ToList();
-            
+
             return latestAvailabilityPerUser;
         }
 
@@ -119,24 +143,24 @@ namespace BD.Repositories.Implementation
         {
             // Blood compatibility logic - simplified version
             var compatibleBloodTypes = GetCompatibleBloodTypes(recipientBloodType);
-            
+
             // First, get all compatible donors with their data
             var allCompatibleDonors = await _context.DonorAvailabilities
                 .Include(da => da.User)
                 .ThenInclude(u => u.Role)
                 .Include(da => da.StatusDonor)
-                .Where(da => da.IsDeleted != true 
-                    && da.StatusDonorId == 1 
+                .Where(da => da.IsDeleted != true
+                    && da.StatusDonorId == 1
                     && compatibleBloodTypes.Contains(da.User.BloodType))
                 .ToListAsync();
-            
+
             // Then group by UserId and get the latest availability for each user
             var latestAvailabilityPerUser = allCompatibleDonors
                 .GroupBy(da => da.UserId)
                 .Select(g => g.OrderByDescending(da => da.AvailableDate).First())
                 .OrderBy(da => da.User.BloodType == recipientBloodType ? 0 : 1) // Exact match first
                 .ToList();
-            
+
             return latestAvailabilityPerUser;
         }
 

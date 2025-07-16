@@ -1,0 +1,146 @@
+@page "/terms"
+@model BD.RazorPages.Pages.TermsOfServiceModel
+@{
+    ViewData["Title"] = "Terms of Service";
+}
+
+<div class="container mx-auto px-4 py-8 max-w-4xl">
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+        <!-- Page Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">Terms of Service</h1>
+            <p class="text-gray-600">Last updated: January 15, 2025</p>
+        </div>
+
+        <!-- Content -->
+        <div class="prose prose-lg max-w-none">
+            <section class="mb-8">
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">1. Acceptance of Terms</h2>
+                <p class="text-gray-700 mb-4">
+                    By accessing and using BloodConnect ("the Service"), you accept and agree to be bound by the terms and provision of this agreement. 
+                    If you do not agree to abide by the above, please do not use this service.
+                </p>
+            </section>
+
+            <section class="mb-8">
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">2. Description of Service</h2>
+                <p class="text-gray-700 mb-4">
+                    BloodConnect is a blood donation management platform that connects blood donors with recipients and medical facilities. 
+                    Our service includes:
+                </p>
+                <ul class="list-disc pl-6 text-gray-700 mb-4">
+                    <li>Donor registration and profile management</li>
+                    <li>Blood donation scheduling and tracking</li>
+                    <li>Emergency blood request notifications</li>
+                    <li>Blood inventory management for medical facilities</li>
+                    <li>Educational content about blood donation</li>
+                </ul>
+            </section>
+
+            <section class="mb-8">
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">3. User Responsibilities</h2>
+                <p class="text-gray-700 mb-4">As a user of BloodConnect, you agree to:</p>
+                <ul class="list-disc pl-6 text-gray-700 mb-4">
+                    <li>Provide accurate and truthful information about your health and medical history</li>
+                    <li>Keep your account information up to date</li>
+                    <li>Follow all medical guidelines and requirements for blood donation</li>
+                    <li>Respect the privacy and confidentiality of other users</li>
+                    <li>Use the service only for legitimate blood donation purposes</li>
+                    <li>Comply with all applicable laws and regulations</li>
+                </ul>
+            </section>
+
+            <section class="mb-8">
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">4. Medical Disclaimer</h2>
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
+                    <p class="text-gray-700">
+                        <strong>Important:</strong> BloodConnect is a platform service and does not provide medical advice, diagnosis, or treatment. 
+                        All medical decisions regarding blood donation should be made in consultation with qualified healthcare professionals.
+                    </p>
+                </div>
+                <p class="text-gray-700 mb-4">
+                    Users understand that:
+                </p>
+                <ul class="list-disc pl-6 text-gray-700 mb-4">
+                    <li>Final eligibility for blood donation is determined by medical professionals at donation centers</li>
+                    <li>BloodConnect does not guarantee acceptance of donations</li>
+                    <li>Users must undergo proper medical screening before donation</li>
+                    <li>Emergency requests through the platform do not replace emergency medical services</li>
+                </ul>
+            </section>
+
+            <section class="mb-8">
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">5. Privacy and Data Protection</h2>
+                <p class="text-gray-700 mb-4">
+                    Your privacy is important to us. Our collection and use of personal information is governed by our 
+                    <a href="/privacy" class="text-red-600 hover:text-red-700 underline">Privacy Policy</a>, 
+                    which is incorporated into these Terms of Service by reference.
+                </p>
+            </section>
+
+            <section class="mb-8">
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">6. Prohibited Uses</h2>
+                <p class="text-gray-700 mb-4">You may not use BloodConnect to:</p>
+                <ul class="list-disc pl-6 text-gray-700 mb-4">
+                    <li>Engage in any illegal activities or violate any laws</li>
+                    <li>Provide false or misleading health information</li>
+                    <li>Harass, abuse, or harm other users</li>
+                    <li>Attempt to gain unauthorized access to our systems</li>
+                    <li>Use the service for commercial purposes without authorization</li>
+                    <li>Spam or send unsolicited communications</li>
+                </ul>
+            </section>
+
+            <section class="mb-8">
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">7. Account Termination</h2>
+                <p class="text-gray-700 mb-4">
+                    We reserve the right to terminate or suspend your account and access to the service, without prior notice, 
+                    for conduct that we believe violates these Terms of Service or is harmful to other users, us, or third parties.
+                </p>
+            </section>
+
+            <section class="mb-8">
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">8. Limitation of Liability</h2>
+                <p class="text-gray-700 mb-4">
+                    BloodConnect and its operators shall not be liable for any direct, indirect, incidental, special, 
+                    consequential, or punitive damages arising from your use of the service. This includes, but is not limited to, 
+                    damages for loss of profits, data, or other intangible losses.
+                </p>
+            </section>
+
+            <section class="mb-8">
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">9. Changes to Terms</h2>
+                <p class="text-gray-700 mb-4">
+                    We reserve the right to modify these Terms of Service at any time. We will notify users of significant changes 
+                    through the platform or via email. Continued use of the service after changes constitutes acceptance of the new terms.
+                </p>
+            </section>
+
+            <section class="mb-8">
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">10. Contact Information</h2>
+                <p class="text-gray-700 mb-4">
+                    If you have any questions about these Terms of Service, please contact us:
+                </p>
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <ul class="list-none text-gray-700">
+                        <li class="mb-2"><i class="fas fa-envelope text-red-500 mr-2"></i> Email: layzegot@gmail.com</li>
+                        <li class="mb-2"><i class="fas fa-phone text-red-500 mr-2"></i> Phone: (123) 456-7890</li>
+                        <li><i class="fas fa-map-marker-alt text-red-500 mr-2"></i> Address: FPTU HCM</li>
+                    </ul>
+                </div>
+            </section>
+        </div>
+
+        <!-- Navigation -->
+        <div class="mt-8 pt-6 border-t border-gray-200 flex justify-between items-center">
+            <a href="/" class="text-red-600 hover:text-red-700 inline-flex items-center">
+                <i class="fas fa-arrow-left mr-2"></i>
+                Back to Home
+            </a>
+            <a href="/privacy" class="text-red-600 hover:text-red-700 inline-flex items-center">
+                Privacy Policy
+                <i class="fas fa-arrow-right ml-2"></i>
+            </a>
+        </div>
+    </div>
+</div>

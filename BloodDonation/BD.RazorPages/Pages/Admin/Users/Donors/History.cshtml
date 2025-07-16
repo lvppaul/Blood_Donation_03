@@ -63,7 +63,7 @@
     </div>
 
     <!-- Statistics Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-6 gap-6">
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <div class="flex items-center">
                 <div class="p-3 rounded-full bg-blue-100">
@@ -103,7 +103,31 @@
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <div class="flex items-center">
                 <div class="p-3 rounded-full bg-red-100">
-                    <i class="fas fa-calendar-alt text-xl text-red-600"></i>
+                    <i class="fas fa-times-circle text-xl text-red-600"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm text-gray-600">Rejected</p>
+                    <p class="text-2xl font-bold text-gray-900">@Model.RejectedDonations</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div class="flex items-center">
+                <div class="p-3 rounded-full bg-gray-100">
+                    <i class="fas fa-ban text-xl text-gray-600"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm text-gray-600">Canceled</p>
+                    <p class="text-2xl font-bold text-gray-900">@Model.CanceledDonations</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div class="flex items-center">
+                <div class="p-3 rounded-full bg-purple-100">
+                    <i class="fas fa-calendar-alt text-xl text-purple-600"></i>
                 </div>
                 <div class="ml-4">
                     <p class="text-sm text-gray-600">Last Donation</p>
@@ -150,6 +174,8 @@
                                             BD.Repositories.Models.Entities.DonationStatus.Waiting => "bg-yellow-100 text-yellow-800",
                                             BD.Repositories.Models.Entities.DonationStatus.Confirmed => "bg-blue-100 text-blue-800",
                                             BD.Repositories.Models.Entities.DonationStatus.Donated => "bg-green-100 text-green-800",
+                                            BD.Repositories.Models.Entities.DonationStatus.Rejected => "bg-red-100 text-red-800",
+                                            BD.Repositories.Models.Entities.DonationStatus.Canceled => "bg-gray-100 text-gray-800",
                                             _ => "bg-gray-100 text-gray-800"
                                         };
                                         var statusText = status switch
@@ -157,6 +183,8 @@
                                             BD.Repositories.Models.Entities.DonationStatus.Waiting => "Chờ",
                                             BD.Repositories.Models.Entities.DonationStatus.Confirmed => "Đã xác nhận",
                                             BD.Repositories.Models.Entities.DonationStatus.Donated => "Đã hiến",
+                                            BD.Repositories.Models.Entities.DonationStatus.Rejected => "Từ chối",
+                                            BD.Repositories.Models.Entities.DonationStatus.Canceled => "Hủy bỏ",
                                             _ => "Unknown"
                                         };
                                     }
@@ -189,6 +217,13 @@
                                                     <i class="fas fa-check mr-1"></i>Confirm
                                                 </button>
                                             </form>
+                                            <form method="post" asp-page-handler="UpdateStatus" style="display: inline;">
+                                                <input type="hidden" name="donationId" value="@donation.DonationId" />
+                                                <input type="hidden" name="newStatus" value="3" />
+                                                <button type="submit" class="text-red-600 hover:text-red-900">
+                                                    <i class="fas fa-times mr-1"></i>Reject
+                                                </button>
+                                            </form>
                                         }
                                         @if (status == BD.Repositories.Models.Entities.DonationStatus.Confirmed)
                                         {
@@ -199,11 +234,30 @@
                                                     <i class="fas fa-heart mr-1"></i>Complete
                                                 </button>
                                             </form>
+                                            <form method="post" asp-page-handler="UpdateStatus" style="display: inline;">
+                                                <input type="hidden" name="donationId" value="@donation.DonationId" />
+                                                <input type="hidden" name="newStatus" value="4" />
+                                                <button type="submit" class="text-gray-600 hover:text-gray-900">
+                                                    <i class="fas fa-ban mr-1"></i>Cancel
+                                                </button>
+                                            </form>
                                         }
                                         @if (status == BD.Repositories.Models.Entities.DonationStatus.Donated)
                                         {
+                                            <span class="text-green-500 text-sm">
+                                                <i class="fas fa-check-circle mr-1"></i>Completed
+                                            </span>
+                                        }
+                                        @if (status == BD.Repositories.Models.Entities.DonationStatus.Rejected)
+                                        {
+                                            <span class="text-red-500 text-sm">
+                                                <i class="fas fa-times-circle mr-1"></i>Rejected
+                                            </span>
+                                        }
+                                        @if (status == BD.Repositories.Models.Entities.DonationStatus.Canceled)
+                                        {
                                             <span class="text-gray-500 text-sm">
-                                                <i class="fas fa-lock mr-1"></i>Completed
+                                                <i class="fas fa-ban mr-1"></i>Canceled
                                             </span>
                                         }
                                     </div>
