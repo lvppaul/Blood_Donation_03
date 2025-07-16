@@ -57,8 +57,9 @@ namespace BD.RazorPages.Pages.Admin.Inventory
                 // Load available blood requests (non-fulfilled requests)
                 var allRequests = await _bloodRequestService.GetAllAsync();
                 AvailableRequests = allRequests.Where(r => r.StatusBloodRequestResponse?.StatusName != "Fulfilled" &&
-                                                          r.StatusBloodRequestResponse?.StatusName != "Canceled" &&
+                                                          r.StatusBloodRequestResponse?.StatusName != "Cancelled" &&
                                                           r.StatusBloodRequestResponse?.StatusName != "Rejected" &&
+                                                          r.StatusBloodRequestResponse?.StatusName != "Pending" &&
                                                           r.IsDeleted != true).ToList();
 
                 if (CurrentPage > TotalPages && TotalPages > 0)

@@ -1,8 +1,8 @@
+using BD.Repositories.Models.DTOs.Requests;
+using BD.Repositories.Models.DTOs.Responses;
+using BD.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using BD.Services.Interfaces;
-using BD.Repositories.Models.DTOs.Responses;
-using BD.Repositories.Models.DTOs.Requests;
 
 namespace BD.RazorPages.Pages.Admin
 {
@@ -27,7 +27,7 @@ namespace BD.RazorPages.Pages.Admin
             try
             {
                 var allRequests = await _bloodRequestService.GetAllAsync();
-                
+
                 // Sort by urgency: Emergency first, then by date
                 var sortedRequests = allRequests
                     .OrderByDescending(r => r.UrgencyLevel?.ToLower() == "emergency")
@@ -37,8 +37,8 @@ namespace BD.RazorPages.Pages.Admin
                 BloodRequests = sortedRequests;
                 PendingRequests = sortedRequests.Where(r => r.StatusBloodRequestResponse.StatusRequestId == 1);
                 ApprovedRequests = sortedRequests.Where(r => r.StatusBloodRequestResponse.StatusRequestId == 2);
-                CancelledRequests = sortedRequests.Where(r => r.StatusBloodRequestResponse.StatusRequestId == 3);
-                FulfilledRequests = sortedRequests.Where(r => r.StatusBloodRequestResponse.StatusRequestId == 4);
+                FulfilledRequests = sortedRequests.Where(r => r.StatusBloodRequestResponse.StatusRequestId == 3);
+                CancelledRequests = sortedRequests.Where(r => r.StatusBloodRequestResponse.StatusRequestId == 4);
                 RejectedRequests = sortedRequests.Where(r => r.StatusBloodRequestResponse.StatusRequestId == 5);
             }
             catch (Exception ex)
@@ -145,7 +145,7 @@ namespace BD.RazorPages.Pages.Admin
                     Amount = request.Amount,
                     UrgencyLevel = request.UrgencyLevel,
                     RequestDate = request.RequestDate,
-                    StatusRequestId = 4, // Fulfilled
+                    StatusRequestId = 3, // Fulfilled
                     FulfilledDate = DateTime.Now
                 };
 
@@ -181,7 +181,7 @@ namespace BD.RazorPages.Pages.Admin
                     Amount = request.Amount,
                     UrgencyLevel = request.UrgencyLevel,
                     RequestDate = request.RequestDate,
-                    StatusRequestId = 3, // Cancelled
+                    StatusRequestId = 4, // Cancelled
                     FulfilledDate = request.FulfilledDate
                 };
 
