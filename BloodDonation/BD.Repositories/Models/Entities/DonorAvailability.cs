@@ -9,7 +9,7 @@ public partial class DonorAvailability
 
     public int UserId { get; set; }
 
-    public int StatusId { get; set; }
+    public int StatusDonorId { get; set; }
 
     public DateOnly? LastDonationDate { get; set; }
 
@@ -19,7 +19,7 @@ public partial class DonorAvailability
 
     public bool? IsDeleted { get; set; }
 
-    public virtual StatusBloodDonor Status { get; set; } = null!;
+    public virtual StatusBloodDonor StatusDonor { get; set; } = null!;
 
     public virtual User User { get; set; } = null!;
 }

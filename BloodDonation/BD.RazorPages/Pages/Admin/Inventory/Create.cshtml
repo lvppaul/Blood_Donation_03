@@ -1,0 +1,247 @@
+﻿@page "/admin/inventory/create"
+@model BD.RazorPages.Pages.Admin.Inventory.CreateModel
+@{
+    ViewData["Title"] = "Add Blood Inventory";
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="bg-green-50 border border-green-200 rounded-md p-4 mb-6">
+        <div class="flex">
+            <div class="flex-shrink-0">
+                <i class="fas fa-check-circle text-green-400"></i>
+            </div>
+            <div class="ml-3">
+                <p class="text-sm font-medium text-green-800">@TempData["SuccessMessage"]</p>
+            </div>
+        </div>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="bg-red-50 border border-red-200 rounded-md p-4 mb-6">
+        <div class="flex">
+            <div class="flex-shrink-0">
+                <i class="fas fa-exclamation-circle text-red-400"></i>
+            </div>
+            <div class="ml-3">
+                <p class="text-sm font-medium text-red-800">@TempData["ErrorMessage"]</p>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="max-w-4xl mx-auto">
+    <!-- Page Header -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <h2 class="text-3xl font-bold text-gray-900 mb-2">Add Blood Inventory</h2>
+                <p class="text-gray-600">Create a new blood inventory record for the facility</p>
+            </div>
+            <div class="flex space-x-3">
+                <a asp-page="./BloodUnits" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                    <i class="fas fa-arrow-left mr-2"></i>Back to Inventory
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Form -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <form method="post" class="space-y-6">
+            <div asp-validation-summary="ModelOnly" class="text-red-600 bg-red-50 border border-red-200 rounded-md p-3"></div>
+
+            <!-- Basic Information Section -->
+            <div>
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Basic Information</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Medical Facility -->
+                    <div>
+                        <label asp-for="BloodInventory.FacilityId" class="block text-sm font-medium text-gray-700 mb-2">
+                            Medical Facility <span class="text-red-500">*</span>
+                        </label>
+                        <select asp-for="BloodInventory.FacilityId" 
+                                asp-items="Model.MedicalFacilities"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500">
+                        </select>
+                        <span asp-validation-for="BloodInventory.FacilityId" class="text-red-600 text-sm"></span>
+                    </div>
+
+                    <!-- Blood Type -->
+                    <div>
+                        <label asp-for="BloodInventory.BloodType" class="block text-sm font-medium text-gray-700 mb-2">
+                            Blood Type <span class="text-red-500">*</span>
+                        </label>
+                        <select asp-for="BloodInventory.BloodType" 
+                                asp-items="Model.BloodTypes"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500">
+                        </select>
+                        <span asp-validation-for="BloodInventory.BloodType" class="text-red-600 text-sm"></span>
+                    </div>
+
+                    <!-- Component Type -->
+                    <div>
+                        <label asp-for="BloodInventory.ComponentType" class="block text-sm font-medium text-gray-700 mb-2">
+                            Component Type <span class="text-red-500">*</span>
+                        </label>
+                        <select asp-for="BloodInventory.ComponentType" 
+                                asp-items="Model.ComponentTypes"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500">
+                        </select>
+                        <span asp-validation-for="BloodInventory.ComponentType" class="text-red-600 text-sm"></span>
+                    </div>
+
+                    <!-- Amount -->
+                    <div>
+                        <label asp-for="BloodInventory.Amount" class="block text-sm font-medium text-gray-700 mb-2">
+                            Amount (units) <span class="text-red-500">*</span>
+                        </label>
+                        <input asp-for="BloodInventory.Amount" 
+                               type="number" 
+                               min="1" 
+                               max="1000"
+                               placeholder="Enter amount in units"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500" />
+                        <span asp-validation-for="BloodInventory.Amount" class="text-red-600 text-sm"></span>
+                        <p class="text-xs text-gray-500 mt-1">Enter the number of units available</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Storage Information Section -->
+            <div class="border-t border-gray-200 pt-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Storage Information</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Expiry Date -->
+                    <div>
+                        <label asp-for="BloodInventory.ExpiredDate" class="block text-sm font-medium text-gray-700 mb-2">
+                            Expiry Date <span class="text-red-500">*</span>
+                        </label>
+                        <input asp-for="BloodInventory.ExpiredDate" 
+                               type="date" 
+                               min="@DateTime.Now.ToString("yyyy-MM-dd")"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500" />
+                        <span asp-validation-for="BloodInventory.ExpiredDate" class="text-red-600 text-sm"></span>
+                        <p class="text-xs text-gray-500 mt-1">Date when this blood inventory expires</p>
+                    </div>
+
+                    <!-- Status -->
+                    <div>
+                        <label asp-for="BloodInventory.StatusInventoryId" class="block text-sm font-medium text-gray-700 mb-2">
+                            Inventory Status <span class="text-red-500">*</span>
+                        </label>
+                        <select asp-for="BloodInventory.StatusInventoryId" 
+                                asp-items="Model.StatusBloodInventories"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500">
+                        </select>
+                        <span asp-validation-for="BloodInventory.StatusInventoryId" class="text-red-600 text-sm"></span>
+                        <p class="text-xs text-gray-500 mt-1">Current status of this inventory</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="border-t border-gray-200 pt-6">
+                <div class="flex items-center justify-between">
+                    <div class="text-sm text-gray-500">
+                        <i class="fas fa-info-circle mr-1"></i>
+                        Fields marked with <span class="text-red-500">*</span> are required
+                    </div>
+                    <div class="flex space-x-3">
+                        <a asp-page="./BloodUnits" 
+                           class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                            Cancel
+                        </a>
+                        <button type="submit" 
+                                class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                            <i class="fas fa-plus mr-2"></i>
+                            Create Inventory
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    
+    <script>
+        // Client-side enhancements
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form');
+            const submitButton = form.querySelector('button[type="submit"]');
+            const expiryDateInput = document.querySelector('input[name="BloodInventory.ExpiredDate"]');
+            const amountInput = document.querySelector('input[name="BloodInventory.Amount"]');
+
+            // Set minimum date to today
+            if (expiryDateInput) {
+                const today = new Date().toISOString().split('T')[0];
+                expiryDateInput.setAttribute('min', today);
+            }
+
+            // Validate expiry date on change
+            if (expiryDateInput) {
+                expiryDateInput.addEventListener('change', function() {
+                    const selectedDate = new Date(this.value);
+                    const today = new Date();
+                    
+                    if (selectedDate <= today) {
+                        this.setCustomValidity('Expiry date must be in the future');
+                        showFieldError(this, 'Expiry date must be in the future');
+                    } else {
+                        this.setCustomValidity('');
+                        hideFieldError(this);
+                    }
+                });
+            }
+
+            // Validate amount
+            if (amountInput) {
+                amountInput.addEventListener('blur', function() {
+                    const amount = parseInt(this.value);
+                    if (amount <= 0) {
+                        showFieldError(this, 'Amount must be greater than 0');
+                    } else if (amount > 1000) {
+                        showFieldError(this, 'Amount cannot exceed 1000 units');
+                    } else {
+                        hideFieldError(this);
+                    }
+                });
+            }
+
+            // Form submission handling
+            form.addEventListener('submit', function(e) {
+                submitButton.disabled = true;
+                submitButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Creating...';
+                
+                // Re-enable button after 3 seconds to prevent permanent disable on validation errors
+                setTimeout(() => {
+                    submitButton.disabled = false;
+                    submitButton.innerHTML = '<i class="fas fa-plus mr-2"></i>Create Inventory';
+                }, 3000);
+            });
+
+            // Helper functions
+            function showFieldError(field, message) {
+                hideFieldError(field);
+                field.classList.add('border-red-500');
+                const errorSpan = document.createElement('span');
+                errorSpan.className = 'text-red-600 text-sm field-error';
+                errorSpan.textContent = message;
+                field.parentNode.appendChild(errorSpan);
+            }
+
+            function hideFieldError(field) {
+                field.classList.remove('border-red-500');
+                const existingError = field.parentNode.querySelector('.field-error');
+                if (existingError) {
+                    existingError.remove();
+                }
+            }
+        });
+    </script>
+}

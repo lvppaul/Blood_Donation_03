@@ -1,0 +1,418 @@
+@page
+@model RegisterDonationModel
+@{
+    ViewData["Title"] = "Register Donation Availability - BloodConnect";
+}
+
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<div class="min-h-screen bg-gradient-to-br from-red-50 via-white to-red-50 py-12">
+    <div class="container mx-auto px-4">
+        <div class="max-w-4xl mx-auto">
+            <!-- Header -->
+            <div class="bg-white rounded-lg shadow-xl p-8 mb-8">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-6">
+                        <div class="bg-red-100 w-16 h-16 rounded-full flex items-center justify-center">
+                            <i class="fas fa-heart text-2xl text-red-600"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-3xl font-bold text-gray-900">Donation Availability Registration</h1>
+                            <p class="text-gray-600 text-lg">Register your availability for blood donation</p>
+                        </div>
+                    </div>
+                    <div class="flex space-x-3">
+                        <a href="/profile" class="bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 inline-flex items-center">
+                            <i class="fas fa-arrow-left mr-2"></i>
+                            Back to Profile
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Success/Error Messages -->
+            @if (!string.IsNullOrEmpty(Model.SuccessMessage))
+            {
+                <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+                    <div class="flex items-center">
+                        <i class="fas fa-check-circle text-green-600 mr-2"></i>
+                        <span class="text-green-700">@Model.SuccessMessage</span>
+                    </div>
+                </div>
+            }
+
+            @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+            {
+                <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+                    <div class="flex items-center">
+                        <i class="fas fa-exclamation-circle text-red-600 mr-2"></i>
+                        <span class="text-red-700">@Model.ErrorMessage</span>
+                    </div>
+                </div>
+            }
+
+            <!-- Registration Form -->
+            <form method="post" class="space-y-8">
+                <!-- User Information (Read-only) -->
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                        <i class="fas fa-user text-red-600 mr-3"></i>
+                        Your Information
+                    </h2>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                            <input type="text" value="@Model.UserName" class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-700" readonly />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                            <input type="email" value="@Model.UserEmail" class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-700" readonly />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                            <input type="tel" value="@Model.UserPhone" class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-700" readonly />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Blood Type</label>
+                            <input type="text" value="@Model.UserBloodType" class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-700" readonly />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Donation History -->
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                        <i class="fas fa-history text-red-600 mr-3"></i>
+                        Donation History
+                    </h2>
+                    <div class="space-y-4">
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                            <div class="flex items-center">
+                                <i class="fas fa-info-circle text-blue-600 mr-2"></i>
+                                <span class="text-blue-700">
+                                    <strong>Last Donation:</strong> @Model.LastDonationDateDisplay
+                                </span>
+                            </div>
+                        </div>
+                        
+                        @if (Model.RecoveryReminderDate.Date > DateTime.Now.Date)
+                        {
+                            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                                <div class="flex items-center">
+                                    <i class="fas fa-exclamation-triangle text-yellow-600 mr-2"></i>
+                                    <span class="text-yellow-700">
+                                        <strong>Recovery Period:</strong> You can donate again after @Model.RecoveryReminderDate.ToString("MMM dd, yyyy")
+                                    </span>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                                <div class="flex items-center">
+                                    <i class="fas fa-check-circle text-green-600 mr-2"></i>
+                                    <span class="text-green-700">
+                                        <strong>Status:</strong> You are eligible to donate blood
+                                    </span>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- Availability Registration -->
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                        <i class="fas fa-calendar-alt text-red-600 mr-3"></i>
+                        Availability Registration
+                    </h2>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label asp-for="AvailableDate" class="block text-sm font-medium text-gray-700 mb-2">Available Date *</label>
+                            <input asp-for="AvailableDate" type="date" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors" required />
+                            <span asp-validation-for="AvailableDate" class="text-red-600 text-sm"></span>
+                            <p class="text-sm text-gray-500 mt-1">When would you like to be available for donation?</p>
+                        </div>
+                        <div>
+                            <label asp-for="RecoveryReminderDate" class="block text-sm font-medium text-gray-700 mb-2">Recovery Reminder Date</label>
+                            <input asp-for="RecoveryReminderDate" type="date" class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-700" readonly />
+                            <span asp-validation-for="RecoveryReminderDate" class="text-red-600 text-sm"></span>
+                            <p class="text-sm text-gray-500 mt-1">Based on your last donation (3 months recovery period)</p>
+                        </div>
+                    </div>
+
+                    <!-- Component Type Selection -->
+                    <div class="mt-6">
+                        <label asp-for="ComponentType" class="block text-sm font-medium text-gray-700 mb-2">Component Type Available for Donation *</label>
+                        <select asp-for="ComponentType" class="component-select w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors" required>
+                            <option value="">Select Component Type</option>
+                            <option value="Whole Blood">Whole Blood</option>
+                            <option value="Red Blood Cells">Red Blood Cells</option>
+                            <option value="Plasma">Plasma</option>
+                            <option value="Platelets">Platelets</option>
+                            <option value="White Blood Cells">White Blood Cells</option>
+                        </select>
+                        <span asp-validation-for="ComponentType" class="text-red-600 text-sm"></span>
+                        <p class="text-sm text-gray-500 mt-1">Select the type of blood component you're willing to donate</p>
+                    </div>
+
+                    <!-- Component Information -->
+                    <div class="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <h3 class="text-sm font-medium text-blue-800 mb-2">Component Information:</h3>
+                        <div class="grid md:grid-cols-2 gap-4 text-sm text-blue-700">
+                            <div>
+                                <p><strong>Whole Blood:</strong> Complete blood with all components (most common)</p>
+                                <p><strong>Red Blood Cells:</strong> For anemia and blood loss patients</p>
+                                <p><strong>Plasma:</strong> For clotting disorders and immune deficiencies</p>
+                            </div>
+                            <div>
+                                <p><strong>Platelets:</strong> For bleeding disorders and cancer patients</p>
+                                <p><strong>White Blood Cells:</strong> For immune system support (specialized)</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Medical Facility Selection -->
+                    <div class="mt-6">
+                        <label asp-for="MedicalFacilityId" class="block text-sm font-medium text-gray-700 mb-2">Select Medical Facility *</label>
+                        <select asp-for="MedicalFacilityId" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors" required>
+                            <option value="">Select Medical Facility</option>
+                            @foreach (var facility in Model.MedicalFacilities)
+                            {
+                                <option value="@facility.Key">@facility.Value</option>
+                            }
+                        </select>
+                        <span asp-validation-for="MedicalFacilityId" class="text-red-600 text-sm"></span>
+                        <p class="text-sm text-gray-500 mt-1">Choose the medical facility where you would like to donate</p>
+                    </div>
+
+                    <!-- Amount Selection -->
+                    <div class="mt-6">
+                        <label asp-for="Amount" class="block text-sm font-medium text-gray-700 mb-2">Donation Amount (ml) *</label>
+                        <input asp-for="Amount" type="number" min="100" max="500" step="50" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors" required />
+                        <span asp-validation-for="Amount" class="text-red-600 text-sm"></span>
+                        <p class="text-sm text-gray-500 mt-1">Standard donation amount is 450ml (range: 100ml - 500ml)</p>
+                    </div>
+
+                </div>
+
+                <!-- Agreement -->
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                        <i class="fas fa-file-contract text-red-600 mr-3"></i>
+                        Agreement & Consent
+                    </h2>
+                    <div class="space-y-4">
+                        <label class="flex items-start">
+                            <input asp-for="AgreesToTerms" type="checkbox" class="mt-1 h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded" required />
+                            <span class="ml-3 text-sm text-gray-700">
+                                I agree to the <a href="/terms" class="text-red-600 hover:text-red-700 underline">terms and conditions</a> and consent to donate blood. I understand that my information will be kept confidential and used only for donation purposes.
+                            </span>
+                        </label>
+                        <span asp-validation-for="AgreesToTerms" class="text-red-600 text-sm"></span>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="flex justify-end space-x-4">
+                    <a href="/profile" class="bg-gray-600 hover:bg-gray-700 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200 inline-flex items-center">
+                        <i class="fas fa-times mr-2"></i>
+                        Cancel
+                    </a>
+                    <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200 inline-flex items-center">
+                        <i class="fas fa-calendar-check mr-2"></i>
+                        Register Availability
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    
+    <style>
+        .component-highlight {
+            background: linear-gradient(135deg, #fef3c7 0%, #f59e0b 100%);
+            border: 2px solid #f59e0b;
+        }
+        
+        .component-select:focus {
+            border-color: #dc2626;
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+        }
+    </style>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get last donation date from server
+            const lastDonationDate = '@Model.LastDonationDateDisplay';
+            
+            // Set minimum date for available date (tomorrow)
+            const availableDateInput = document.querySelector('input[name="AvailableDate"]');
+            const recoveryDateInput = document.querySelector('input[name="RecoveryReminderDate"]');
+            
+            if (availableDateInput) {
+                const tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                availableDateInput.min = tomorrow.toISOString().split('T')[0];
+                
+                // Auto-calculate predicted recovery reminder date when available date changes
+                // This is for display purposes only - server-side validation uses DB data
+                availableDateInput.addEventListener('change', function() {
+                    if (this.value) {
+                        const availableDate = new Date(this.value);
+                        const predictedRecoveryDate = new Date(availableDate);
+                        predictedRecoveryDate.setDate(predictedRecoveryDate.getDate() + 90); // Add 3 months (90 days)
+                        
+                        if (recoveryDateInput) {
+                            recoveryDateInput.value = predictedRecoveryDate.toISOString().split('T')[0];
+                        }
+                    }
+                });
+                
+                // Initialize predicted recovery date on page load if available date is set
+                if (availableDateInput.value && recoveryDateInput) {
+                    const availableDate = new Date(availableDateInput.value);
+                    const predictedRecoveryDate = new Date(availableDate);
+                    predictedRecoveryDate.setDate(predictedRecoveryDate.getDate() + 90);
+                    recoveryDateInput.value = predictedRecoveryDate.toISOString().split('T')[0];
+                }
+                
+                // Check and update register button state based on last donation date
+                updateRegisterButtonState();
+            }
+            
+            // Function to check last donation date and update register button state
+            function updateRegisterButtonState() {
+                const registerButton = document.querySelector('button[type="submit"]');
+                
+                if (registerButton && lastDonationDate && lastDonationDate !== 'No previous donations' && 
+                    !lastDonationDate.includes('Demo') && !lastDonationDate.includes('Unable to load')) {
+                    
+                    // Parse the last donation date (MM/dd/yyyy format)
+                    const lastDonation = new Date(lastDonationDate);
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    lastDonation.setHours(0, 0, 0, 0);
+                    
+                    // Check if today is 90 days or more after the last donation
+                    const eligibleDate = new Date(lastDonation);
+                    eligibleDate.setDate(eligibleDate.getDate() + 90);
+                    
+                    if (today < eligibleDate) {
+                        // User is still in recovery period - disable button
+                        registerButton.disabled = true;
+                        registerButton.classList.remove('bg-red-600', 'hover:bg-red-700');
+                        registerButton.classList.add('bg-gray-400', 'cursor-not-allowed');
+                        registerButton.innerHTML = '<i class="fas fa-ban mr-2"></i>Cannot Register (Recovery Period)';
+                    } else {
+                        // User can donate - enable button
+                        registerButton.disabled = false;
+                        registerButton.classList.remove('bg-gray-400', 'cursor-not-allowed');
+                        registerButton.classList.add('bg-red-600', 'hover:bg-red-700');
+                        registerButton.innerHTML = '<i class="fas fa-calendar-check mr-2"></i>Register Availability';
+                    }
+                } else if (registerButton) {
+                    // For new users or demo users - enable button
+                    registerButton.disabled = false;
+                    registerButton.classList.remove('bg-gray-400', 'cursor-not-allowed');
+                    registerButton.classList.add('bg-red-600', 'hover:bg-red-700');
+                    registerButton.innerHTML = '<i class="fas fa-calendar-check mr-2"></i>Register Availability';
+                }
+            }
+
+            // Auto-dismiss messages
+            // const messages = document.querySelectorAll('.bg-green-50, .bg-red-50');
+            // messages.forEach(message => {
+            //     setTimeout(() => {
+            //         message.style.opacity = '0';
+            //         setTimeout(() => message.remove(), 300);
+            //     }, 5000);
+            // });
+
+            // Form validation
+            const form = document.querySelector('form');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    let isValid = true;
+                    
+                    // Check if user is eligible based on last donation date + 90 days
+                    if (lastDonationDate && lastDonationDate !== 'No previous donations' && 
+                        !lastDonationDate.includes('Demo') && !lastDonationDate.includes('Unable to load')) {
+                        
+                        // Parse the last donation date (MM/dd/yyyy format)
+                        const lastDonation = new Date(lastDonationDate);
+                        const today = new Date();
+                        today.setHours(0, 0, 0, 0);
+                        lastDonation.setHours(0, 0, 0, 0);
+                        
+                        // Check if today is 90 days or more after the last donation
+                        const eligibleDate = new Date(lastDonation);
+                        eligibleDate.setDate(eligibleDate.getDate() + 90);
+                        
+                        if (today < eligibleDate) {
+                            alert('You are still in recovery period. You can donate again after ' + eligibleDate.toDateString());
+                            isValid = false;
+                        }
+                    }
+                    
+                    // Validate required fields
+                    const requiredInputs = form.querySelectorAll('input[required]:not([type="checkbox"]), select[required]');
+                    requiredInputs.forEach(input => {
+                        if (!input.value.trim()) {
+                            input.style.borderColor = '#ef4444';
+                            isValid = false;
+                        } else {
+                            input.style.borderColor = '#d1d5db';
+                        }
+                    });
+
+                    // Validate component type selection
+                    const componentTypeSelect = document.querySelector('select[name="ComponentType"]');
+                    if (componentTypeSelect && !componentTypeSelect.value.trim()) {
+                        componentTypeSelect.style.borderColor = '#ef4444';
+                        isValid = false;
+                    } else if (componentTypeSelect) {
+                        componentTypeSelect.style.borderColor = '#d1d5db';
+                    }
+
+                    // Validate checkbox agreement
+                    const agreementCheckbox = document.querySelector('input[name="AgreesToTerms"]');
+                    if (agreementCheckbox && !agreementCheckbox.checked) {
+                        agreementCheckbox.style.outline = '2px solid #ef4444';
+                        alert('You must agree to the terms and conditions.');
+                        isValid = false;
+                    } else if (agreementCheckbox) {
+                        agreementCheckbox.style.outline = 'none';
+                    }
+
+                    // Validate available date is in the future
+                    if (availableDateInput && availableDateInput.value) {
+                        const availableDate = new Date(availableDateInput.value);
+                        const today = new Date();
+                        today.setHours(0, 0, 0, 0);
+                        availableDate.setHours(0, 0, 0, 0);
+                        
+                        if (availableDate <= today) {
+                            availableDateInput.style.borderColor = '#ef4444';
+                            alert('Available date must be in the future.');
+                            isValid = false;
+                        }
+                    }
+
+                    if (!isValid) {
+                        e.preventDefault();
+                        const firstError = document.querySelector('input[style*="border-color: rgb(239, 68, 68)"], select[style*="border-color: rgb(239, 68, 68)"], input[style*="outline: 2px solid rgb(239, 68, 68)"]');
+                        if (firstError) {
+                            firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            firstError.focus();
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+}

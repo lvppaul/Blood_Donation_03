@@ -1,0 +1,355 @@
+@page "/admin/blood-units/requests"
+@model BD.RazorPages.Pages.Admin.BloodRequestsModel
+@{
+    ViewData["Title"] = "Blood Requests Management";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+@* Add anti-forgery token *@
+<form style="display: none;">
+    @Html.AntiForgeryToken()
+</form>
+
+<div class="bg-white rounded-lg shadow-md mb-6">
+    <div class="p-6 border-b border-gray-200">
+        <div class="flex justify-between items-center">
+            <div>
+                <h2 class="text-2xl font-bold text-gray-800">Blood Requests Management</h2>
+                <p class="text-gray-600 mt-1">Manage and track all blood donation requests</p>
+            </div>
+            <div class="flex items-center space-x-4">
+                <!-- Search Box -->
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fas fa-search text-gray-400"></i>
+                    </div>
+                    <input type="text" 
+                           id="searchInput" 
+                           class="block w-64 pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-red-500 focus:border-red-500 sm:text-sm"
+                           placeholder="Search by name or email..."
+                           onkeyup="searchRequests()"
+                           autocomplete="off">
+                </div>
+                <div class="bg-blue-100 text-blue-800 px-4 py-2 rounded-lg">
+                    <i class="fas fa-clipboard-list mr-2"></i>
+                    Total: <span id="totalCount">@Model.BloodRequests.Count()</span> requests
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status Filter Tabs -->
+    <div class="border-b border-gray-200">
+        <nav class="flex space-x-8 px-6" aria-label="Tabs">
+            <button onclick="filterByStatus('all')" 
+                    class="status-tab active py-4 px-1 border-b-2 font-medium text-sm text-gray-700 hover:text-red-600 border-transparent hover:border-red-300" 
+                    data-status="all">
+                All Requests
+                <span class="ml-2 bg-gray-100 text-gray-900 py-0.5 px-2.5 rounded-full text-xs">@Model.BloodRequests.Count()</span>
+            </button>
+            <button onclick="filterByStatus('pending')" 
+                    class="status-tab py-4 px-1 border-b-2 font-medium text-sm text-gray-700 hover:text-red-600 border-transparent hover:border-red-300" 
+                    data-status="pending">
+                Pending
+                <span class="ml-2 bg-yellow-100 text-yellow-800 py-0.5 px-2.5 rounded-full text-xs">@Model.PendingRequests.Count()</span>
+            </button>
+            <button onclick="filterByStatus('approved')" 
+                    class="status-tab py-4 px-1 border-b-2 font-medium text-sm text-gray-700 hover:text-red-600 border-transparent hover:border-red-300" 
+                    data-status="approved">
+                Approved
+                <span class="ml-2 bg-green-100 text-green-800 py-0.5 px-2.5 rounded-full text-xs">@Model.ApprovedRequests.Count()</span>
+            </button>
+            <button onclick="filterByStatus('cancelled')" 
+                    class="status-tab py-4 px-1 border-b-2 font-medium text-sm text-gray-700 hover:text-red-600 border-transparent hover:border-red-300" 
+                    data-status="cancelled">
+                Cancelled
+                <span class="ml-2 bg-red-100 text-red-800 py-0.5 px-2.5 rounded-full text-xs">@Model.CancelledRequests.Count()</span>
+            </button>
+            <button onclick="filterByStatus('fulfilled')" 
+                    class="status-tab py-4 px-1 border-b-2 font-medium text-sm text-gray-700 hover:text-red-600 border-transparent hover:border-red-300" 
+                    data-status="fulfilled">
+                Fulfilled
+                <span class="ml-2 bg-blue-100 text-blue-800 py-0.5 px-2.5 rounded-full text-xs">@Model.FulfilledRequests.Count()</span>
+            </button>
+            <button onclick="filterByStatus('rejected')" 
+                    class="status-tab py-4 px-1 border-b-2 font-medium text-sm text-gray-700 hover:text-red-600 border-transparent hover:border-red-300" 
+                    data-status="rejected">
+                Rejected
+                <span class="ml-2 bg-red-100 text-red-800 py-0.5 px-2.5 rounded-full text-xs">@Model.RejectedRequests.Count()</span>
+            </button>
+        </nav>
+    </div>
+</div>
+
+<!-- Messages -->
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
+        <i class="fas fa-check-circle mr-2"></i>
+        @TempData["SuccessMessage"]
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+        <i class="fas fa-exclamation-triangle mr-2"></i>
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+<!-- Blood Requests Table -->
+<div class="bg-white rounded-lg shadow-md overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Request Info</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Requester</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Blood Details</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                @foreach (var request in Model.BloodRequests)
+                {
+                    <tr class="request-row hover:bg-gray-50 transition-colors" data-status="@GetStatusFilter(request.StatusBloodRequestResponse.StatusRequestId)">
+                        <!-- Request Info -->
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div>
+                                    <div class="text-sm font-medium text-gray-900">Request #@request.RequestId</div>
+                                    <div class="text-sm text-gray-500">@(request.RequestDate?.ToString("MMM dd, yyyy HH:mm") ?? "Unknown")</div>
+                                    @if (request.UrgencyLevel?.ToLower() == "emergency")
+                                    {
+                                        <div class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                            <i class="fas fa-exclamation-triangle mr-1"></i>
+                                            EMERGENCY
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </td>
+
+                        <!-- Requester -->
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-gray-900">@(request.User?.Name ?? "Unknown")</div>
+                            <div class="text-sm text-gray-500">@(request.User?.Email ?? "No email")</div>
+                        </td>
+
+                        <!-- Blood Details -->
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center space-x-2">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                    @request.BloodType
+                                </span>
+                                <span class="text-sm text-gray-900">@request.ComponentType</span>
+                            </div>
+                            <div class="text-sm text-gray-500">@request.Amount ml</div>
+                            <div class="text-sm">
+                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium @GetUrgencyBadgeColor(request.UrgencyLevel ?? "routine")">
+                                    @(request.UrgencyLevel ?? "Routine")
+                                </span>
+                            </div>
+                        </td>
+
+                        <!-- Status -->
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium @GetStatusBadgeColor(request.StatusBloodRequestResponse.StatusRequestId)">
+                                @GetStatusName(request.StatusBloodRequestResponse.StatusRequestId)
+                            </span>
+                        </td>
+
+                        <!-- Actions -->
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <div class="flex space-x-2">
+                                @if (request.StatusBloodRequestResponse.StatusRequestId == 1) // Pending
+                                {
+                                    <form method="post" asp-page-handler="ApproveRequest" class="inline">
+                                        <input type="hidden" name="requestId" value="@request.RequestId" />
+                                        <button type="submit" class="text-green-600 hover:text-green-900" title="Approve">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                    </form>
+                                    <form method="post" asp-page-handler="RejectRequest" class="inline">
+                                        <input type="hidden" name="requestId" value="@request.RequestId" />
+                                        <button type="submit" class="text-red-600 hover:text-red-900" title="Reject"
+                                                onclick="return confirm('Are you sure you want to reject this request?')">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </form>
+                                    <form method="post" asp-page-handler="CancelRequest" class="inline">
+                                        <input type="hidden" name="requestId" value="@request.RequestId" />
+                                        <button type="submit" class="text-gray-600 hover:text-gray-900" title="Cancel"
+                                                onclick="return confirm('Are you sure you want to cancel this request?')">
+                                            <i class="fas fa-ban"></i>
+                                        </button>
+                                    </form>
+                                }
+                                else if (request.StatusBloodRequestResponse.StatusRequestId == 2) // Approved
+                                {
+                                    <form method="post" asp-page-handler="FulfillRequest" class="inline">
+                                        <input type="hidden" name="requestId" value="@request.RequestId" />
+                                        <button type="submit" class="text-blue-600 hover:text-blue-900" title="Mark as Fulfilled">
+                                            <i class="fas fa-check-double"></i>
+                                        </button>
+                                    </form>
+                                    <form method="post" asp-page-handler="CancelRequest" class="inline">
+                                        <input type="hidden" name="requestId" value="@request.RequestId" />
+                                        <button type="submit" class="text-gray-600 hover:text-gray-900" title="Cancel"
+                                                onclick="return confirm('Are you sure you want to cancel this request?')">
+                                            <i class="fas fa-ban"></i>
+                                        </button>
+                                    </form>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @if (!Model.BloodRequests.Any())
+    {
+        <div class="text-center py-12">
+            <i class="fas fa-clipboard-list text-gray-400 text-6xl mb-4"></i>
+            <h3 class="text-xl font-semibold text-gray-600 mb-2">No blood requests found</h3>
+            <p class="text-gray-500">Blood requests will appear here when submitted.</p>
+        </div>
+    }
+</div>
+
+@functions {
+    private string GetStatusBadgeColor(int statusId)
+    {
+        return statusId switch
+        {
+            1 => "bg-yellow-100 text-yellow-800", // Pending
+            2 => "bg-green-100 text-green-800",   // Approved
+            3 => "bg-red-100 text-red-800",       // Cancelled
+            4 => "bg-blue-100 text-blue-800",     // Fulfilled
+            5 => "bg-red-100 text-red-800",       // Rejected
+            _ => "bg-gray-100 text-gray-800"
+        };
+    }
+
+    private string GetStatusName(int statusId)
+    {
+        return statusId switch
+        {
+            1 => "Pending",
+            2 => "Approved",
+            3 => "Cancelled",
+            4 => "Fulfilled",
+            5 => "Rejected",
+            _ => "Unknown"
+        };
+    }
+
+    private string GetStatusFilter(int statusId)
+    {
+        return statusId switch
+        {
+            1 => "pending",
+            2 => "approved",
+            3 => "cancelled",
+            4 => "fulfilled",
+            5 => "rejected",
+            _ => "unknown"
+        };
+    }
+
+    private string GetUrgencyBadgeColor(string urgency)
+    {
+        return urgency?.ToLower() switch
+        {
+            "emergency" => "bg-red-100 text-red-800",
+            "urgent" => "bg-orange-100 text-orange-800",
+            "routine" => "bg-blue-100 text-blue-800",
+            "scheduled" => "bg-green-100 text-green-800",
+            _ => "bg-gray-100 text-gray-800"
+        };
+    }
+}
+
+<style>
+    .status-tab.active {
+        color: #dc2626;
+        border-color: #dc2626;
+    }
+    
+    .request-row {
+        transition: all 0.2s ease;
+    }
+</style>
+
+<script>
+function filterByStatus(status) {
+    // Update tab appearance
+    document.querySelectorAll('.status-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    document.querySelector(`[data-status="${status}"]`).classList.add('active');
+    
+    // Apply both status filter and search filter
+    applyFilters();
+}
+
+function searchRequests() {
+    applyFilters();
+}
+
+function applyFilters() {
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    const activeTab = document.querySelector('.status-tab.active');
+    const activeStatus = activeTab ? activeTab.dataset.status : 'all';
+    
+    let visibleCount = 0;
+    
+    // Filter table rows
+    document.querySelectorAll('.request-row').forEach(row => {
+        const status = row.dataset.status;
+        
+        // Get requester name and email from the second column
+        const requesterCell = row.querySelector('td:nth-child(2)');
+        const requesterName = requesterCell.querySelector('.text-sm.font-medium').textContent.toLowerCase();
+        const requesterEmail = requesterCell.querySelector('.text-sm.text-gray-500').textContent.toLowerCase();
+        
+        // Check status filter
+        const statusMatch = activeStatus === 'all' || status === activeStatus;
+        
+        // Check search filter
+        const searchMatch = searchTerm === '' || 
+                           requesterName.includes(searchTerm) || 
+                           requesterEmail.includes(searchTerm);
+        
+        if (statusMatch && searchMatch) {
+            row.style.display = 'table-row';
+            visibleCount++;
+        } else {
+            row.style.display = 'none';
+        }
+    });
+    
+    // Update total count
+    document.getElementById('totalCount').textContent = visibleCount;
+}
+
+function clearSearch() {
+    document.getElementById('searchInput').value = '';
+    applyFilters();
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+    filterByStatus('all');
+    
+    // Add clear search functionality on ESC key
+    document.getElementById('searchInput').addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            clearSearch();
+        }
+    });
+});
+</script>

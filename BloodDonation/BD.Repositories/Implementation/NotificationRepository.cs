@@ -14,42 +14,44 @@ namespace BD.Repositories.Implementation
             _context = context;
         }
 
-        public async Task AddAsync(Notification notification)
+        public async Task<Notification> AddAsync(Notification notification)
         {
             await _context.Notifications.AddAsync(notification);
             await _context.SaveChangesAsync();
+            return notification;
         }
 
-        public async Task DeleteAsync(int notificationId)
+        public async Task DeleteAsync(Notification notification)
         {
-            var notification = await _context.Notifications.FirstOrDefaultAsync(n => n.NotificationId == notificationId);
-            if (notification != null)
-            {
-                notification.IsDeleted = true;
-                await _context.SaveChangesAsync();
-            }
+            notification.IsDeleted = true;
+            await _context.SaveChangesAsync();
 
         }
 
         public async Task<IEnumerable<Notification>> GetAllAsync()
         {
-            return await _context.Notifications.Where(n => (bool)!n.IsDeleted).ToListAsync();
+            return await _context.Notifications.Where(n => n.IsDeleted != true).ToListAsync();
         }
 
         public async Task<Notification?> GetByIdAsync(int notificationId)
         {
-            var notification = await _context.Notifications.Include(u => u.User).Include(s => s.StatusNotification).Where(n => n.NotificationId == notificationId && (bool)!n.IsDeleted).FirstOrDefaultAsync();
+            var notification = await _context.Notifications.Where(n => n.NotificationId == notificationId && !n.IsDeleted != true).FirstOrDefaultAsync();
             return notification;
         }
 
-        public Task<IEnumerable<Notification>> GetByUserIdAsync(int userId)
+        public async Task<IEnumerable<Notification>> GetByUserIdAsync(int userId)
         {
-            throw new NotImplementedException();
+            var notificationList = await _context.Notifications.Include(n => n.User)
+                .Where(n => n.UserId == userId && n.IsDeleted != true)
+                .ToListAsync();
+            return notificationList;
         }
 
-        public Task UpdateAsync(Notification notification)
+        public async Task<Notification> UpdateAsync(Notification notification)
         {
-            throw new NotImplementedException();
+            _context.Notifications.Update(notification);
+            await _context.SaveChangesAsync();
+            return notification;
         }
     }
 }

@@ -1,0 +1,60 @@
+@model BD.Repositories.Models.Entities.DonationStatus
+
+<!-- Simple Donation Status Component -->
+<div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+    <div class="flex items-center justify-between space-x-4">
+        <!-- Status 1: Chờ -->
+        <div class="flex flex-col items-center">
+            <div class="@(Model >= BD.Repositories.Models.Entities.DonationStatus.Waiting ? "bg-yellow-500 text-white" : "bg-gray-200 text-gray-400") w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold">
+                1
+            </div>
+            <span class="mt-2 text-xs @(Model >= BD.Repositories.Models.Entities.DonationStatus.Waiting ? "text-yellow-600 font-medium" : "text-gray-400")">
+                Chờ
+            </span>
+        </div>
+
+        <!-- Line 1 -->
+        <div class="flex-1 h-1 @(Model >= BD.Repositories.Models.Entities.DonationStatus.Confirmed ? "bg-green-500" : "bg-gray-200") rounded"></div>
+
+        <!-- Status 2: Đã xác nhận -->
+        <div class="flex flex-col items-center">
+            <div class="@(Model >= BD.Repositories.Models.Entities.DonationStatus.Confirmed ? "bg-green-500 text-white" : "bg-gray-200 text-gray-400") w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold">
+                2
+            </div>
+            <span class="mt-2 text-xs @(Model >= BD.Repositories.Models.Entities.DonationStatus.Confirmed ? "text-green-600 font-medium" : "text-gray-400")">
+                Đã xác nhận
+            </span>
+        </div>
+
+        <!-- Line 2 -->
+        <div class="flex-1 h-1 @(Model >= BD.Repositories.Models.Entities.DonationStatus.Donated ? "bg-red-500" : "bg-gray-200") rounded"></div>
+
+        <!-- Status 3: Đã hiến -->
+        <div class="flex flex-col items-center">
+            <div class="@(Model >= BD.Repositories.Models.Entities.DonationStatus.Donated ? "bg-red-500 text-white" : "bg-gray-200 text-gray-400") w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold">
+                3
+            </div>
+            <span class="mt-2 text-xs @(Model >= BD.Repositories.Models.Entities.DonationStatus.Donated ? "text-red-600 font-medium" : "text-gray-400")">
+                Đã hiến
+            </span>
+        </div>
+    </div>
+    
+    <!-- Status Text -->
+    <div class="mt-4 text-center">
+        <p class="text-sm text-gray-600">
+            @switch (Model)
+            {
+                case BD.Repositories.Models.Entities.DonationStatus.Waiting:
+                    <span class="text-yellow-600">Đang chờ xác nhận từ bộ phận y tế</span>
+                    break;
+                case BD.Repositories.Models.Entities.DonationStatus.Confirmed:
+                    <span class="text-green-600">Đã được xác nhận, vui lòng đến đúng lịch hẹn</span>
+                    break;
+                case BD.Repositories.Models.Entities.DonationStatus.Donated:
+                    <span class="text-red-600">Cảm ơn bạn đã hiến máu!</span>
+                    break;
+            }
+        </p>
+    </div>
+</div>

@@ -1,0 +1,300 @@
+@page "/admin/users/donors/history/{id:int}"
+@model BD.RazorPages.Pages.Admin.Users.Donors.HistoryModel
+@{
+    ViewData["Title"] = "Donor History";
+}
+
+<div class="space-y-6">
+    <!-- Header Section -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <h2 class="text-3xl font-bold text-gray-900 mb-2">Donor History</h2>
+                <p class="text-gray-600">Complete donation history for @Model.DonorName</p>
+            </div>
+            <div class="flex space-x-2">
+                <a href="/admin/users/donors" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
+                    <i class="fas fa-arrow-left mr-2"></i>Back to Donors
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success/Error Messages -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+            <div class="flex">
+                <i class="fas fa-check-circle text-green-400 text-xl mr-3"></i>
+                <p class="text-green-800">@TempData["SuccessMessage"]</p>
+            </div>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+            <div class="flex">
+                <i class="fas fa-exclamation-circle text-red-400 text-xl mr-3"></i>
+                <p class="text-red-800">@TempData["ErrorMessage"]</p>
+            </div>
+        </div>
+    }
+
+    <!-- Donor Info Card -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div class="flex items-center space-x-4">
+            <div class="h-16 w-16 bg-green-100 rounded-full flex items-center justify-center">
+                <span class="text-green-600 font-bold text-xl">@Model.GetInitials(Model.DonorName)</span>
+            </div>
+            <div>
+                <h3 class="text-xl font-bold text-gray-900">@Model.DonorName</h3>
+                <p class="text-gray-600">@Model.DonorEmail</p>
+                <div class="flex items-center space-x-4 mt-2">
+                    <span class="px-3 py-1 text-sm font-medium rounded-full bg-red-100 text-red-800">
+                        <i class="fas fa-tint mr-1"></i>@Model.BloodType
+                    </span>
+                    <span class="text-sm text-gray-500">
+                        <i class="fas fa-calendar mr-1"></i>Joined: @(Model.JoinedDate?.ToString("MMM dd, yyyy") ?? "N/A")
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-6 gap-6">
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div class="flex items-center">
+                <div class="p-3 rounded-full bg-blue-100">
+                    <i class="fas fa-heart text-xl text-blue-600"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm text-gray-600">Total Donations</p>
+                    <p class="text-2xl font-bold text-gray-900">@Model.TotalDonations</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div class="flex items-center">
+                <div class="p-3 rounded-full bg-green-100">
+                    <i class="fas fa-check-circle text-xl text-green-600"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm text-gray-600">Completed</p>
+                    <p class="text-2xl font-bold text-gray-900">@Model.CompletedDonations</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div class="flex items-center">
+                <div class="p-3 rounded-full bg-yellow-100">
+                    <i class="fas fa-clock text-xl text-yellow-600"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm text-gray-600">Pending</p>
+                    <p class="text-2xl font-bold text-gray-900">@Model.PendingDonations</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div class="flex items-center">
+                <div class="p-3 rounded-full bg-red-100">
+                    <i class="fas fa-times-circle text-xl text-red-600"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm text-gray-600">Rejected</p>
+                    <p class="text-2xl font-bold text-gray-900">@Model.RejectedDonations</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div class="flex items-center">
+                <div class="p-3 rounded-full bg-gray-100">
+                    <i class="fas fa-ban text-xl text-gray-600"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm text-gray-600">Canceled</p>
+                    <p class="text-2xl font-bold text-gray-900">@Model.CanceledDonations</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div class="flex items-center">
+                <div class="p-3 rounded-full bg-purple-100">
+                    <i class="fas fa-calendar-alt text-xl text-purple-600"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm text-gray-600">Last Donation</p>
+                    <p class="text-sm font-bold text-gray-900">@(Model.LastDonationDate?.ToString("MMM dd, yyyy") ?? "Never")</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Donation History Table -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h3 class="text-lg font-medium text-gray-900">
+                <i class="fas fa-history text-blue-500 mr-2"></i>
+                Donation History
+            </h3>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Donation ID</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Blood Type</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Facility</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    @if (Model.DonationHistories?.Any() == true)
+                    {
+                        @foreach (var donation in Model.DonationHistories)
+                        {
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    #@donation.DonationId.ToString("D6")
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    @{
+                                        var status = Model.GetDonationStatus(donation);
+                                        var statusClass = status switch
+                                        {
+                                            BD.Repositories.Models.Entities.DonationStatus.Waiting => "bg-yellow-100 text-yellow-800",
+                                            BD.Repositories.Models.Entities.DonationStatus.Confirmed => "bg-blue-100 text-blue-800",
+                                            BD.Repositories.Models.Entities.DonationStatus.Donated => "bg-green-100 text-green-800",
+                                            BD.Repositories.Models.Entities.DonationStatus.Rejected => "bg-red-100 text-red-800",
+                                            BD.Repositories.Models.Entities.DonationStatus.Canceled => "bg-gray-100 text-gray-800",
+                                            _ => "bg-gray-100 text-gray-800"
+                                        };
+                                        var statusText = status switch
+                                        {
+                                            BD.Repositories.Models.Entities.DonationStatus.Waiting => "Chờ",
+                                            BD.Repositories.Models.Entities.DonationStatus.Confirmed => "Đã xác nhận",
+                                            BD.Repositories.Models.Entities.DonationStatus.Donated => "Đã hiến",
+                                            BD.Repositories.Models.Entities.DonationStatus.Rejected => "Từ chối",
+                                            BD.Repositories.Models.Entities.DonationStatus.Canceled => "Hủy bỏ",
+                                            _ => "Unknown"
+                                        };
+                                    }
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full @statusClass">
+                                        @statusText
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                        @donation.BloodType
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    @(donation.Facility?.Name ?? "N/A")
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    @(donation.DonationDate?.ToString("MMM dd, yyyy") ?? "N/A")
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    <div class="flex space-x-2">
+                                        <a href="/admin/donations/details/@donation.DonationId" class="text-blue-600 hover:text-blue-900">
+                                            <i class="fas fa-eye mr-1"></i>Details
+                                        </a>
+                                        @if (status == BD.Repositories.Models.Entities.DonationStatus.Waiting)
+                                        {
+                                            <form method="post" asp-page-handler="UpdateStatus" style="display: inline;">
+                                                <input type="hidden" name="donationId" value="@donation.DonationId" />
+                                                <input type="hidden" name="newStatus" value="1" />
+                                                <button type="submit" class="text-green-600 hover:text-green-900">
+                                                    <i class="fas fa-check mr-1"></i>Confirm
+                                                </button>
+                                            </form>
+                                            <form method="post" asp-page-handler="UpdateStatus" style="display: inline;">
+                                                <input type="hidden" name="donationId" value="@donation.DonationId" />
+                                                <input type="hidden" name="newStatus" value="3" />
+                                                <button type="submit" class="text-red-600 hover:text-red-900">
+                                                    <i class="fas fa-times mr-1"></i>Reject
+                                                </button>
+                                            </form>
+                                        }
+                                        @if (status == BD.Repositories.Models.Entities.DonationStatus.Confirmed)
+                                        {
+                                            <form method="post" asp-page-handler="UpdateStatus" style="display: inline;">
+                                                <input type="hidden" name="donationId" value="@donation.DonationId" />
+                                                <input type="hidden" name="newStatus" value="2" />
+                                                <button type="submit" class="text-purple-600 hover:text-purple-900">
+                                                    <i class="fas fa-heart mr-1"></i>Complete
+                                                </button>
+                                            </form>
+                                            <form method="post" asp-page-handler="UpdateStatus" style="display: inline;">
+                                                <input type="hidden" name="donationId" value="@donation.DonationId" />
+                                                <input type="hidden" name="newStatus" value="4" />
+                                                <button type="submit" class="text-gray-600 hover:text-gray-900">
+                                                    <i class="fas fa-ban mr-1"></i>Cancel
+                                                </button>
+                                            </form>
+                                        }
+                                        @if (status == BD.Repositories.Models.Entities.DonationStatus.Donated)
+                                        {
+                                            <span class="text-green-500 text-sm">
+                                                <i class="fas fa-check-circle mr-1"></i>Completed
+                                            </span>
+                                        }
+                                        @if (status == BD.Repositories.Models.Entities.DonationStatus.Rejected)
+                                        {
+                                            <span class="text-red-500 text-sm">
+                                                <i class="fas fa-times-circle mr-1"></i>Rejected
+                                            </span>
+                                        }
+                                        @if (status == BD.Repositories.Models.Entities.DonationStatus.Canceled)
+                                        {
+                                            <span class="text-gray-500 text-sm">
+                                                <i class="fas fa-ban mr-1"></i>Canceled
+                                            </span>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="px-6 py-4 text-center text-gray-500">
+                                <i class="fas fa-heart text-4xl mb-2 text-gray-300"></i>
+                                <p>No donation history found for this donor.</p>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Donation Flow Visualization -->
+    @if (Model.DonationHistories?.Any() == true)
+    {
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">
+                <i class="fas fa-stream text-purple-500 mr-2"></i>
+                Recent Donation Flow
+            </h3>
+            @foreach (var donation in Model.DonationHistories.Take(3))
+            {
+                <partial name="_DonationStatusFlow" model="Model.GetDonationStatus(donation)" />
+                @if (donation != Model.DonationHistories.Take(3).Last())
+                {
+                    <div class="my-4 border-t border-gray-200"></div>
+                }
+            }
+        </div>
+    }
+</div>

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace BD.Repositories.Models.Entities;
+﻿namespace BD.Repositories.Models.Entities;
 
 public partial class DonationHistory
 {
@@ -9,17 +6,23 @@ public partial class DonationHistory
 
     public int UserId { get; set; }
 
-    public int RequestId { get; set; }
+    public int? RequestId { get; set; }
 
     public int FacilityId { get; set; }
 
-    public int Quantity { get; set; }
+    public int Amount { get; set; }
 
     public DateTime? DonationDate { get; set; }
 
     public string BloodType { get; set; } = null!;
 
     public string ComponentType { get; set; } = null!;
+
+    public DonationStatus Status { get; set; } = DonationStatus.Waiting;
+
+    public DateTime CreatedDate { get; set; } = DateTime.Now;
+
+    public DateTime? ConfirmedDate { get; set; }
 
     public bool? IsDeleted { get; set; }
 

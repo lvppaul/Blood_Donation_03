@@ -1,0 +1,224 @@
+@page
+@model BD.RazorPages.Pages.DonationStatusModel
+@{
+    ViewData["Title"] = "Trạng thái hiến máu";
+}
+
+<div class="min-h-screen bg-gradient-to-br from-red-50 to-pink-100 py-8 px-4">
+    <div class="max-w-4xl mx-auto">
+        <!-- Header Section -->
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-red-100 rounded-full mb-4">
+                <i class="fas fa-heart text-red-600 text-2xl"></i>
+            </div>
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">Trạng thái hiến máu</h1>
+            <p class="text-gray-600 max-w-2xl mx-auto">
+                Theo dõi tiến trình hiến máu của bạn từ lúc đăng ký đến khi hoàn thành.
+            </p>
+        </div>
+
+        <!-- Success Message -->
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-6" id="success-alert">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-check-circle text-green-400 text-xl"></i>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm font-medium text-green-800">@TempData["SuccessMessage"]</p>
+                    </div>
+                    <div class="ml-auto pl-3">
+                        <div class="-mx-1.5 -my-1.5">
+                            <button type="button" class="inline-flex bg-green-50 rounded-md p-1.5 text-green-500 hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-green-50 focus:ring-green-600" onclick="document.getElementById('success-alert').style.display='none'">
+                                <i class="fas fa-times text-sm"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Error Message -->
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6" id="error-alert">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-exclamation-circle text-red-400 text-xl"></i>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm font-medium text-red-800">@TempData["ErrorMessage"]</p>
+                    </div>
+                    <div class="ml-auto pl-3">
+                        <div class="-mx-1.5 -my-1.5">
+                            <button type="button" class="inline-flex bg-red-50 rounded-md p-1.5 text-red-500 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-red-50 focus:ring-red-600" onclick="document.getElementById('error-alert').style.display='none'">
+                                <i class="fas fa-times text-sm"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        @if (Model.DonationHistory != null)
+        {
+            <!-- Donation Status Flow -->
+            <partial name="_DonationStatusFlowWithDates" model="BD.RazorPages.Models.DonationStatusViewModel.FromDonationHistory(Model.DonationHistory)" />
+
+            <!-- Donation Details Card -->
+            <div class="bg-white rounded-lg shadow-lg p-8 mb-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-6">
+                    <i class="fas fa-info-circle text-blue-500 mr-2"></i>
+                    Thông tin chi tiết
+                </h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Donation ID -->
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <div class="flex items-center">
+                            <i class="fas fa-hashtag text-gray-500 mr-2"></i>
+                            <span class="text-sm font-medium text-gray-700">Mã hiến máu</span>
+                        </div>
+                        <p class="text-lg font-semibold text-gray-900 mt-1">#@Model.DonationHistory.DonationId.ToString("D6")</p>
+                    </div>
+
+                    <!-- Blood Type -->
+                    <div class="bg-red-50 rounded-lg p-4">
+                        <div class="flex items-center">
+                            <i class="fas fa-tint text-red-500 mr-2"></i>
+                            <span class="text-sm font-medium text-gray-700">Nhóm máu</span>
+                        </div>
+                        <p class="text-lg font-semibold text-red-600 mt-1">@Model.DonationHistory.BloodType</p>
+                    </div>
+
+                    <!-- Component Type -->
+                    <div class="bg-blue-50 rounded-lg p-4">
+                        <div class="flex items-center">
+                            <i class="fas fa-flask text-blue-500 mr-2"></i>
+                            <span class="text-sm font-medium text-gray-700">Loại thành phần</span>
+                        </div>
+                        <p class="text-lg font-semibold text-blue-600 mt-1">@Model.DonationHistory.ComponentType</p>
+                    </div>
+
+                    <!-- Amount -->
+                    <div class="bg-green-50 rounded-lg p-4">
+                        <div class="flex items-center">
+                            <i class="fas fa-weight text-green-500 mr-2"></i>
+                            <span class="text-sm font-medium text-gray-700">Số lượng</span>
+                        </div>
+                        <p class="text-lg font-semibold text-green-600 mt-1">@Model.DonationHistory.Amount đơn vị</p>
+                        <p class="text-xs text-gray-500">(@(Model.DonationHistory.Amount * 250)ml)</p>
+                    </div>
+
+                    <!-- Created Date -->
+                    <div class="bg-purple-50 rounded-lg p-4">
+                        <div class="flex items-center">
+                            <i class="fas fa-calendar-plus text-purple-500 mr-2"></i>
+                            <span class="text-sm font-medium text-gray-700">Ngày đăng ký</span>
+                        </div>
+                        <p class="text-lg font-semibold text-purple-600 mt-1">@Model.DonationHistory.CreatedDate.ToString("dd/MM/yyyy")</p>
+                        <p class="text-xs text-gray-500">@Model.DonationHistory.CreatedDate.ToString("HH:mm")</p>
+                    </div>
+
+                    <!-- Status -->
+                    <div class="bg-orange-50 rounded-lg p-4">
+                        <div class="flex items-center">
+                            <i class="fas fa-info-circle text-orange-500 mr-2"></i>
+                            <span class="text-sm font-medium text-gray-700">Trạng thái hiện tại</span>
+                        </div>
+                        <p class="text-lg font-semibold text-orange-600 mt-1">
+                            @switch (Model.DonationHistory.Status)
+                            {
+                                case BD.Repositories.Models.Entities.DonationStatus.Waiting:
+                                    <span>Chờ xác nhận</span>
+                                    break;
+                                case BD.Repositories.Models.Entities.DonationStatus.Confirmed:
+                                    <span>Đã xác nhận</span>
+                                    break;
+                                case BD.Repositories.Models.Entities.DonationStatus.Donated:
+                                    <span>Đã hiến máu</span>
+                                    break;
+                            }
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Controls (Demo - in real app, check user role) -->
+            <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                    <i class="fas fa-cogs text-gray-500 mr-2"></i>
+                    Quản lý trạng thái (Admin)
+                </h3>
+                
+                <form method="post" asp-page-handler="UpdateStatus" class="space-y-4">
+                    <input type="hidden" asp-for="DonationHistory.DonationId" />
+                    <input type="hidden" asp-for="DonationHistory.UserId" />
+                    <input type="hidden" asp-for="DonationHistory.RequestId" />
+                    <input type="hidden" asp-for="DonationHistory.FacilityId" />
+                    <input type="hidden" asp-for="DonationHistory.Amount" />
+                    <input type="hidden" asp-for="DonationHistory.BloodType" />
+                    <input type="hidden" asp-for="DonationHistory.ComponentType" />
+                    <input type="hidden" asp-for="DonationHistory.CreatedDate" />
+                    <input type="hidden" asp-for="DonationHistory.ConfirmedDate" />
+                    <input type="hidden" asp-for="DonationHistory.DonationDate" />
+                    <input type="hidden" asp-for="DonationHistory.IsDeleted" />
+                    
+                    <div class="flex gap-4 items-center">
+                        <label class="text-sm font-medium text-gray-700">Cập nhật trạng thái:</label>
+                        <select asp-for="DonationHistory.Status" class="rounded-md border-gray-300 shadow-sm focus:border-red-400 focus:ring focus:ring-red-200 focus:ring-opacity-50">
+                            <option value="@((int)BD.Repositories.Models.Entities.DonationStatus.Waiting)">Chờ xác nhận</option>
+                            <option value="@((int)BD.Repositories.Models.Entities.DonationStatus.Confirmed)">Đã xác nhận</option>
+                            <option value="@((int)BD.Repositories.Models.Entities.DonationStatus.Donated)">Đã hiến máu</option>
+                        </select>
+                        <button type="submit" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:border-blue-900 focus:ring ring-blue-300 disabled:opacity-25 transition ease-in-out duration-150">
+                            <i class="fas fa-save mr-2"></i>
+                            Cập nhật
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Demo Navigation -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                    <i class="fas fa-eye text-blue-500 mr-2"></i>
+                    Demo - Xem các trạng thái khác
+                </h3>
+                
+                <div class="flex gap-3 flex-wrap">
+                    <a href="?id=0" class="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                        <i class="fas fa-clock text-blue-500 mr-2"></i>
+                        Chờ xác nhận
+                    </a>
+                    <a href="?id=1" class="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                        <i class="fas fa-check text-green-500 mr-2"></i>
+                        Đã xác nhận
+                    </a>
+                    <a href="?id=2" class="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                        <i class="fas fa-heart text-red-500 mr-2"></i>
+                        Đã hiến máu
+                    </a>
+                </div>
+            </div>
+        }
+        else
+        {
+            <!-- No Data -->
+            <div class="bg-white rounded-lg shadow-lg p-8 text-center">
+                <i class="fas fa-exclamation-triangle text-yellow-500 text-4xl mb-4"></i>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Không tìm thấy thông tin</h3>
+                <p class="text-gray-600 mb-4">Không có thông tin hiến máu để hiển thị.</p>
+                <a href="/" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700">
+                    <i class="fas fa-home mr-2"></i>
+                    Về trang chủ
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
