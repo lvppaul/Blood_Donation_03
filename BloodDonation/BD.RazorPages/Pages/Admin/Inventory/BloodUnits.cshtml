@@ -207,7 +207,8 @@
                                            class="inline-flex items-center px-2 py-1 border border-blue-300 rounded-md text-xs font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 transition-colors flex-shrink-0">
                                             <i class="fas fa-eye mr-1"></i>View
                                         </a>
-                                        <button class="inline-flex items-center px-2 py-1 border border-yellow-300 rounded-md text-xs font-medium text-yellow-700 bg-yellow-50 hover:bg-yellow-100 transition-colors flex-shrink-0">
+                                        <button class="inline-flex items-center px-2 py-1 border border-yellow-300 rounded-md text-xs font-medium text-yellow-700 bg-yellow-50 hover:bg-yellow-100 transition-colors flex-shrink-0"
+                                                onclick="openTransferModal(@unit.InventoryId, '@unit.BloodType', '@unit.ComponentType', @unit.Amount)">
                                             <i class="fas fa-exchange-alt mr-1"></i>Transfer
                                         </button>
                                         <button class="inline-flex items-center px-2 py-1 border border-red-300 rounded-md text-xs font-medium text-red-700 bg-red-50 hover:bg-red-100 transition-colors flex-shrink-0"
@@ -440,6 +441,118 @@
     </div>
 </div>
 
+<!-- Transfer Modal -->
+<div id="transferModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="mt-3 text-center">
+            <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-yellow-100 mb-4">
+                <i class="fas fa-exchange-alt text-yellow-600 text-xl"></i>
+            </div>
+            <h3 class="text-lg font-medium text-gray-900 mb-2">Transfer Blood Unit</h3>
+            <div class="mt-2 px-7 py-3">
+                <p class="text-sm text-gray-500 mb-4">
+                    Select a blood request to transfer this blood unit to:
+                </p>
+                
+                <!-- Blood Unit Details -->
+                <div class="bg-gray-50 rounded-lg p-3 mb-4">
+                    <div class="text-sm">
+                        <div class="flex justify-between mb-1">
+                            <span class="font-medium text-gray-700">Unit ID:</span>
+                            <span id="transferModalUnitId" class="text-gray-900"></span>
+                        </div>
+                        <div class="flex justify-between mb-1">
+                            <span class="font-medium text-gray-700">Blood Type:</span>
+                            <span id="transferModalBloodType" class="text-gray-900"></span>
+                        </div>
+                        <div class="flex justify-between mb-1">
+                            <span class="font-medium text-gray-700">Component:</span>
+                            <span id="transferModalComponent" class="text-gray-900"></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="font-medium text-gray-700">Available Amount:</span>
+                            <span id="transferModalAmount" class="text-gray-900"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Request Selection -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Select Blood Request:</label>
+                    <select id="requestSelect" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                        <option value="">Choose a request...</option>
+                        @foreach (var request in Model.AvailableRequests)
+                        {
+                            <option value="@request.RequestId" 
+                                    data-blood-type="@request.BloodType" 
+                                    data-component="@request.ComponentType"
+                                    data-amount="@request.Amount"
+                                    data-urgency="@request.UrgencyLevel"
+                                    data-user="@request.User.Name">
+                                #@request.RequestId - @request.User.Name (@request.BloodType, @request.ComponentType, @request.Amount units)
+                            </option>
+                        }
+                    </select>
+                </div>
+
+                <!-- Selected Request Details -->
+                <div id="requestDetails" class="hidden bg-blue-50 rounded-lg p-3 mb-4">
+                    <div class="text-sm">
+                        <div class="flex justify-between mb-1">
+                            <span class="font-medium text-blue-700">Patient:</span>
+                            <span id="selectedRequestUser" class="text-blue-900"></span>
+                        </div>
+                        <div class="flex justify-between mb-1">
+                            <span class="font-medium text-blue-700">Blood Type:</span>
+                            <span id="selectedRequestBloodType" class="text-blue-900"></span>
+                        </div>
+                        <div class="flex justify-between mb-1">
+                            <span class="font-medium text-blue-700">Component:</span>
+                            <span id="selectedRequestComponent" class="text-blue-900"></span>
+                        </div>
+                        <div class="flex justify-between mb-1">
+                            <span class="font-medium text-blue-700">Required Amount:</span>
+                            <span id="selectedRequestAmount" class="text-blue-900"></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="font-medium text-blue-700">Urgency:</span>
+                            <span id="selectedRequestUrgency" class="text-blue-900"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transfer Warning -->
+                <div id="transferWarning" class="hidden bg-red-50 border border-red-200 rounded p-3 mb-4">
+                    <div class="flex">
+                        <i class="fas fa-exclamation-triangle text-red-400 mr-2"></i>
+                        <span class="text-red-800 text-sm" id="warningMessage"></span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex justify-center space-x-3">
+                <button id="cancelTransferBtn" 
+                        class="px-4 py-2 bg-gray-300 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300">
+                    Cancel
+                </button>
+                <form id="transferForm" method="post" asp-page-handler="Transfer" class="inline">
+                    <input type="hidden" id="transferInventoryId" name="inventoryId" value="">
+                    <input type="hidden" id="transferRequestId" name="requestId" value="">
+                    <input type="hidden" name="SearchTerm" value="@Model.SearchTerm">
+                    <input type="hidden" name="SelectedBloodType" value="@Model.SelectedBloodType">
+                    <input type="hidden" name="SelectedFacilityId" value="@Model.SelectedFacilityId">
+                    <input type="hidden" name="CurrentPage" value="@Model.CurrentPage">
+                    <input type="hidden" name="PageSize" value="@Model.PageSize">
+                    <button type="submit" id="transferSubmitBtn" disabled
+                            class="px-4 py-2 bg-yellow-600 text-white text-sm font-medium rounded-md hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 disabled:bg-gray-300 disabled:cursor-not-allowed">
+                        <i class="fas fa-exchange-alt mr-2"></i>Transfer Blood
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     <script>
        
@@ -450,7 +563,7 @@
             const transferButtons = document.querySelectorAll('button:has(.fa-exchange-alt)');
             transferButtons.forEach(button => {
                 button.addEventListener('click', function() {
-                    alert('Transfer functionality will be implemented here');
+                    // alert('Transfer functionality will be implemented here');
                 });
             });
         });
@@ -461,7 +574,7 @@
             document.getElementById('modalUnitId').textContent = '#' + unitId;
             document.getElementById('modalBloodType').textContent = bloodType;
             document.getElementById('modalComponent').textContent = componentType;
-            document.getElementById('modalAmount').textContent = amount + ' units';
+            document.getElementById('modalAmount').textContent = amount + ' ml';
             document.getElementById('disposeUnitId').value = unitId;
             
             // Show modal
@@ -474,29 +587,145 @@
             document.body.style.overflow = 'auto'; // Restore scrolling
         }
 
-        // Modal event listeners
-        document.addEventListener('DOMContentLoaded', function() {
-            const modal = document.getElementById('disposeModal');
-            const cancelBtn = document.getElementById('cancelDisposeBtn');
+        // Transfer Modal Functions
+        let currentInventoryId = null;
+        let currentBloodType = null;
+        let currentComponent = null;
+        let currentAmount = null;
+
+        function openTransferModal(unitId, bloodType, componentType, amount) {
+            // Store current unit details
+            currentInventoryId = unitId;
+            currentBloodType = bloodType;
+            currentComponent = componentType;
+            currentAmount = amount;
             
-            // Close modal when clicking cancel button
-            if (cancelBtn) {
-                cancelBtn.addEventListener('click', closeDisposeModal);
+            // Set modal content
+            document.getElementById('transferModalUnitId').textContent = '#' + unitId;
+            document.getElementById('transferModalBloodType').textContent = bloodType;
+            document.getElementById('transferModalComponent').textContent = componentType;
+            document.getElementById('transferModalAmount').textContent = amount + ' ml';
+            document.getElementById('transferInventoryId').value = unitId;
+            
+            // Reset request selection
+            const requestSelect = document.getElementById('requestSelect');
+            requestSelect.selectedIndex = 0;
+            document.getElementById('requestDetails').classList.add('hidden');
+            document.getElementById('transferWarning').classList.add('hidden');
+            document.getElementById('transferSubmitBtn').disabled = true;
+            document.getElementById('transferRequestId').value = '';
+
+            // Filter compatible requests
+            filterCompatibleRequests(bloodType, componentType);
+
+            // Show modal
+            document.getElementById('transferModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden'; // Prevent background scrolling
+        }
+
+        function filterCompatibleRequests(bloodType, componentType) {
+            const requestSelect = document.getElementById('requestSelect');
+            const options = requestSelect.options;
+            let hasCompatibleRequests = false;
+            
+            for (let i = 1; i < options.length; i++) { // Skip first option (placeholder)
+                const option = options[i];
+                const isCompatible = option.getAttribute('data-blood-type') === bloodType && 
+                                   option.getAttribute('data-component') === componentType;
+                
+                if (isCompatible) {
+                    option.style.display = 'block';
+                    option.classList.add('compatible-request');
+                    hasCompatibleRequests = true;
+                } else {
+                    option.style.display = 'none';
+                    option.classList.remove('compatible-request');
+                }
             }
             
-            // Close modal when clicking outside the modal content
-            if (modal) {
-                modal.addEventListener('click', function(e) {
-                    if (e.target === modal) {
+            if (!hasCompatibleRequests) {
+                document.getElementById('transferWarning').classList.remove('hidden');
+                document.getElementById('warningMessage').textContent = 'No compatible requests found for this blood unit.';
+            }
+        }
+
+        function checkTransferCompatibility(selectedOption) {
+            const warningMessage = document.getElementById('warningMessage');
+            const transferWarning = document.getElementById('transferWarning');
+            
+            // Check blood type compatibility
+            if (selectedOption.getAttribute('data-blood-type') !== currentBloodType) {
+                warningMessage.textContent = `Blood type mismatch: Unit has ${currentBloodType}, request needs ${selectedOption.getAttribute('data-blood-type')}`;
+                transferWarning.classList.remove('hidden');
+                return false;
+            }
+            
+            // Check component type compatibility
+            if (selectedOption.getAttribute('data-component') !== currentComponent) {
+                warningMessage.textContent = `Component mismatch: Unit has ${currentComponent}, request needs ${selectedOption.getAttribute('data-component')}`;
+                transferWarning.classList.remove('hidden');
+                return false;
+            }
+            
+            // Check amount availability
+            const requestedAmount = parseInt(selectedOption.getAttribute('data-amount'));
+            if (requestedAmount > currentAmount) {
+                warningMessage.textContent = `Insufficient amount: Unit has ${currentAmount} ml, request needs ${requestedAmount} ml`;
+                transferWarning.classList.remove('hidden');
+                return false;
+            }
+            
+            return true;
+        }
+
+        function closeTransferModal() {
+            document.getElementById('transferModal').classList.add('hidden');
+            document.body.style.overflow = 'auto'; // Restore scrolling
+        }
+
+        // Modal event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            const disposeModal = document.getElementById('disposeModal');
+            const transferModal = document.getElementById('transferModal');
+            const cancelDisposeBtn = document.getElementById('cancelDisposeBtn');
+            const cancelTransferBtn = document.getElementById('cancelTransferBtn');
+            
+            // Close dispose modal when clicking cancel button
+            if (cancelDisposeBtn) {
+                cancelDisposeBtn.addEventListener('click', closeDisposeModal);
+            }
+            
+            // Close transfer modal when clicking cancel button
+            if (cancelTransferBtn) {
+                cancelTransferBtn.addEventListener('click', closeTransferModal);
+            }
+            
+            // Close modals when clicking outside the modal content
+            if (disposeModal) {
+                disposeModal.addEventListener('click', function(e) {
+                    if (e.target === disposeModal) {
                         closeDisposeModal();
                     }
                 });
             }
             
-            // Close modal with Escape key
+            if (transferModal) {
+                transferModal.addEventListener('click', function(e) {
+                    if (e.target === transferModal) {
+                        closeTransferModal();
+                    }
+                });
+            }
+            
+            // Close modals with Escape key
             document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
-                    closeDisposeModal();
+                if (e.key === 'Escape') {
+                    if (!disposeModal.classList.contains('hidden')) {
+                        closeDisposeModal();
+                    }
+                    if (!transferModal.classList.contains('hidden')) {
+                        closeTransferModal();
+                    }
                 }
             });
             
@@ -509,6 +738,66 @@
                         submitBtn.disabled = true;
                         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Disposing...';
                     }
+                });
+            }
+
+            // Add change event to request select
+            const requestSelect = document.getElementById('requestSelect');
+            if (requestSelect) {
+                requestSelect.addEventListener('change', function() {
+                    const selectedOption = requestSelect.options[requestSelect.selectedIndex];
+                    const transferRequestId = document.getElementById('transferRequestId');
+                    
+                    if (this.value) {
+                        const bloodType = selectedOption.getAttribute('data-blood-type');
+                        const component = selectedOption.getAttribute('data-component');
+                        const amount = selectedOption.getAttribute('data-amount');
+                        const urgency = selectedOption.getAttribute('data-urgency');
+                        const user = selectedOption.getAttribute('data-user');
+                        
+                        // Show request details
+                        document.getElementById('selectedRequestUser').textContent = user;
+                        document.getElementById('selectedRequestBloodType').textContent = bloodType;
+                        document.getElementById('selectedRequestComponent').textContent = component;
+                        document.getElementById('selectedRequestAmount').textContent = amount + ' ml';
+                        document.getElementById('selectedRequestUrgency').textContent = urgency;
+                        document.getElementById('requestDetails').classList.remove('hidden');
+                        
+                        // Set hidden field
+                        transferRequestId.value = this.value;
+                        
+                        // Check compatibility
+                        const isCompatible = checkTransferCompatibility(selectedOption);
+                        document.getElementById('transferSubmitBtn').disabled = !isCompatible;
+                        
+                        if (isCompatible) {
+                            document.getElementById('transferWarning').classList.add('hidden');
+                        }
+                    } else {
+                        // Hide request details
+                        document.getElementById('requestDetails').classList.add('hidden');
+                        document.getElementById('transferWarning').classList.add('hidden');
+                        
+                        // Reset form
+                        transferRequestId.value = '';
+                        document.getElementById('transferSubmitBtn').disabled = true;
+                    }
+                });
+            }
+
+            // Add submit event to transfer form
+            const transferForm = document.getElementById('transferForm');
+            if (transferForm) {
+                transferForm.addEventListener('submit', function(event) {
+                    // Show loading state
+                    const submitBtn = transferForm.querySelector('button[type="submit"]');
+                    if (submitBtn) {
+                        submitBtn.disabled = true;
+                        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Transferring...';
+                    }
+                    
+                    // Let the form submit normally to the server
+                    // The form will post to the OnPostTransferAsync method
                 });
             }
         });

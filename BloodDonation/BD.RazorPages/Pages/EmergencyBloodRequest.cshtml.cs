@@ -39,8 +39,8 @@ namespace BD.RazorPages.Pages
 
 
         [BindProperty]
-        [Display(Name = "Ghi chú")]
-        [StringLength(1000, ErrorMessage = "Ghi chú không được vượt quá 1000 ký tự")]
+        [Display(Name = "Note")]
+        [StringLength(1000, ErrorMessage = "Note not exceed 1000 characters")]
         public string? Notes { get; set; }
 
         public void OnGet()
@@ -91,7 +91,7 @@ namespace BD.RazorPages.Pages
 
                 if (result != null)
                 {
-                    TempData["SuccessMessage"] = $"Yêu cầu cần máu khẩn cấp đã được gửi thành công! Mã yêu cầu: {result.RequestId}. Chúng tôi sẽ liên hệ với bạn sớm nhất có thể.";
+                    TempData["SuccessMessage"] = $"Emergency Request Created Successfuly! ID: {result.RequestId}. We will contact you as soon as possible.";
                     _logger.LogInformation("Emergency blood request created successfully with ID: {RequestId}", result.RequestId);
 
                     // Reset form sau khi gửi thành công
@@ -108,7 +108,7 @@ namespace BD.RazorPages.Pages
                 }
                 else
                 {
-                    TempData["ErrorMessage"] = "Có lỗi xảy ra khi gửi yêu cầu. Vui lòng thử lại sau.";
+                    TempData["ErrorMessage"] = "Error happens. Try again later.";
                     _logger.LogWarning("Failed to create emergency blood request - service returned null");
                     return Page();
                 }
@@ -117,7 +117,7 @@ namespace BD.RazorPages.Pages
             {
                 _logger.LogError(ex, "Error occurred while creating emergency blood request for user {UserId}",
                     User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "Anonymous");
-                TempData["ErrorMessage"] = "Có lỗi xảy ra khi gửi yêu cầu. Vui lòng thử lại sau.";
+                TempData["ErrorMessage"] = "Error happens when create request. Try again later.";
                 return Page();
             }
         }

@@ -1,7 +1,7 @@
 @page
 @model BD.RazorPages.Pages.EmergencyBloodRequestModel
 @{
-    ViewData["Title"] = "Đăng ký cần máu khẩn cấp";
+    ViewData["Title"] = "Emergency Blood Request Registration";
 }
 
 <div class="min-h-screen bg-gradient-to-br from-red-50 to-red-100 py-8 px-4">
@@ -11,10 +11,10 @@
             <div class="inline-flex items-center justify-center w-16 h-16 bg-red-100 rounded-full mb-4">
                 <i class="fas fa-exclamation-triangle text-red-600 text-2xl"></i>
             </div>
-            <h1 class="text-3xl font-bold text-gray-900 mb-2">Đăng ký cần máu khẩn cấp</h1>
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">Emergency Blood Request Registration</h1>
             <p class="text-gray-600 max-w-2xl mx-auto">
-                Yêu cầu khẩn cấp sẽ được ưu tiên xử lý trong vòng 30 phút.<br>
-                Vui lòng điền đầy đủ thông tin để chúng tôi có thể hỗ trợ nhanh nhất.
+                Emergency requests will be prioritized and processed within 30 minutes.<br>
+                Please fill in all required information so we can assist you as quickly as possible.
             </p>
         </div>
 
@@ -26,7 +26,7 @@
                 </div>
                 <div class="ml-3">
                     <p class="text-yellow-800">
-                        <strong class="font-semibold">Lưu ý quan trọng:</strong> Form này dành cho các trường hợp cần máu khẩn cấp. Vui lòng điền đầy đủ thông tin để chúng tôi có thể hỗ trợ nhanh nhất.
+                        <strong class="font-semibold">Important Note:</strong> This form is for emergency blood requests only. Please provide complete information so we can assist you as quickly as possible.
                     </p>
                 </div>
             </div>
@@ -41,7 +41,7 @@
                         <i class="fas fa-exclamation-circle text-red-400 text-xl"></i>
                     </div>
                     <div class="ml-3">
-                        <h3 class="text-sm font-medium text-red-800">Vui lòng kiểm tra lại thông tin:</h3>
+                        <h3 class="text-sm font-medium text-red-800">Please check your information:</h3>
                         <div class="mt-2 text-sm text-red-700">
                             <ul class="list-disc pl-5 space-y-1">
                                 @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
@@ -105,10 +105,10 @@
                 <!-- Blood Type -->
                 <div>
                     <label asp-for="BloodRequest.BloodType" class="block text-sm font-medium text-gray-700 mb-1">
-                        Nhóm máu <span class="text-red-500">*</span>
+                        Blood Type <span class="text-red-500">*</span>
                     </label>
                     <select asp-for="BloodRequest.BloodType" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-400 focus:ring focus:ring-red-200 focus:ring-opacity-50">
-                        <option value="">-- Chọn nhóm máu --</option>
+                        <option value="">-- Select blood type --</option>
                         <option value="A+">A+</option>
                         <option value="A-">A-</option>
                         <option value="B+">B+</option>
@@ -124,15 +124,15 @@
                 <!-- Component Type -->
                 <div>
                     <label asp-for="BloodRequest.ComponentType" class="block text-sm font-medium text-gray-700 mb-1">
-                        Loại thành phần máu <span class="text-red-500">*</span>
+                        Blood Component Type <span class="text-red-500">*</span>
                     </label>
                     <select asp-for="BloodRequest.ComponentType" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-400 focus:ring focus:ring-red-200 focus:ring-opacity-50">
-                        <option value="">-- Chọn loại thành phần máu --</option>
-                        <option value="Whole Blood">Máu toàn phần (Whole Blood)</option>
-                        <option value="Red Blood Cells">Hồng cầu (Red Blood Cells)</option>
-                        <option value="Platelets">Tiểu cầu (Platelets)</option>
-                        <option value="Plasma">Huyết tương (Plasma)</option>
-                        <option value="White Blood Cells">Bạch cầu (White Blood Cells)</option>
+                        <option value="">-- Select blood component type --</option>
+                        <option value="Whole Blood">Whole Blood</option>
+                        <option value="Red Blood Cells">Red Blood Cells</option>
+                        <option value="Platelets">Platelets</option>
+                        <option value="Plasma">Plasma</option>
+                        <option value="White Blood Cells">White Blood Cells</option>
                     </select>
                     <span asp-validation-for="BloodRequest.ComponentType" class="text-red-500 text-xs"></span>
                 </div>
@@ -140,46 +140,24 @@
                 <!-- Amount -->
                 <div>
                     <label asp-for="BloodRequest.Amount" class="block text-sm font-medium text-gray-700 mb-1">
-                        Số lượng đơn vị <span class="text-red-500">*</span>
+                        Amount (ml) <span class="text-red-500">*</span>
                     </label>
-                    <input asp-for="BloodRequest.Amount" type="number" min="1" max="22"
+                    <input asp-for="BloodRequest.Amount" type="number" min="100" max="500"
                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-400 focus:ring focus:ring-red-200 focus:ring-opacity-50"
-                           placeholder="Nhập số đơn vị cần" />
+                           placeholder="Enter required amount" />
                     <span asp-validation-for="BloodRequest.Amount" class="text-red-500 text-xs"></span>
-                    <div class="text-gray-500 text-xs mt-1">Từ 1 đến 22 đơn vị<br>1 đơn vị máu = 250ml</div>
+                    <div class="text-gray-500 text-xs mt-1">From 100 to 500ml</div>
                 </div>
             </div>
-
-            @* <div class="grid grid-cols-1 md:grid-cols-2 gap-6"> *@
-            @*     <!-- Contact Phone --> *@
-            @*     <div> *@
-            @*         <label class="block text-sm font-medium text-gray-700 mb-1"> *@
-            @*             Số điện thoại liên hệ *@
-            @*         </label> *@
-            @*         <input asp-for="ContactPhone" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-400 focus:ring focus:ring-red-200 focus:ring-opacity-50" *@
-            @*                placeholder="Nhập số điện thoại" /> *@
-            @*         <span asp-validation-for="ContactPhone" class="text-red-500 text-xs"></span> *@
-            @*     </div> *@
-
-            @*     <!-- Hospital Name --> *@
-            @*     <div> *@
-            @*         <label class="block text-sm font-medium text-gray-700 mb-1"> *@
-            @*             Tên bệnh viện *@
-            @*         </label> *@
-            @*         <input asp-for="HospitalName" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-400 focus:ring focus:ring-red-200 focus:ring-opacity-50" *@
-            @*                placeholder="Nhập tên bệnh viện" /> *@
-            @*         <span asp-validation-for="HospitalName" class="text-red-500 text-xs"></span> *@
-            @*     </div> *@
-            @* </div> *@
 
             <!-- Notes -->
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">
-                    Ghi chú thêm
+                    Additional Notes
                 </label>
                 <textarea asp-for="Notes" rows="3"
                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-400 focus:ring focus:ring-red-200 focus:ring-opacity-50"
-                          placeholder="Nhập thông tin bổ sung (triệu chứng, tình trạng khẩn cấp, v.v.)"></textarea>
+                          placeholder="Enter additional information (symptoms, emergency situation, etc.)"></textarea>
                 <span asp-validation-for="Notes" class="text-red-500 text-xs"></span>
             </div>
 
@@ -190,11 +168,11 @@
                         <i class="fas fa-info-circle text-blue-400 text-xl"></i>
                     </div>
                     <div class="ml-3">
-                        <h3 class="text-sm font-medium text-blue-800">Thông tin tự động:</h3>
+                        <h3 class="text-sm font-medium text-blue-800">Automatic Information:</h3>
                         <ul class="mt-2 text-sm text-blue-700 space-y-1">
-                            <li>• Mức độ ưu tiên: <span class="font-semibold text-red-600">Khẩn cấp</span></li>
-                            <li>• Thời gian đăng ký: <span class="font-semibold">@DateTime.Now.ToString("dd/MM/yyyy HH:mm")</span></li>
-                            <li>• Trạng thái: <span class="font-semibold">Đang chờ xử lý</span></li>
+                            <li>• Priority Level: <span class="font-semibold text-red-600">Emergency</span></li>
+                            <li>• Registration Time: <span class="font-semibold">@DateTime.Now.ToString("dd/MM/yyyy HH:mm")</span></li>
+                            <li>• Status: <span class="font-semibold">Pending</span></li>
                         </ul>
                     </div>
                 </div>
@@ -205,10 +183,10 @@
             <!-- Action Buttons -->
             <div class="flex flex-col md:flex-row md:justify-between items-center mt-8 gap-4">
                 <a href="/" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
-                    <i class="fas fa-arrow-left mr-2"></i>Quay lại
+                    <i class="fas fa-arrow-left mr-2"></i>Back
                 </a>
                 <button type="submit" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-semibold rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition duration-150 ease-in-out">
-                    <i class="fas fa-paper-plane mr-2"></i>Gửi yêu cầu khẩn cấp
+                    <i class="fas fa-paper-plane mr-2"></i>Submit Emergency Request
                 </button>
             </div>
         </form>
