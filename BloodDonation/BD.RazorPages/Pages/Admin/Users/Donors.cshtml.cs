@@ -424,8 +424,9 @@ namespace BD.RazorPages.Pages.Admin.Users
                             UserId = latestDonorAvailability.User.UserId,
                             AvailableDate = latestDonorAvailability.AvailableDate,
                             StatusDonorId = statusDonorId, // Set to 3 for donated status
-                            // LastDonationDate = DateOnly.FromDateTime(DateTime.Today), // Update last donation date
-                            //RecoveryReminderDate = DateOnly.FromDateTime(DateTime.Today.AddDays(56)) // 8 weeks recovery period
+                            //LastDonationDate = DateOnly.FromDateTime(DateTime.Today), // Update last donation date
+                            LastDonationDate = latestDonorAvailability.LastDonationDate, // Update last donation date
+                            RecoveryReminderDate = latestDonorAvailability.RecoveryReminderDate // 8 weeks recovery period
                         };
 
                         await _donorAvailabilityService.UpdateAsync(latestDonorAvailability.AvailabilityId, updateRequest);

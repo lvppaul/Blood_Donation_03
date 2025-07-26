@@ -77,12 +77,12 @@ INSERT INTO MedicalFacility (name, address, phone, email, description, is_Delete
 -- Insert data vào bảng DonationHistory
 INSERT INTO DonationHistory 
 (user_id, request_id, facility_id, amount,donation_date, blood_type, component_type, status, created_date, confirmed_date, is_Deleted) VALUES
-(3, null, 1, 20,'2024-08-16','O+', 'Red Blood Cells', 0, '2024-08-16', '2024-08-17', 0),
-(5, null, 4, 20,'2024-09-21', 'O-', 'Red Blood Cells', 0, '2024-09-21', '2024-09-22', 0),
+(3, null, 1, 20,'2024-08-16','O+', 'Red Blood Cells', 2, '2024-08-16', '2024-08-17', 0),
+(5, null, 4, 20,'2024-09-21', 'O-', 'Red Blood Cells', 2, '2024-09-21', '2024-09-22', 0),
 (3, null, 1, 10,'2025-02-09', 'O+', 'Plasma', 0, '2025-02-09', '2025-02-10', 0),
-(4, null, 2, 30,'2025-07-02', 'AB+', 'Platelets', 0, '2024-07-02', '2024-07-03', 0),
+(4, null, 2, 30,'2025-07-02', 'AB+', 'Platelets', 2, '2024-07-02', '2024-07-03', 0),
 (5, null, 3, 10,'2024-03-04', 'O-', 'Platelets', 0, '2024-03-04', '2024-03-05', 0),
-(6, null, 2, 10,'2025-06-22', 'O-', 'Platelets', 0, '2025-06-22', '2024-06-22', 0);
+(6, null, 2, 10,'2025-06-22', 'O-', 'Platelets', 2, '2025-06-22', '2024-06-22', 0);
 
 -- Insert data vào bảng StatusBloodInventory
 INSERT INTO StatusBloodInventory (status_name, is_Deleted) VALUES
@@ -103,7 +103,8 @@ INSERT INTO BloodInventory (facility_id, component_type, amount, expired_date, s
 (2, 'Plasma', 3500, '2026-02-05', 1, 'O+', 0),
 (5, 'Platelets', 8000, '2026-01-12', 4, 'B-', 0),
 (3, 'Red Blood Cells', 2200, '2026-01-28', 1, 'AB-', 0),
-(4, 'Plasma', 4500, '2026-02-20', 1, 'O-', 0);
+(4, 'Plasma', 4500, '2026-02-20', 1, 'O-', 0),
+(3, 'Red Blood Cells', 1500, '2026-01-20', 4, 'AB+', 0);
 
 -- Insert data vào bảng BlogPost
 INSERT INTO BlogPost (title, content, author_id, category, is_document, is_Deleted) VALUES
@@ -113,5 +114,77 @@ INSERT INTO BlogPost (title, content, author_id, category, is_document, is_Delet
 ('Donor Eligibility Guidelines', 'Not everyone can donate blood due to health and safety considerations. This article outlines the eligibility criteria for blood donors, including age requirements, weight limits, health conditions, and temporary deferrals...', 2, 'Guidelines', 0, 0),
 ('Blood Component Separation', 'Modern blood banking involves separating whole blood into different components: red blood cells, plasma, platelets, and white blood cells. Each component has specific uses and storage requirements. Learn about the process and applications...', 1, 'Medical', 1, 0);
 
+INSERT INTO [BloodCompatibility] (
+    recipient_blood_type, 
+    donor_blood_type, 
+    component_type, 
+    is_compatible, 
+    is_Deleted
+)
+VALUES
+('A+', 'A+', 'Red Blood Cells', 1, 0),
+('A+', 'A-', 'Red Blood Cells', 1, 0),
+('A+', 'O+', 'Red Blood Cells', 1, 0),
+('A+', 'O-', 'Red Blood Cells', 1, 0),
+('A-', 'A-', 'Red Blood Cells', 1, 0),
+('A-', 'O-', 'Red Blood Cells', 1, 0),
+('B+', 'B+', 'Red Blood Cells', 1, 0),
+('B+', 'B-', 'Red Blood Cells', 1, 0),
+('B+', 'O+', 'Red Blood Cells', 1, 0),
+('B+', 'O-', 'Red Blood Cells', 1, 0),
+('B-', 'B-', 'Red Blood Cells', 1, 0),
+('B-', 'O-', 'Red Blood Cells', 1, 0),
+('AB+', 'A+', 'Red Blood Cells', 1, 0),
+('AB+', 'A-', 'Red Blood Cells', 1, 0),
+('AB+', 'B+', 'Red Blood Cells', 1, 0),
+('AB+', 'B-', 'Red Blood Cells', 1, 0),
+('AB+', 'AB+', 'Red Blood Cells', 1, 0),
+('AB+', 'AB-', 'Red Blood Cells', 1, 0),
+('AB+', 'O+', 'Red Blood Cells', 1, 0),
+('AB+', 'O-', 'Red Blood Cells', 1, 0),
+('AB-', 'A-', 'Red Blood Cells', 1, 0),
+('AB-', 'B-', 'Red Blood Cells', 1, 0),
+('AB-', 'AB-', 'Red Blood Cells', 1, 0),
+('AB-', 'O-', 'Red Blood Cells', 1, 0),
+('O+', 'O+', 'Red Blood Cells', 1, 0),
+('O+', 'O-', 'Red Blood Cells', 1, 0),
+('O-', 'O-', 'Red Blood Cells', 1, 0),
+('A+', 'A+', 'Plasma', 1, 0),
+('A+', 'AB+', 'Plasma', 1, 0),
+('A-', 'A-', 'Plasma', 1, 0),
+('A-', 'AB-', 'Plasma', 1, 0),
+('B+', 'B+', 'Plasma', 1, 0),
+('B+', 'AB+', 'Plasma', 1, 0),
+('B-', 'B-', 'Plasma', 1, 0),
+('B-', 'AB-', 'Plasma', 1, 0),
+('AB+', 'AB+', 'Plasma', 1, 0),
+('AB-', 'AB-', 'Plasma', 1, 0),
+('O+', 'A+', 'Plasma', 1, 0),
+('O+', 'B+', 'Plasma', 1, 0),
+('O+', 'AB+', 'Plasma', 1, 0),
+('O+', 'O+', 'Plasma', 1, 0),
+('O-', 'A-', 'Plasma', 1, 0),
+('O-', 'B-', 'Plasma', 1, 0),
+('O-', 'AB-', 'Plasma', 1, 0),
+('O-', 'O-', 'Plasma', 1, 0),
+('A+', 'A+', 'Platelets', 1, 0),
+('A-', 'A-', 'Platelets', 1, 0),
+('B+', 'B+', 'Platelets', 1, 0),
+('B-', 'B-', 'Platelets', 1, 0),
+('AB+', 'AB+', 'Platelets', 1, 0),
+('AB-', 'AB-', 'Platelets', 1, 0),
+('O+', 'O+', 'Platelets', 1, 0),
+('O-', 'O-', 'Platelets', 1, 0),
+('A+', 'O-', 'Platelets', 1, 0),
+('B+', 'O-', 'Platelets', 1, 0),
+('AB+', 'O-', 'Platelets', 1, 0),
+('A+', 'A+', 'White Blood Cells', 1, 0),
+('A-', 'A-', 'White Blood Cells', 1, 0),
+('B+', 'B+', 'White Blood Cells', 1, 0),
+('B-', 'B-', 'White Blood Cells', 1, 0),
+('AB+', 'AB+', 'White Blood Cells', 1, 0),
+('AB-', 'AB-', 'White Blood Cells', 1, 0),
+('O+', 'O+', 'White Blood Cells', 1, 0),
+('O-', 'O-', 'White Blood Cells', 1, 0);
 
 PRINT 'Data insertion completed successfully!';
